@@ -9,10 +9,28 @@ from __future__ import annotations
 
 import pytest
 
-from probelens.ai.demo import run_demo
+from probelens.ai.demo import _merge_nearby_releases, run_demo
 from probelens.ai.schemas import AskContext
 from probelens.ai.tools import ToolContext
+from probelens.analytics.dimensions import Filter
 from tests.util import require_db
+
+
+def test_merge_nearby_releases_pins_payment_sdk() -> None:
+    cands = [{"kind": "segment", "title": "Payment method: upi"}]
+    releases = [
+        {
+            "id": 1,
+            "version": "8.4.0",
+            "platform": "android",
+            "status": "completed",
+            "name": "Android 8.4.0 — payment SDK upgrade",
+            "affected_areas": ["checkout", "payments"],
+        }
+    ]
+    android = Filter(dimension="platform", operator="eq", value="android")
+    out = _merge_nearby_releases(cands, releases, "payment_success_rate", [android])
+    assert any("8.4.0" in c["title"] for c in out)
 
 
 @pytest.fixture(scope="module")

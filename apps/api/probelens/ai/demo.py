@@ -29,6 +29,7 @@ from probelens.ai.schemas import (
 from probelens.ai.tools import ToolContext, run_tool
 from probelens.analytics.dimensions import DIMENSIONS, Filter
 from probelens.analytics.metrics import format_value, get_metric
+from probelens.analytics.rootcause import _areas_touch_metric
 
 Conf = str  # "low" | "medium" | "high"
 
@@ -354,6 +355,38 @@ def _why_candidates(cands: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return shown
 
 
+def _merge_nearby_releases(
+    cands: list[dict[str, Any]], releases: list[dict[str, Any]], metric: str, filters: list[Filter]
+) -> list[dict[str, Any]]:
+    """RCA only emits a release when a version slice ranks. A finished rollout still belongs here."""
+    m = get_metric(metric)
+    platforms = {str(f.value) for f in filters if f.dimension == "platform" and f.operator == "eq"}
+    have = " ".join(c.get("title") or "" for c in cands)
+    out = list(cands)
+    for r in releases:
+        if r.get("status") == "planned":
+            continue
+        if platforms and r["platform"] not in platforms and r["platform"] != "all":
+            continue
+        if not _areas_touch_metric(m, list(r.get("affected_areas") or [])):
+            continue
+        if r["version"] in have:
+            continue
+        title = f"Release {r['version']} ({r['platform']})"
+        out.append(
+            {
+                "kind": "release",
+                "title": title,
+                "confidence": "medium",
+                "summary": r.get("name") or title,
+                "release_id": r["id"],
+                "data": r,
+            }
+        )
+        have += " " + r["version"]
+    return out
+
+
 def _drill_recommendation(m, top: dict[str, Any]) -> str:
     if "payment" in m.key:
         return (
@@ -464,6 +497,12 @@ def _why(
         if _ok(c_bd):
             facts.append(Fact(text=c_bd.summary, source=c_bd.id))
 
+    c_rel = trace.call("list_releases", date_from=b0, date_to=p1)
+    nearby = (c_rel.data or {}).get("releases", []) if _ok(c_rel) else []
+    if nearby:
+        facts.append(Fact(text=c_rel.summary, source=c_rel.id))
+    cands = _merge_nearby_releases(cands, nearby, metric, filters)
+
     release_cands = [c for c in cands if c["kind"] == "release" and c["confidence"] in ("high", "medium")]
     lead_release = release_cands[0]["data"] if release_cands and release_cands[0].get("data") else None
     if lead_release is None and release_cands:
@@ -524,11 +563,6 @@ def _why(
             text = c["summary"]
         inferences.append(Inference(text=text, confidence=c["confidence"], basis=basis))
 
-    # Releases in the window are facts; their relevance is inference (above).
-    if rc.get("releases"):
-        c_rel = trace.call("list_releases", date_from=b0, date_to=p1)
-        if _ok(c_rel):
-            facts.append(Fact(text=c_rel.summary, source=c_rel.id))
     # Only pull an experiment readout when the experiment actually measures this metric.
     exp_refs = [
         e
