@@ -11,9 +11,11 @@ const inrCompact = new Intl.NumberFormat("en-IN", {
   notation: "compact",
   maximumFractionDigits: 1,
 });
-const count = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
-const countCompact = new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 });
-const decimal = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+// Currency keeps Indian grouping (₹1.6Cr) because Threadline reports in INR;
+// counts use K/M so non-Indian readers are not tripped up by lakh notation.
+const count = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const countCompact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
+const decimal = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
 
 export function formatMetric(value: number | null | undefined, format: MetricFormat, compact = false) {
   if (value === null || value === undefined || Number.isNaN(value)) return "—";
@@ -75,4 +77,30 @@ export function formatDateTime(iso: string | Date) {
 
 export function titleCase(s: string) {
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/**
+ * A tight, "nice" axis domain for rate metrics: lines fill the plot instead of
+ * hugging a zero baseline, and ticks land on round percentages.
+ */
+export function niceDomain(values: number[], isPercent: boolean): { domain: [number, number]; ticks: number[] } {
+  const finite = values.filter((v) => Number.isFinite(v));
+  if (!finite.length) return { domain: [0, 1], ticks: [0, 0.5, 1] };
+  let min = Math.min(...finite);
+  let max = Math.max(...finite);
+  if (min === max) {
+    min = min * 0.9;
+    max = max * 1.1 || 1;
+  }
+  const span = max - min;
+  const rawStep = span / 4;
+  const pow = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * pow).find((s) => s >= rawStep) ?? pow * 10;
+  let lo = Math.floor((min - span * 0.15) / step) * step;
+  let hi = Math.ceil((max + span * 0.15) / step) * step;
+  if (lo < 0) lo = 0;
+  if (isPercent && hi > 1) hi = 1;
+  const ticks: number[] = [];
+  for (let t = lo; t <= hi + step / 2; t += step) ticks.push(Number(t.toFixed(10)));
+  return { domain: [lo, hi], ticks };
 }

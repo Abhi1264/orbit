@@ -40,6 +40,15 @@ def create_app() -> FastAPI:
             status_code=502, content={"detail": "Analytics query failed", "error": str(exc)[:300]}
         )
 
+    @app.exception_handler(Exception)
+    async def unhandled_error(request: Request, exc: Exception) -> JSONResponse:
+        request_id = getattr(request.state, "request_id", None)
+        log.exception("unhandled_error", path=request.url.path, request_id=request_id)
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Internal server error", "request_id": request_id},
+        )
+
     @app.get("/api/health", tags=["system"])
     def health() -> dict:
         status = {"api": "ok", "postgres": "ok", "clickhouse": "ok"}

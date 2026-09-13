@@ -49,6 +49,30 @@ CATEGORIES: dict[str, dict] = {
     },
 }
 
+_SINGULAR = {
+    "tshirts": "T-shirt",
+    "shirts": "Shirt",
+    "dresses": "Dress",
+    "jeans": "Jeans",
+    "kurtas": "Kurta",
+    "jackets": "Jacket",
+    "activewear": "Activewear",
+    "sneakers": "Sneakers",
+    "sandals": "Sandals",
+    "running": "Running Shoe",
+    "formal": "Formal Shoe",
+    "boots": "Boots",
+    "bags": "Bag",
+    "watches": "Watch",
+    "sunglasses": "Sunglasses",
+    "belts": "Belt",
+    "jewellery": "Jewellery",
+    "skincare": "Skincare",
+    "makeup": "Makeup",
+    "haircare": "Haircare",
+    "fragrance": "Fragrance",
+}
+
 _ADJECTIVES = [
     "Classic",
     "Relaxed",
@@ -114,8 +138,8 @@ def generate_products(rng: random.Random, count: int) -> list[ProductRow]:
             brand = rng.choice(spec["brands"])
             price = round(math.exp(rng.uniform(math.log(lo), math.log(hi))) / 10) * 10 - 1
             # Zipf-ish popularity: a few products carry most of the demand.
-            popularity = 1.0 / (rng.paretovariate(1.15))
-            name = f"{brand} {rng.choice(_ADJECTIVES)} {sub[:-1].title() if sub.endswith('s') else sub.title()} — {rng.choice(_COLOURS)}"
+            popularity = rng.paretovariate(1.2)
+            name = f"{brand} {rng.choice(_ADJECTIVES)} {_SINGULAR[sub]} — {rng.choice(_COLOURS)}"
             products.append(
                 ProductRow(
                     id=pid,
@@ -136,13 +160,13 @@ def generate_products(rng: random.Random, count: int) -> list[ProductRow]:
 def apply_stockout_risk(rng: random.Random, products: list[ProductRow], count: int = 18) -> list[ProductRow]:
     """Give the most popular products stock levels that will not cover recent velocity."""
     by_pop = sorted(products, key=lambda p: p.popularity, reverse=True)
-    risky = {p.id for p in by_pop[3:60] if rng.random() < 0.4}
+    risky = {p.id for p in by_pop[2:45] if rng.random() < 0.5}
     out = []
     picked = 0
     for p in products:
         if p.id in risky and picked < count:
             picked += 1
-            out.append(ProductRow(**{**p.__dict__, "stock_units": rng.randint(4, 30)}))
+            out.append(ProductRow(**{**p.__dict__, "stock_units": rng.randint(2, 14)}))
         else:
             out.append(p)
     return out

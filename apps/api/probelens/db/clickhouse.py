@@ -5,6 +5,7 @@ from functools import lru_cache
 from typing import Any
 
 import clickhouse_connect
+import clickhouse_connect.driver.httputil
 from clickhouse_connect.driver.client import Client
 
 from probelens.config import get_settings
@@ -25,6 +26,11 @@ def _new_client(user: str, password: str) -> Client:
         username=user,
         password=password,
         compress=True,
+        # Requests run in FastAPI's threadpool and share this client. Without a
+        # session id ClickHouse treats each query independently, which is what
+        # we want: the analytics path never uses session state (temp tables etc.).
+        autogenerate_session_id=False,
+        pool_mgr=clickhouse_connect.driver.httputil.get_pool_manager(maxsize=32, num_pools=4),
     )
 
 

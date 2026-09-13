@@ -118,6 +118,7 @@ class Segment(Base, TimestampMixin):
     description: Mapped[str] = mapped_column(Text, default="")
     conditions: Mapped[list] = mapped_column(JSONB)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    owner: Mapped[User] = relationship()
 
 
 class Anomaly(Base, TimestampMixin):
