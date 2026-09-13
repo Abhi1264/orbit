@@ -15,7 +15,6 @@ from probelens.models.enums import (
     ReleaseStatus,
 )
 
-
 class Release(Base, TimestampMixin):
     __tablename__ = "releases"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -42,7 +41,6 @@ class Release(Base, TimestampMixin):
         Index("ix_releases_version_platform", "version", "platform", unique=True),
     )
 
-
 class ReleaseEvent(Base):
     __tablename__ = "release_events"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -54,7 +52,6 @@ class ReleaseEvent(Base):
 
     release: Mapped[Release] = relationship(back_populates="timeline")
     actor: Mapped[User | None] = relationship()
-
 
 class Sop(Base, TimestampMixin):
     """A reusable standard operating procedure. Items are ordered checklist
@@ -74,7 +71,6 @@ class Sop(Base, TimestampMixin):
 
     __table_args__ = (Index("ix_sops_search", "search_vector", postgresql_using="gin"),)
 
-
 class Checklist(Base, TimestampMixin):
     __tablename__ = "checklists"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -90,7 +86,6 @@ class Checklist(Base, TimestampMixin):
     owner: Mapped[User] = relationship()
     sop: Mapped[Sop | None] = relationship()
 
-
 class KnowledgeDocument(Base, TimestampMixin):
     __tablename__ = "knowledge_documents"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -104,7 +99,6 @@ class KnowledgeDocument(Base, TimestampMixin):
     search_vector = search_vector("title", "body")
 
     __table_args__ = (Index("ix_knowledge_search", "search_vector", postgresql_using="gin"),)
-
 
 class Decision(Base, TimestampMixin):
     __tablename__ = "decisions"
@@ -128,7 +122,6 @@ class Decision(Base, TimestampMixin):
     search_vector = search_vector("title", "context", "evidence", "decision")
 
     __table_args__ = (Index("ix_decisions_search", "search_vector", postgresql_using="gin"),)
-
 
 class Feedback(Base, TimestampMixin):
     """Stakeholder and customer feedback intake. Each item carries a theme so the
@@ -157,7 +150,6 @@ class Feedback(Base, TimestampMixin):
     search_vector = search_vector("theme", "body")
 
     __table_args__ = (Index("ix_feedback_search", "search_vector", postgresql_using="gin"),)
-
 
 class AiRun(Base):
     """Audit record for every analyst invocation: what was asked, which tools ran,

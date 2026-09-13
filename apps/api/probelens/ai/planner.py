@@ -18,8 +18,6 @@ from typing import Literal
 from probelens.analytics.dimensions import DIMENSIONS, Filter
 from probelens.analytics.metrics import METRICS
 
-# --------------------------------------------------------------------------- lexicon
-
 # Longest phrases first so "checkout conversion" wins over "conversion".
 METRIC_SYNONYMS: list[tuple[str, str]] = [
     ("checkout conversion", "checkout_conversion"),
@@ -310,9 +308,7 @@ STOPWORDS = {
     "any",
 }
 
-
 Intent = Literal["why", "what", "funnel", "experiment", "attention", "compare"]
-
 
 @dataclass
 class ParsedDates:
@@ -322,7 +318,6 @@ class ParsedDates:
     compare: bool = False
     granularity: Literal["hour", "day", "week", "month"] = "day"
     phrase: str = ""
-
 
 @dataclass
 class Plan:
@@ -335,13 +330,8 @@ class Plan:
     intent: Intent = "what"
     experiment_hint: str | None = None
 
-
-# --------------------------------------------------------------------------- pieces
-
-
 def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", text.lower().replace("’", "'")).strip()
-
 
 def parse_dates(text: str, today: date, default_days: int = 14) -> ParsedDates:
     """Relative and absolute date phrases → window. Defaults to the last `default_days`."""
@@ -436,7 +426,6 @@ def parse_dates(text: str, today: date, default_days: int = 14) -> ParsedDates:
 
     return ParsedDates(today - timedelta(days=default_days - 1), today, False, compare, granularity, "")
 
-
 def parse_metric(text: str) -> tuple[str | None, str | None]:
     """(metric_key, matched phrase)."""
     t = _norm(text)
@@ -447,7 +436,6 @@ def parse_metric(text: str) -> tuple[str | None, str | None]:
         if re.search(rf"\b{re.escape(m.label.lower())}\b", t):
             return key, m.label.lower()
     return None, None
-
 
 def parse_breakdown(text: str) -> tuple[str | None, str | None]:
     t = _norm(text)
@@ -461,7 +449,6 @@ def parse_breakdown(text: str) -> tuple[str | None, str | None]:
         if tail.startswith(phrase):
             return DIMENSION_SYNONYMS[phrase], f"by {phrase}"
     return None, None
-
 
 def parse_filters(text: str, values: dict[str, list[str]] | None = None) -> tuple[list[Filter], list[str]]:
     """Dimension values mentioned anywhere in the text. Same-dimension mentions
@@ -499,7 +486,6 @@ def parse_filters(text: str, values: dict[str, list[str]] | None = None) -> tupl
             filters.append(Filter(dimension=dim, operator="in", values=vals))
     return filters, matched
 
-
 def detect_intent(text: str) -> Intent:
     t = _norm(text)
     if re.search(r"\b(why|what happened|what caused|cause|reason|explain|root cause|driving|drove)\b", t):
@@ -519,7 +505,6 @@ def detect_intent(text: str) -> Intent:
     if re.search(r"\b(vs|versus|compare|compared|against|difference between)\b", t):
         return "compare"
     return "what"
-
 
 def parse(text: str, today: date, values: dict[str, list[str]] | None = None, default_days: int = 14) -> Plan:
     metric, mphrase = parse_metric(text)
@@ -556,11 +541,9 @@ def parse(text: str, today: date, values: dict[str, list[str]] | None = None, de
         experiment_hint=exp_hint,
     )
 
-
 def previous_window(date_from: date, date_to: date) -> tuple[date, date]:
     days = (date_to - date_from).days + 1
     return date_from - timedelta(days=days), date_from - timedelta(days=1)
-
 
 def describe(plan: Plan) -> str:
     parts: list[str] = []

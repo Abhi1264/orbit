@@ -1,22 +1,33 @@
 import * as React from "react";
 
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-const fieldClass =
-  "rounded-sm border border-border bg-bg px-2 text-[13px] text-fg placeholder:text-fg-faint focus-visible:border-accent focus-visible:outline-none disabled:opacity-50";
+export { Label } from "@/components/ui/label";
+export { Textarea } from "@/components/ui/textarea";
 
-export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(fieldClass, "h-8 w-full", className)} {...props} />;
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return (
+    <input
+      type={type}
+      data-slot="input"
+      className={cn(
+        "h-8 w-full rounded-sm border border-border bg-bg px-2 text-[13px] text-fg placeholder:text-fg-faint focus-visible:border-accent focus-visible:outline-none disabled:opacity-50",
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
-export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn(fieldClass, "min-h-20 w-full py-1.5 leading-5", className)} {...props} />;
-}
-
-export function Select({ className, children, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
+function Select({ className, children, ...props }: React.ComponentProps<"select">) {
   return (
     <select
-      className={cn(fieldClass, "h-8 appearance-none bg-no-repeat pr-7", "select-chevron", className)}
+      data-slot="native-select"
+      className={cn(
+        "select-chevron h-8 appearance-none rounded-sm border border-border bg-bg bg-no-repeat px-2 pr-7 text-[13px] text-fg focus-visible:border-accent focus-visible:outline-none disabled:opacity-50",
+        className,
+      )}
       {...props}
     >
       {children}
@@ -24,11 +35,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
   );
 }
 
-export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("text-fg-muted mb-1 block text-xs font-medium", className)} {...props} />;
-}
-
-export function Field({
+function Field({
   label,
   htmlFor,
   hint,
@@ -49,3 +56,5 @@ export function Field({
     </div>
   );
 }
+
+export { Field, Input, Select };

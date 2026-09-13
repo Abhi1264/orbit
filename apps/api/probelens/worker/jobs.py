@@ -11,14 +11,29 @@ from probelens.analytics.meta import get_meta
 from probelens.config import get_settings
 from probelens.core.logging import get_logger
 from probelens.db.postgres import get_sessionmaker
-from probelens.db.redis import invalidate_analytics_cache
+from probelens.db.redis import get_redis, invalidate_analytics_cache
 from probelens.services.projects import default_project_id
 
 log = get_logger("worker")
 
+HEARTBEAT_KEY = "orbit:worker:heartbeat"
+LAST_RUN_KEY = "orbit:worker:last_run:{job}"
+
+def mark_run(job: str, ok: bool, **fields: object) -> None:
+    """Record the outcome of a job so /api/system/status can show it without touching the worker."""
+    redis = get_redis()
+    if redis is None:
+        return
+    payload = {"at": datetime.now(UTC).isoformat(), "ok": ok, **{k: str(v) for k, v in fields.items()}}
+    redis.hset(LAST_RUN_KEY.format(job=job), mapping=payload)
+
+def heartbeat() -> None:
+    redis = get_redis()
+    if redis is not None:
+        redis.set(HEARTBEAT_KEY, datetime.now(UTC).isoformat(), ex=180)
+
 broker = RedisBroker(url=get_settings().redis_url)
 dramatiq.set_broker(broker)
-
 
 @dramatiq.actor(max_retries=2, time_limit=5 * 60 * 1000)
 def detect_anomalies(as_of_iso: str | None = None) -> None:
@@ -33,15 +48,17 @@ def detect_anomalies(as_of_iso: str | None = None) -> None:
         summary = run_detection(db, default_project_id(db), as_of, datetime.now(UTC))
         db.commit()
         log.info("job_detect_anomalies_done", as_of=str(as_of), **summary)
-    except Exception:
+        mark_run("detect_anomalies", True, as_of=as_of, **summary)
+    except Exception as exc:
         db.rollback()
+        mark_run("detect_anomalies", False, error=str(exc)[:200])
         raise
     finally:
         db.close()
-
 
 @dramatiq.actor(max_retries=0)
 def refresh_analytics_cache() -> None:
     """Drop cached ClickHouse results so dashboards pick up newly loaded data."""
     deleted = invalidate_analytics_cache()
     log.info("job_cache_invalidated", keys=deleted)
+    mark_run("refresh_analytics_cache", True, keys=deleted)

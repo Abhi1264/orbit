@@ -33,10 +33,8 @@ SEGMENT_PREVIEW_METRICS = [
     "return_rate",
 ]
 
-
 def _can_edit(user, owner_id: int) -> bool:
     return user.id == owner_id or user.role in (Role.admin, Role.pm)
-
 
 @router.get("/saved-analyses", response_model=list[SavedAnalysisOut])
 def list_saved(_: CurrentUser, db: DbSession) -> list[SavedAnalysis]:
@@ -48,7 +46,6 @@ def list_saved(_: CurrentUser, db: DbSession) -> list[SavedAnalysis]:
         )
     )
 
-
 @router.post("/saved-analyses", response_model=SavedAnalysisOut, status_code=201)
 def create_saved(payload: SavedAnalysisCreate, user: CurrentUser, db: DbSession) -> SavedAnalysis:
     obj = SavedAnalysis(project_id=default_project_id(db), owner_id=user.id, **payload.model_dump())
@@ -57,14 +54,12 @@ def create_saved(payload: SavedAnalysisCreate, user: CurrentUser, db: DbSession)
     db.refresh(obj)
     return obj
 
-
 @router.get("/saved-analyses/{analysis_id}", response_model=SavedAnalysisOut)
 def get_saved(analysis_id: int, _: CurrentUser, db: DbSession) -> SavedAnalysis:
     obj = db.get(SavedAnalysis, analysis_id)
     if obj is None:
         raise NotFound("Analysis", analysis_id)
     return obj
-
 
 @router.delete("/saved-analyses/{analysis_id}", status_code=204)
 def delete_saved(analysis_id: int, user: CurrentUser, db: DbSession) -> None:
@@ -75,11 +70,9 @@ def delete_saved(analysis_id: int, user: CurrentUser, db: DbSession) -> None:
         raise Forbidden()
     db.delete(obj)
 
-
 @router.get("/segments", response_model=list[SegmentOut])
 def list_segments(_: CurrentUser, db: DbSession) -> list[Segment]:
     return list(db.scalars(select(Segment).options(selectinload(Segment.owner)).order_by(Segment.name)))
-
 
 @router.post("/segments", response_model=SegmentOut, status_code=201)
 def create_segment(payload: SegmentCreate, user: CurrentUser, db: DbSession) -> Segment:
@@ -95,7 +88,6 @@ def create_segment(payload: SegmentCreate, user: CurrentUser, db: DbSession) -> 
     db.refresh(obj)
     return obj
 
-
 @router.put("/segments/{segment_id}", response_model=SegmentOut)
 def update_segment(segment_id: int, payload: SegmentCreate, user: CurrentUser, db: DbSession) -> Segment:
     obj = db.get(Segment, segment_id)
@@ -109,7 +101,6 @@ def update_segment(segment_id: int, payload: SegmentCreate, user: CurrentUser, d
     db.flush()
     return obj
 
-
 @router.delete("/segments/{segment_id}", status_code=204)
 def delete_segment(segment_id: int, user: CurrentUser, db: DbSession) -> None:
     obj = db.get(Segment, segment_id)
@@ -118,7 +109,6 @@ def delete_segment(segment_id: int, user: CurrentUser, db: DbSession) -> None:
     if not _can_edit(user, obj.owner_id):
         raise Forbidden()
     db.delete(obj)
-
 
 @router.post("/segments/preview", response_model=SegmentPreview)
 def preview_segment(payload: SegmentPreviewRequest) -> SegmentPreview:

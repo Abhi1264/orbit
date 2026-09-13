@@ -11,7 +11,6 @@ from probelens.schemas.investigations import CommentCreate, CommentOut
 
 router = APIRouter(tags=["comments"], dependencies=[Depends(require(Permission.view))])
 
-
 @router.get("/comments/{entity_type}/{entity_id}", response_model=list[CommentOut])
 def list_comments(entity_type: EntityType, entity_id: int, _: CurrentUser, db: DbSession) -> list[Comment]:
     return list(
@@ -22,7 +21,6 @@ def list_comments(entity_type: EntityType, entity_id: int, _: CurrentUser, db: D
             .order_by(Comment.created_at)
         )
     )
-
 
 @router.post("/comments/{entity_type}/{entity_id}", response_model=CommentOut, status_code=201)
 def add_comment(
@@ -37,7 +35,6 @@ def add_comment(
     db.flush()
     db.refresh(comment)
     return comment
-
 
 @router.delete("/comments/{comment_id}", status_code=204)
 def delete_comment(comment_id: int, user: CurrentUser, db: DbSession) -> None:

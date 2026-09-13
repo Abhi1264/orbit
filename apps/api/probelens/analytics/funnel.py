@@ -33,11 +33,9 @@ DEFAULT_FUNNEL = [
 
 FUNNEL_WINDOW_SECONDS = 24 * 3600
 
-
 class FunnelSegment(BaseModel):
     label: str = "All sessions"
     filters: list[Filter] = Field(default_factory=list)
-
 
 class FunnelQuery(BaseModel):
     steps: list[str] = Field(default_factory=lambda: list(DEFAULT_FUNNEL), min_length=2, max_length=8)
@@ -62,7 +60,6 @@ class FunnelQuery(BaseModel):
             raise ValueError("Use either a breakdown or multiple segments, not both")
         return self
 
-
 class FunnelStep(BaseModel):
     event: str
     label: str
@@ -72,7 +69,6 @@ class FunnelStep(BaseModel):
     overall_conversion: float | None  # from first step
     drop_off: int
 
-
 class FunnelSeries(BaseModel):
     key: str
     label: str
@@ -80,13 +76,11 @@ class FunnelSeries(BaseModel):
     total_sessions: int
     steps: list[FunnelStep]
 
-
 class FunnelResult(BaseModel):
     steps: list[str]
     window_seconds: int
     series: list[FunnelSeries]
     interpretation: dict[str, Any]
-
 
 def _compile(
     q: FunnelQuery, filters: list[Filter], breakdown: str | None, limit: int
@@ -118,7 +112,6 @@ LIMIT {int(limit)}
 """
     return sql, params
 
-
 def _to_steps(q: FunnelQuery, row: dict[str, Any]) -> list[FunnelStep]:
     steps: list[FunnelStep] = []
     first = int(row["s0"]) if row else 0
@@ -141,7 +134,6 @@ def _to_steps(q: FunnelQuery, row: dict[str, Any]) -> list[FunnelStep]:
         )
         prev = sessions
     return steps
-
 
 def run_funnel(q: FunnelQuery) -> FunnelResult:
     series: list[FunnelSeries] = []

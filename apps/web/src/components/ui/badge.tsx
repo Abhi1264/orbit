@@ -7,6 +7,15 @@ const badgeVariants = cva(
   "inline-flex items-center gap-1 rounded-sm border px-1.5 py-px text-2xs font-medium whitespace-nowrap",
   {
     variants: {
+      variant: {
+        default: "border-border bg-surface-2 text-fg-muted",
+        secondary: "border-border bg-surface-2 text-fg-muted",
+        outline: "border-border text-fg-muted",
+        destructive: "border-danger/20 bg-danger-soft text-danger",
+        success: "border-success/20 bg-success-soft text-success",
+        warning: "border-warning/20 bg-warning-soft text-warning",
+        info: "border-info/20 bg-info-soft text-info",
+      },
       tone: {
         neutral: "border-border bg-surface-2 text-fg-muted",
         success: "border-success/20 bg-success-soft text-success",
@@ -22,12 +31,13 @@ const badgeVariants = cva(
 
 export type BadgeTone = NonNullable<VariantProps<typeof badgeVariants>["tone"]>;
 
-export function Badge({
+function Badge({
   className,
+  variant,
   tone,
   ...props
-}: React.HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeVariants>) {
-  return <span className={cn(badgeVariants({ tone }), className)} {...props} />;
+}: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+  return <span data-slot="badge" className={cn(badgeVariants({ variant, tone }), className)} {...props} />;
 }
 
 const STATUS_TONES: Record<string, BadgeTone> = {
@@ -63,10 +73,12 @@ const STATUS_TONES: Record<string, BadgeTone> = {
   complete: "success",
 };
 
-export function StatusBadge({ status, className }: { status: string; className?: string }) {
+function StatusBadge({ status, className }: { status: string; className?: string }) {
   return (
     <Badge tone={STATUS_TONES[status] ?? "neutral"} className={className}>
       {status.replace(/_/g, " ")}
     </Badge>
   );
 }
+
+export { Badge, badgeVariants, StatusBadge };

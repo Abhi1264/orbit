@@ -25,7 +25,8 @@ function LoginForm() {
     mutationFn: async () => unwrap(await api.POST("/api/auth/login", { body: { email, password } })),
     onSuccess: () => {
       const next = params.get("next");
-      router.replace(next && next.startsWith("/") ? (next as "/") : "/");
+      const safe = next && next.startsWith("/") && !next.startsWith("//") && !next.includes("\\");
+      router.replace(safe ? (next as "/") : "/");
     },
   });
 
@@ -38,7 +39,7 @@ function LoginForm() {
       }}
     >
       <div className="mb-6">
-        <div className="mb-1 text-[15px] font-semibold tracking-tight">Probelens</div>
+        <div className="mb-1 text-[15px] font-semibold tracking-tight">Orbit</div>
         <p className="text-fg-muted text-[13px]">Product analytics and experimentation for Threadline.</p>
       </div>
       <div className="space-y-3">

@@ -16,7 +16,6 @@ router = APIRouter(prefix="/decisions", tags=["decisions"], dependencies=[Depend
 
 _write = Depends(require(Permission.manage_decisions))
 
-
 def _links(db: Session, d: Decision) -> list[EntityRef]:
     out: list[EntityRef] = []
     if d.investigation_id and (inv := db.get(Investigation, d.investigation_id)):
@@ -29,10 +28,8 @@ def _links(db: Session, d: Decision) -> list[EntityRef]:
         )
     return out
 
-
 def _due(d: Decision, today: date) -> bool:
     return d.status == DecisionStatus.decided and d.follow_up_date is not None and d.follow_up_date <= today
-
 
 def _summary(db: Session, d: Decision, today: date) -> DecisionSummary:
     return DecisionSummary(
@@ -48,7 +45,6 @@ def _summary(db: Session, d: Decision, today: date) -> DecisionSummary:
         updated_at=d.updated_at,
     )
 
-
 def _out(db: Session, d: Decision, today: date) -> DecisionOut:
     return DecisionOut(
         **_summary(db, d, today).model_dump(),
@@ -62,13 +58,11 @@ def _out(db: Session, d: Decision, today: date) -> DecisionOut:
         created_at=d.created_at,
     )
 
-
 def _load(db: Session, decision_id: int) -> Decision:
     d = db.get(Decision, decision_id, options=[selectinload(Decision.owner)])
     if d is None:
         raise NotFound("Decision", decision_id)
     return d
-
 
 def _validate_links(db: Session, data: dict) -> None:
     for key, model, label in (
@@ -78,7 +72,6 @@ def _validate_links(db: Session, data: dict) -> None:
     ):
         if data.get(key) is not None and db.get(model, data[key]) is None:
             raise NotFound(label, data[key])
-
 
 @router.get("", response_model=list[DecisionSummary])
 def list_decisions(
@@ -107,11 +100,9 @@ def list_decisions(
     rows = [_summary(db, d, today) for d in db.scalars(stmt).all()]
     return [r for r in rows if r.follow_up_due] if due_only else rows
 
-
 @router.get("/{decision_id}", response_model=DecisionOut)
 def get_decision(decision_id: int, _: CurrentUser, db: DbSession) -> DecisionOut:
     return _out(db, _load(db, decision_id), date.today())
-
 
 @router.post("", response_model=DecisionOut, status_code=201, dependencies=[_write])
 def create_decision(payload: DecisionCreate, user: CurrentUser, db: DbSession) -> DecisionOut:
@@ -126,7 +117,6 @@ def create_decision(payload: DecisionCreate, user: CurrentUser, db: DbSession) -
     db.flush()
     return _out(db, _load(db, d.id), date.today())
 
-
 @router.patch("/{decision_id}", response_model=DecisionOut, dependencies=[_write])
 def update_decision(decision_id: int, payload: DecisionUpdate, _: CurrentUser, db: DbSession) -> DecisionOut:
     d = _load(db, decision_id)
@@ -136,7 +126,6 @@ def update_decision(decision_id: int, payload: DecisionUpdate, _: CurrentUser, d
         setattr(d, k, v)
     db.flush()
     return _out(db, d, date.today())
-
 
 @router.delete("/{decision_id}", status_code=204, dependencies=[_write])
 def delete_decision(decision_id: int, _: CurrentUser, db: DbSession) -> None:

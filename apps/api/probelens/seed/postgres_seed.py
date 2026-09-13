@@ -75,10 +75,8 @@ STAKEHOLDERS = [
     ("Sameer Joshi", "sameer.joshi@threadline.test", "Search Engineering", "Tech Lead"),
 ]
 
-
 def _at(day, hour=10, minute=0) -> datetime:
     return datetime.combine(day, time(hour, minute), tzinfo=UTC)
-
 
 def reset(db: Session) -> None:
     for model in (
@@ -108,7 +106,6 @@ def reset(db: Session) -> None:
     ):
         db.execute(delete(model))
     db.flush()
-
 
 def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dict:
     reset(db)
@@ -156,7 +153,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
     db.add_all(stakeholders.values())
     db.flush()
 
-    # --- Experiments (mirroring the simulator) -------------------------------
     experiments: dict[str, Experiment] = {}
     owners = {
         "new_pdp_cta": rohan,
@@ -200,7 +196,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
     fst.decided_at = _at(fst.end_date + timedelta(days=1), 11)
     fst.decided_by_id = priya.id
 
-    # --- Releases ------------------------------------------------------------
     releases: dict[str, Release] = {}
     release_owner = {"android": priya, "ios": priya, "web": priya, "all": rohan}
     for spec in sc.releases:
@@ -253,7 +248,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         "8.4.1:android"
     ].description += " Blocked on root cause confirmation from the payments investigation."
 
-    # --- Segments ------------------------------------------------------------
     db.add_all(
         [
             Segment(
@@ -298,7 +292,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         ]
     )
 
-    # --- Investigations ------------------------------------------------------
     paid_social_start = sc.day(sc.paid_social_campaign_start_days_before_end)
     inv_paid = Investigation(
         project_id=project.id,
@@ -433,7 +426,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         ]
     )
 
-    # --- Product ops ---------------------------------------------------------
     sop_checkout = Sop(
         project_id=project.id,
         title="Launching a checkout or payments change",
@@ -635,7 +627,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         ]
     )
 
-    # --- Stakeholder & customer feedback --------------------------------------
     android_date = android.release_date
     campaign_start = sc.day(sc.paid_social_campaign_start_days_before_end)
 
@@ -818,7 +809,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         "android_release_id": android.id,
         "investigations": {"paid_social": inv_paid.id, "footwear": inv_old.id},
     }
-
 
 def link_anomalies_to_investigations(db: Session, project_id: int) -> int:
     """Attach detected anomalies to the seeded investigations that are about them.

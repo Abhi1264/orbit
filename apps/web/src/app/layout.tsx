@@ -9,7 +9,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Probelens", template: "%s · Probelens" },
+  title: { default: "Orbit", template: "%s · Orbit" },
   description: "Product analytics and experimentation for Threadline",
 };
 

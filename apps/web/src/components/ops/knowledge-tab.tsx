@@ -21,7 +21,6 @@ import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useUrlState } from "@/lib/url-state";
 
-/** Minimal renderer for the subset of markdown the knowledge base uses: ##/### headings, paragraphs, - lists. */
 export function SimpleMarkdown({ body }: { body: string }) {
   const blocks = body.split(/\n{2,}/);
   return (

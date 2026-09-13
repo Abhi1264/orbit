@@ -32,10 +32,6 @@ from probelens.analytics.metrics import format_value, get_metric
 
 Conf = str  # "low" | "medium" | "high"
 
-
-# --------------------------------------------------------------------------- helpers
-
-
 @dataclass
 class Trace:
     ctx: ToolContext
@@ -46,10 +42,8 @@ class Trace:
         self.calls.append(rec)
         return rec
 
-
 def _jsonable(args: dict[str, Any]) -> dict[str, Any]:
     return json.loads(json.dumps(args, default=_default))
-
 
 def _default(o: Any) -> Any:
     if isinstance(o, date):
@@ -58,20 +52,16 @@ def _default(o: Any) -> Any:
         return o.model_dump(exclude_none=True)
     raise TypeError(type(o).__name__)
 
-
 def _pct(v: float | None, signed: bool = True) -> str:
     if v is None:
         return "n/a"
     return f"{v * 100:+.1f}%" if signed else f"{v * 100:.1f}%"
 
-
 def _d(s: str) -> str:
     return date.fromisoformat(s).strftime("%-d %b")
 
-
 def _scope(filters: list[Filter]) -> str:
     return ", ".join(f.describe() for f in filters) or "store-wide"
-
 
 def explore_href(
     metric: str,
@@ -91,7 +81,6 @@ def explore_href(
         sp["breakdown"] = breakdown
     return "/analytics?" + urlencode(sp)
 
-
 def funnel_href(filters: list[Filter], date_from: date, date_to: date, breakdown: str | None) -> str:
     sp: dict[str, str] = {"from": str(date_from), "to": str(date_to)}
     if filters:
@@ -103,10 +92,8 @@ def funnel_href(filters: list[Filter], date_from: date, date_to: date, breakdown
         sp["breakdown"] = breakdown
     return "/funnels?" + urlencode(sp)
 
-
 def _ok(rec: ToolCallRecord) -> bool:
     return rec.error is None and rec.data is not None
-
 
 def _dominant_dimension(question: str, metric: str) -> str:
     """Dimension to show when the user didn't name one: what typically explains this metric."""
@@ -118,7 +105,6 @@ def _dominant_dimension(question: str, metric: str) -> str:
     if "return" in m.key or "delivery" in m.key:
         return "category"
     return "platform"
-
 
 def _empty(question: str, why: str) -> AnalystAnswer:
     return AnalystAnswer(
@@ -132,10 +118,6 @@ def _empty(question: str, why: str) -> AnalystAnswer:
             "What needs attention right now?",
         ],
     )
-
-
-# --------------------------------------------------------------------------- playbooks
-
 
 def run_demo(
     question: str, ask_ctx: AskContext, tctx: ToolContext
@@ -173,10 +155,6 @@ def run_demo(
             "Words not mapped to a metric, dimension or date and ignored: " + ", ".join(plan.unresolved) + "."
         )
     return answer, trace.calls
-
-
-# ----------------------------------------------------------------------------- what
-
 
 def _what(
     trace: Trace, plan: planner.Plan, metric: str, filters: list[Filter], compare: bool = False
@@ -306,10 +284,6 @@ def _what(
         ],
     )
 
-
-# ----------------------------------------------------------------------------- why
-
-
 def _dedupe(filters: list[Filter]) -> list[Filter]:
     seen: set[str] = set()
     out: list[Filter] = []
@@ -319,7 +293,6 @@ def _dedupe(filters: list[Filter]) -> list[Filter]:
             seen.add(k)
             out.append(f)
     return out
-
 
 def _anchor_to_anomaly(
     anomalies: list[dict[str, Any]], filters: list[Filter], p0: date, p1: date
@@ -335,7 +308,6 @@ def _anchor_to_anomaly(
             return a
     return None
 
-
 def _drill_recommendation(m, top: dict[str, Any]) -> str:
     if "payment" in m.key:
         return (
@@ -350,7 +322,6 @@ def _drill_recommendation(m, top: dict[str, Any]) -> str:
         f"Drill into {top['title']}: run the funnel for that segment to find which step is leaking, then "
         "check the releases and experiments touching it."
     )
-
 
 def _why(
     trace: Trace, plan: planner.Plan, metric: str, filters: list[Filter], ask_ctx: AskContext
@@ -714,10 +685,6 @@ def _why(
         caveats=caveats,
     )
 
-
-# ----------------------------------------------------------------------------- funnel
-
-
 def _funnel(trace: Trace, plan: planner.Plan, filters: list[Filter]) -> AnalystAnswer:
     d0, d1 = plan.dates.date_from, plan.dates.date_to
     breakdown = plan.breakdown
@@ -802,10 +769,6 @@ def _funnel(trace: Trace, plan: planner.Plan, filters: list[Filter]) -> AnalystA
             "day starts a new funnel."
         ],
     )
-
-
-# ----------------------------------------------------------------------------- experiment
-
 
 def _experiment(trace: Trace, plan: planner.Plan, ask_ctx: AskContext) -> AnalystAnswer:
     c_list = trace.call("list_experiments", status="all")
@@ -906,14 +869,9 @@ def _experiment(trace: Trace, plan: planner.Plan, ask_ctx: AskContext) -> Analys
         caveats=caveats,
     )
 
-
-# ----------------------------------------------------------------------------- attention
-
-
 def _days_after(a: date, b: date) -> str:
     n = (a - b).days
     return "the same day as" if n == 0 else f"{n} day{'s' if n != 1 else ''} after"
-
 
 def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
     c_an = trace.call("list_anomalies", status="open", limit=15)

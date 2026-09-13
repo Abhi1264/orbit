@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from typing import Annotated
 
+import structlog
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
@@ -11,7 +12,6 @@ from probelens.db.postgres import get_db
 from probelens.models import User
 
 DbSession = Annotated[Session, Depends(get_db)]
-
 
 def get_current_user(request: Request, db: DbSession) -> User:
     token = request.cookies.get(SESSION_COOKIE)
@@ -24,11 +24,10 @@ def get_current_user(request: Request, db: DbSession) -> User:
     user = db.get(User, user_id)
     if user is None or not user.is_active:
         raise Unauthorized("Session is no longer valid")
+    structlog.contextvars.bind_contextvars(user_id=user.id)
     return user
 
-
 CurrentUser = Annotated[User, Depends(get_current_user)]
-
 
 def require(permission: Permission) -> Callable[[User], User]:
     def dependency(user: CurrentUser) -> User:

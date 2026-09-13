@@ -1,15 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const SESSION_COOKIE = "probelens_session";
+const SESSION_COOKIE = "orbit_session";
 
-// Optimistic check only: the API validates the session on every request.
 export function proxy(request: NextRequest) {
   const hasSession = request.cookies.has(SESSION_COOKIE);
   const { pathname } = request.nextUrl;
 
   if (pathname === "/login") {
-    // `next` means the app bounced here after a 401: the cookie exists but is no longer
-    // valid, so let the user log in again instead of looping back to the app.
     const bounced = request.nextUrl.searchParams.has("next");
     return hasSession && !bounced ? NextResponse.redirect(new URL("/", request.url)) : NextResponse.next();
   }

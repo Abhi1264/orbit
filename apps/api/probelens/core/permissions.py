@@ -2,7 +2,6 @@ from enum import StrEnum
 
 from probelens.models.enums import Role
 
-
 class Permission(StrEnum):
     view = "view"
     run_analytics = "run_analytics"
@@ -14,7 +13,6 @@ class Permission(StrEnum):
     manage_decisions = "manage_decisions"
     use_analyst = "use_analyst"
     manage_users = "manage_users"
-
 
 _ANALYST = {
     Permission.view,
@@ -36,7 +34,6 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
     Role.pm: frozenset(_PM),
     Role.admin: frozenset(set(Permission)),
 }
-
 
 def has_permission(role: Role, permission: Permission) -> bool:
     return permission in ROLE_PERMISSIONS[role]

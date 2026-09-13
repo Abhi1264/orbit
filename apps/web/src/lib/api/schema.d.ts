@@ -55,6 +55,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/auth/password": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Change Password */
+    post: operations["change_password_api_auth_password_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/roles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Roles */
+    get: operations["roles_api_auth_roles_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/auth/users": {
     parameters: {
       query?: never;
@@ -70,6 +104,45 @@ export interface paths {
     options?: never;
     head?: never;
     patch?: never;
+    trace?: never;
+  };
+  "/api/auth/admin/users": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Admin List Users */
+    get: operations["admin_list_users_api_auth_admin_users_get"];
+    put?: never;
+    /** Admin Create User */
+    post: operations["admin_create_user_api_auth_admin_users_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/admin/users/{user_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Admin Delete User
+     * @description Hard delete for accounts that never touched anything; otherwise deactivate to keep the audit trail.
+     */
+    delete: operations["admin_delete_user_api_auth_admin_users__user_id__delete"];
+    options?: never;
+    head?: never;
+    /** Admin Update User */
+    patch: operations["admin_update_user_api_auth_admin_users__user_id__patch"];
     trace?: never;
   };
   "/api/analytics/meta": {
@@ -741,7 +814,11 @@ export interface paths {
     get: operations["get_sop_api_ops_sops__sop_id__get"];
     put?: never;
     post?: never;
-    delete?: never;
+    /**
+     * Delete Sop
+     * @description Checklists already run from the SOP keep their items; they just lose the back-reference.
+     */
+    delete: operations["delete_sop_api_ops_sops__sop_id__delete"];
     options?: never;
     head?: never;
     /** Update Sop */
@@ -781,6 +858,23 @@ export interface paths {
     head?: never;
     /** Toggle Checklist Item */
     patch: operations["toggle_checklist_item_api_ops_checklists__checklist_id__items__key__patch"];
+    trace?: never;
+  };
+  "/api/ops/checklists/{checklist_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Checklist */
+    delete: operations["delete_checklist_api_ops_checklists__checklist_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/api/ops/knowledge": {
@@ -935,6 +1029,23 @@ export interface paths {
     };
     /** Search */
     get: operations["search_api_search_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/system/status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** System Status */
+    get: operations["system_status_api_system_status_get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -1558,6 +1669,19 @@ export interface components {
        */
       is_new: boolean;
     };
+    /** DataStatus */
+    DataStatus: {
+      /** Data Start */
+      data_start: string | null;
+      /** Data End */
+      data_end: string | null;
+      /** Events */
+      events: number;
+      /** Users */
+      users: number;
+      /** Cache Keys */
+      cache_keys: number;
+    };
     /** DecisionCreate */
     DecisionCreate: {
       /** Title */
@@ -1711,6 +1835,17 @@ export interface components {
       experiment_id?: number | null;
       /** Release Id */
       release_id?: number | null;
+    };
+    /** Dependency */
+    Dependency: {
+      /** Name */
+      name: string;
+      /** Ok */
+      ok: boolean;
+      /** Latency Ms */
+      latency_ms: number | null;
+      /** Detail */
+      detail: string;
     };
     /** DetectionSummary */
     DetectionSummary: {
@@ -2532,6 +2667,19 @@ export interface components {
       /** Baseline End */
       baseline_end?: string | null;
     };
+    /** JobRun */
+    JobRun: {
+      /** Job */
+      job: string;
+      /** At */
+      at: string | null;
+      /** Ok */
+      ok: boolean | null;
+      /** Detail */
+      detail: {
+        [key: string]: string;
+      };
+    };
     /** KnowledgeCreate */
     KnowledgeCreate: {
       /** Title */
@@ -2754,6 +2902,13 @@ export interface components {
       compare_to: string | null;
       /** Kpis */
       kpis: components["schemas"]["Kpi"][];
+    };
+    /** PasswordChange */
+    PasswordChange: {
+      /** Current Password */
+      current_password: string;
+      /** New Password */
+      new_password: string;
     };
     /**
      * Permission
@@ -3113,6 +3268,12 @@ export interface components {
      * @enum {string}
      */
     Role: "admin" | "pm" | "analyst" | "viewer";
+    /** RolePermissions */
+    RolePermissions: {
+      role: components["schemas"]["Role"];
+      /** Permissions */
+      permissions: components["schemas"]["Permission"][];
+    };
     /** RootCauseAnalysis */
     RootCauseAnalysis: {
       /** Metric */
@@ -3493,6 +3654,41 @@ export interface components {
         [key: string]: unknown;
       }[];
     };
+    /** SystemStatus */
+    SystemStatus: {
+      /** Env */
+      env: string;
+      /** Version */
+      version: string;
+      /** Llm Mode */
+      llm_mode: string;
+      /** Llm Model */
+      llm_model: string | null;
+      /** Dependencies */
+      dependencies: components["schemas"]["Dependency"][];
+      /** Worker Heartbeat */
+      worker_heartbeat: string | null;
+      /** Worker Alive */
+      worker_alive: boolean;
+      /** Jobs */
+      jobs: components["schemas"]["JobRun"][];
+      data: components["schemas"]["DataStatus"];
+      /** Counts */
+      counts: {
+        [key: string]: number;
+      };
+      /** Last Anomaly Detection */
+      last_anomaly_detection: string | null;
+      /** Ai Runs 24H */
+      ai_runs_24h: number;
+      /** Ai Errors 24H */
+      ai_errors_24h: number;
+      /**
+       * Generated At
+       * Format: date-time
+       */
+      generated_at: string;
+    };
     /** ThemeSummary */
     ThemeSummary: {
       /** Theme */
@@ -3555,6 +3751,41 @@ export interface components {
       /** Denominator */
       denominator: number | null;
     };
+    /** UserAdminOut */
+    UserAdminOut: {
+      /** Id */
+      id: number;
+      /** Email */
+      email: string;
+      /** Name */
+      name: string;
+      role: components["schemas"]["Role"];
+      /** Is Active */
+      is_active: boolean;
+      /** Team */
+      team: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** UserCreate */
+    UserCreate: {
+      /** Email */
+      email: string;
+      /** Name */
+      name: string;
+      /** Password */
+      password: string;
+      /** @default viewer */
+      role: components["schemas"]["Role"];
+    };
     /** UserOut */
     UserOut: {
       /** Id */
@@ -3576,6 +3807,16 @@ export interface components {
       /** Email */
       email: string;
       role: components["schemas"]["Role"];
+    };
+    /** UserUpdate */
+    UserUpdate: {
+      /** Name */
+      name?: string | null;
+      role?: components["schemas"]["Role"] | null;
+      /** Is Active */
+      is_active?: boolean | null;
+      /** Password */
+      password?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -3759,6 +4000,57 @@ export interface operations {
       };
     };
   };
+  change_password_api_auth_password_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasswordChange"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  roles_api_auth_roles_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RolePermissions"][];
+        };
+      };
+    };
+  };
   list_users_api_auth_users_get: {
     parameters: {
       query?: never;
@@ -3775,6 +4067,134 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["UserSummary"][];
+        };
+      };
+    };
+  };
+  admin_list_users_api_auth_admin_users_get: {
+    parameters: {
+      query?: {
+        include_inactive?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserAdminOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_create_user_api_auth_admin_users_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserAdminOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_delete_user_api_auth_admin_users__user_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  admin_update_user_api_auth_admin_users__user_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        user_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UserAdminOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
@@ -5526,6 +5946,35 @@ export interface operations {
       };
     };
   };
+  delete_sop_api_ops_sops__sop_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        sop_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   update_sop_api_ops_sops__sop_id__patch: {
     parameters: {
       query?: never;
@@ -5650,6 +6099,35 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["ChecklistOut"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_checklist_api_ops_checklists__checklist_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        checklist_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {
@@ -6158,6 +6636,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  system_status_api_system_status_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SystemStatus"];
         };
       };
     };

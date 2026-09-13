@@ -1,6 +1,6 @@
 # Experimentation
 
-How Probelens assigns users, reads results, and turns a readout into a
+How Orbit assigns users, reads results, and turns a readout into a
 ship / iterate / stop / continue recommendation. Code lives in
 `apps/api/probelens/experiments/`.
 

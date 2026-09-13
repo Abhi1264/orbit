@@ -11,10 +11,14 @@ log = get_logger("http")
 
 REQUEST_ID_HEADER = "X-Request-ID"
 
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "same-origin",
+    "Cache-Control": "no-store",
+}
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    """Attach a request id to logs and the response, and record timing for every request."""
-
     async def dispatch(self, request: Request, call_next):
         request_id = request.headers.get(REQUEST_ID_HEADER) or uuid.uuid4().hex[:16]
         request.state.request_id = request_id
@@ -28,6 +32,8 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             raise
         elapsed_ms = round((time.perf_counter() - started) * 1000, 1)
         response.headers[REQUEST_ID_HEADER] = request_id
+        for header, value in SECURITY_HEADERS.items():
+            response.headers.setdefault(header, value)
         if not request.url.path.endswith("/health"):
             log.info(
                 "request",

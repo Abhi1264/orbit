@@ -24,7 +24,6 @@ from probelens.experiments.analysis import (
 # ruled out a material regression, whatever its p-value says.
 GUARDRAIL_TOLERANCE = 0.10
 
-
 def _pick_treatment(primary: MetricReadout) -> VariantComparison | None:
     """The variant to judge: the significant one with the best lift, else the best point estimate."""
     if not primary.comparisons:
@@ -34,14 +33,11 @@ def _pick_treatment(primary: MetricReadout) -> VariantComparison | None:
     pool = sig or primary.comparisons
     return max(pool, key=lambda c: sign * c.abs_diff)
 
-
 def _fmt(metric_key: str, value: float | None) -> str:
     return format_value(get_metric(metric_key).format, value)
 
-
 def _pct(x: float | None) -> str:
     return "n/a" if x is None else f"{x * 100:+.1f}%"
-
 
 def recommend(
     spec: ExperimentSpec, exposure: Exposure, metrics: list[MetricReadout], power: Power, as_of: date

@@ -5,20 +5,24 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-export const Tabs = TabsPrimitive.Root;
+function Tabs({ ...props }: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  return <TabsPrimitive.Root data-slot="tabs" {...props} />;
+}
 
-export function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
+function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
+      data-slot="tabs-list"
       className={cn("border-border flex items-center gap-4 border-b", className)}
       {...props}
     />
   );
 }
 
-export function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
+      data-slot="tabs-trigger"
       className={cn(
         "text-fg-muted hover:text-fg -mb-px border-b-2 border-transparent px-0.5 pb-2 text-[13px] transition-colors",
         "data-[state=active]:border-fg data-[state=active]:text-fg",
@@ -29,12 +33,17 @@ export function TabsTrigger({ className, ...props }: React.ComponentProps<typeof
   );
 }
 
-export function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
-  return <TabsPrimitive.Content className={cn("pt-4 focus-visible:outline-none", className)} {...props} />;
+function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
+  return (
+    <TabsPrimitive.Content
+      data-slot="tabs-content"
+      className={cn("pt-4 focus-visible:outline-none", className)}
+      {...props}
+    />
+  );
 }
 
-/** Compact button-group style toggle for view/metric switches inside toolbars. */
-export function SegmentedControl<T extends string>({
+function SegmentedControl<T extends string>({
   value,
   onChange,
   options,
@@ -71,3 +80,5 @@ export function SegmentedControl<T extends string>({
     </div>
   );
 }
+
+export { SegmentedControl, Tabs, TabsContent, TabsList, TabsTrigger };

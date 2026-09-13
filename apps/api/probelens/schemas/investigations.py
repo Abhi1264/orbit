@@ -14,9 +14,6 @@ from probelens.models.enums import (
 )
 from probelens.schemas.auth import UserSummary
 
-# --------------------------------------------------------------------------- anomalies
-
-
 class AnomalyOut(BaseModel):
     id: int
     metric_key: str
@@ -39,20 +36,14 @@ class AnomalyOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
-
 class AnomalyUpdate(BaseModel):
     status: AnomalyStatus
-
 
 class DetectionSummary(BaseModel):
     as_of: date
     detected: int
     created: int
     updated: int
-
-
-# --------------------------------------------------------------------------- investigations
-
 
 class StakeholderOut(BaseModel):
     id: int
@@ -63,13 +54,11 @@ class StakeholderOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
-
 class InvestigationStakeholderOut(BaseModel):
     stakeholder: StakeholderOut
     role: str
 
     model_config = {"from_attributes": True}
-
 
 class FindingCreate(BaseModel):
     kind: FindingKind
@@ -79,13 +68,11 @@ class FindingCreate(BaseModel):
     state: HypothesisState | None = None
     data: dict[str, Any] | None = None
 
-
 class FindingUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=300)
     body: str | None = None
     confidence: Confidence | None = None
     state: HypothesisState | None = None
-
 
 class FindingOut(BaseModel):
     id: int
@@ -101,19 +88,16 @@ class FindingOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
-
 class ActionCreate(BaseModel):
     title: str = Field(min_length=1, max_length=300)
     owner_id: int | None = None
     due_date: date | None = None
-
 
 class ActionUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=300)
     owner_id: int | None = None
     status: ActionStatus | None = None
     due_date: date | None = None
-
 
 class ActionOut(BaseModel):
     id: int
@@ -124,7 +108,6 @@ class ActionOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
-
 
 class InvestigationCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
@@ -139,7 +122,6 @@ class InvestigationCreate(BaseModel):
     release_id: int | None = None
     experiment_id: int | None = None
 
-
 class InvestigationUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     status: InvestigationStatus | None = None
@@ -151,11 +133,9 @@ class InvestigationUpdate(BaseModel):
     baseline_start: date | None = None
     baseline_end: date | None = None
 
-
 class StakeholderAssignment(BaseModel):
     stakeholder_id: int
     role: str = "informed"
-
 
 class LinkedRelease(BaseModel):
     id: int
@@ -167,7 +147,6 @@ class LinkedRelease(BaseModel):
 
     model_config = {"from_attributes": True}
 
-
 class LinkedExperiment(BaseModel):
     id: int
     key: str
@@ -176,7 +155,6 @@ class LinkedExperiment(BaseModel):
     primary_metric: str
 
     model_config = {"from_attributes": True}
-
 
 class InvestigationSummary(BaseModel):
     id: int
@@ -194,7 +172,6 @@ class InvestigationSummary(BaseModel):
     updated_at: datetime
     created_at: datetime
 
-
 class InvestigationOut(InvestigationSummary):
     baseline_start: date
     baseline_end: date
@@ -208,13 +185,8 @@ class InvestigationOut(InvestigationSummary):
     release: LinkedRelease | None
     experiment: LinkedExperiment | None
 
-
-# --------------------------------------------------------------------------- comments
-
-
 class CommentCreate(BaseModel):
     body: str = Field(min_length=1, max_length=4000)
-
 
 class CommentOut(BaseModel):
     id: int

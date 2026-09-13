@@ -8,7 +8,6 @@ from probelens.models.base import Base, TimestampMixin
 from probelens.models.core import User, enum_col, search_vector
 from probelens.models.enums import ExperimentDecision, ExperimentStatus
 
-
 class Experiment(Base, TimestampMixin):
     __tablename__ = "experiments"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -46,7 +45,6 @@ class Experiment(Base, TimestampMixin):
     search_vector = search_vector("name", "hypothesis", "description")
 
     __table_args__ = (Index("ix_experiments_search", "search_vector", postgresql_using="gin"),)
-
 
 class ExperimentVariant(Base):
     __tablename__ = "experiment_variants"

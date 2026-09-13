@@ -9,7 +9,6 @@ experiments; docs/data-model.md describes them for humans.
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
-
 @dataclass(frozen=True)
 class ReleaseSpec:
     version: str
@@ -21,7 +20,6 @@ class ReleaseSpec:
     # (day offset from release, rollout percent) pairs; last entry holds thereafter.
     rollout: tuple[tuple[int, int], ...] = ((0, 100),)
     status: str = "completed"
-
 
 @dataclass(frozen=True)
 class ExperimentSpec:
@@ -41,7 +39,6 @@ class ExperimentSpec:
     exposure_event: str = "product_view"
     audience_filters: tuple[dict, ...] = ()
 
-
 @dataclass(frozen=True)
 class Scenarios:
     start: date
@@ -50,7 +47,6 @@ class Scenarios:
     def day(self, days_before_end: int) -> date:
         return self.end - timedelta(days=days_before_end)
 
-    # --- Scenario 0 (historical, already resolved): footwear sandals sizing ---
     # Lives in the first two weeks of the window so the seeded "resolved"
     # investigation has real evidence behind it.
     historical_spike_subcategory = "sandals"
@@ -60,7 +56,6 @@ class Scenarios:
     def historical_spike_window(self) -> tuple[date, date]:
         return self.start, self.start + timedelta(days=13)
 
-    # --- Scenario 1: Android 8.4.0 payment SDK regression -------------------
     android_release = ReleaseSpec(
         version="8.4.0",
         name="Android 8.4.0 — payment SDK upgrade",
@@ -95,14 +90,12 @@ class Scenarios:
     android_upi_failure_multiplier = 5.5
     android_other_failure_multiplier = 1.8
 
-    # --- Scenario 2: Fashion return spike (sizing issue in a supplier batch) --
     return_spike_start_days_before_end = 28
     return_spike_category = "fashion"
     return_spike_subcategory = "dresses"
     return_spike_multiplier = 1.9
     return_spike_reason = "size_fit"
 
-    # --- Scenario 3: Search relevance change hurts footwear click-through -----
     search_release = ReleaseSpec(
         version="search-relevance-v2",
         name="Search relevance v2 — learned ranking",
@@ -114,19 +107,16 @@ class Scenarios:
     search_ctr_category = "footwear"
     search_ctr_multiplier = 0.68
 
-    # --- Scenario 4: Paid social campaign with poor conversion ---------------
     paid_social_campaign_start_days_before_end = 30
     paid_social_conversion_multiplier = 0.12
     paid_social_bounce_multiplier = 2.0
 
-    # --- Scenario 5: Delivery delays depress repeat purchase -----------------
     delivery_delay_start_days_before_end = 42
     delivery_delay_end_days_before_end = 27
     delivery_delay_city_tier = "tier3"
     delivery_delay_days = (7, 11)
     delayed_user_repurchase_multiplier = 0.55
 
-    # --- Scenario 6: Experiments -------------------------------------------
     experiments = (
         ExperimentSpec(
             key="new_pdp_cta",

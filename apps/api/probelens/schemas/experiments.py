@@ -6,7 +6,6 @@ from probelens.analytics.dimensions import Filter
 from probelens.models.enums import ExperimentDecision, ExperimentStatus
 from probelens.schemas.auth import UserSummary
 
-
 class VariantIn(BaseModel):
     key: str = Field(min_length=1, max_length=40, pattern=r"^[a-z0-9_]+$")
     name: str = Field(min_length=1, max_length=120)
@@ -14,12 +13,10 @@ class VariantIn(BaseModel):
     weight: int = Field(default=50, ge=1, le=100)
     is_control: bool = False
 
-
 class VariantOut(VariantIn):
     id: int
 
     model_config = {"from_attributes": True}
-
 
 class ExperimentBase(BaseModel):
     name: str = Field(min_length=1, max_length=200)
@@ -34,7 +31,6 @@ class ExperimentBase(BaseModel):
     min_duration_days: int = Field(default=7, ge=1, le=90)
     start_date: date | None = None
     end_date: date | None = None
-
 
 class ExperimentCreate(ExperimentBase):
     key: str | None = Field(default=None, min_length=2, max_length=60, pattern=r"^[a-z0-9_]+$")
@@ -53,7 +49,6 @@ class ExperimentCreate(ExperimentBase):
             raise ValueError("End date must be on or after the start date")
         return self
 
-
 class ExperimentUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     hypothesis: str | None = None
@@ -69,7 +64,6 @@ class ExperimentUpdate(BaseModel):
     start_date: date | None = None
     end_date: date | None = None
     variants: list[VariantIn] | None = Field(default=None, min_length=2, max_length=5)
-
 
 class ExperimentSummary(BaseModel):
     id: int
@@ -88,7 +82,6 @@ class ExperimentSummary(BaseModel):
     has_exposure_events: bool
     updated_at: datetime
 
-
 class ExperimentOut(ExperimentSummary):
     hypothesis: str
     description: str
@@ -103,13 +96,11 @@ class ExperimentOut(ExperimentSummary):
     decided_by: UserSummary | None
     created_at: datetime
 
-
 class DecisionIn(BaseModel):
     decision: ExperimentDecision
     reason: str = Field(min_length=1)
     # Also record it in the decision log; on by default because that is the point.
     log: bool = True
-
 
 class MemoOut(BaseModel):
     markdown: str

@@ -19,7 +19,6 @@ const KIND_LABEL: Record<string, string> = {
   mix_shift: "Mix shift",
 };
 
-/** Small inline chip that points at the tool call which produced a number. */
 export function Cite({
   id,
   active,
@@ -35,7 +34,6 @@ export function Cite({
       ? "border-accent bg-accent text-white"
       : "border-border bg-surface-2 text-fg-subtle hover:border-accent hover:text-accent",
   );
-  // Without a handler it is a label (e.g. inside the evidence row, which is itself a button).
   if (!onClick) return <span className={className}>{id}</span>;
   return (
     <button type="button" onClick={() => onClick(id)} title={`Evidence ${id}`} className={className}>
@@ -64,7 +62,6 @@ export function AnswerView({
   onCite: (id: string) => void;
   onFollowUp: (q: string) => void;
 }) {
-  // Pydantic default_factory fields are optional in the generated types; fill them in once.
   const raw: AnalystAnswer = response.answer;
   const a = {
     summary: raw.summary,
@@ -215,8 +212,6 @@ export function AnswerView({
   );
 }
 
-// ------------------------------------------------------------------ evidence drawer
-
 function fmtArgs(args: Record<string, unknown>) {
   return Object.entries(args)
     .filter(([, v]) => v !== null && v !== undefined && !(Array.isArray(v) && v.length === 0))
@@ -278,7 +273,6 @@ function fmtCell(v: unknown, fmt: CellFormat = "text"): string {
   }
 }
 
-/** Metric values follow the metric's own format; the tool payload carries it. */
 function metricFormat(d: Record<string, unknown>): CellFormat {
   const f = String(d.format ?? "");
   if (f === "percent") return "pct";

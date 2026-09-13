@@ -9,7 +9,6 @@ from probelens.analytics.query import MetricInfo, MetricQuery, Point, Total, met
 from probelens.db.clickhouse import run_query
 from probelens.models import Product
 
-
 class Kpi(BaseModel):
     metric: MetricInfo
     current: Total
@@ -17,14 +16,12 @@ class Kpi(BaseModel):
     points: list[Point]
     compare_points: list[Point]
 
-
 class OverviewKpis(BaseModel):
     date_from: date
     date_to: date
     compare_from: date | None
     compare_to: date | None
     kpis: list[Kpi]
-
 
 def overview_kpis(
     date_from: date, date_to: date, compare_from: date | None, compare_to: date | None
@@ -56,7 +53,6 @@ def overview_kpis(
         date_from=date_from, date_to=date_to, compare_from=compare_from, compare_to=compare_to, kpis=kpis
     )
 
-
 class InventoryRisk(BaseModel):
     product_id: int
     sku: str
@@ -68,12 +64,10 @@ class InventoryRisk(BaseModel):
     days_of_cover: float | None
     revenue_14d: float
 
-
 class InventoryRiskResult(BaseModel):
     as_of: date
     threshold_days: float
     items: list[InventoryRisk]
-
 
 def inventory_risk(
     db: Session, as_of: date, threshold_days: float = 7.0, limit: int = 25

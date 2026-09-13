@@ -52,7 +52,6 @@ PAYMENT_METHODS = [
 ANDROID_VERSIONS_BEFORE = [("8.3.1", 0.62), ("8.3.0", 0.28), ("8.2.0", 0.10)]
 IOS_VERSIONS_BEFORE = [("8.3.1", 0.75), ("8.3.0", 0.25)]
 
-
 def weighted_choice(rng: random.Random, options: list[tuple]) -> str:
     r = rng.random() * sum(w for _, w, *_ in options)
     acc = 0.0
@@ -61,7 +60,6 @@ def weighted_choice(rng: random.Random, options: list[tuple]) -> str:
         if r <= acc:
             return opt[0]
     return options[-1][0]
-
 
 @dataclass
 class SimUser:
@@ -87,11 +85,9 @@ class SimUser:
     orders: int = 0
     session_seq: int = field(default=0)
 
-
 # Users acquired by the paid-social campaign, as a fraction of the organic population.
 # They are added on top of `count` so the organic base is unchanged.
 CAMPAIGN_USER_RATIO = 0.50
-
 
 def generate_users(
     rng: random.Random, count: int, start: date, end: date, campaign_start: date | None = None

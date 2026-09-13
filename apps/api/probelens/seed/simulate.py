@@ -101,7 +101,6 @@ _GATEWAYS = {
     "netbanking": "razorpay",
 }
 
-
 class Simulator:
     def __init__(
         self,
@@ -141,7 +140,6 @@ class Simulator:
         for e in scenarios.experiments:
             self.exp_by_exposure.setdefault(e.exposure_event, []).append(e)
 
-    # ------------------------------------------------------------------ helpers
     def _uuid(self) -> str:
         return str(uuid.UUID(int=self.rng.getrandbits(128), version=4))
 
@@ -184,7 +182,6 @@ class Simulator:
                 mult *= e.effects.get(metric, 1.0)
         return mult
 
-    # ---------------------------------------------------------------- main loop
     def run(self, on_progress: Callable[[date, int], None] | None = None) -> Iterator[list[tuple]]:
         """Yield batches of event rows, one batch per simulated day."""
         day = self.start

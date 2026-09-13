@@ -20,7 +20,6 @@ from probelens.worker import jobs
 
 log = get_logger("worker")
 
-
 def main() -> int:
     configure_logging()
     worker = Worker(jobs.broker, worker_threads=2)
@@ -31,7 +30,9 @@ def main() -> int:
     # environment has anomalies without waiting a day.
     scheduler.add_job(jobs.detect_anomalies.send, CronTrigger(hour=0, minute=15), id="detect_anomalies")
     scheduler.add_job(jobs.detect_anomalies.send, id="detect_anomalies_boot")
+    scheduler.add_job(jobs.heartbeat, "interval", seconds=60, id="heartbeat", next_run_time=None)
     scheduler.start()
+    jobs.heartbeat()
     log.info("worker_started", jobs=[j.id for j in scheduler.get_jobs()])
 
     stop = threading.Event()
@@ -47,7 +48,6 @@ def main() -> int:
     scheduler.shutdown(wait=False)
     worker.stop()
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

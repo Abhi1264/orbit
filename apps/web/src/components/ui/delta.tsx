@@ -1,10 +1,6 @@
 import { formatDelta, type MetricFormat } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-/**
- * Period-over-period change. Colour encodes whether the move is good for the
- * business (not merely up or down), so a falling return rate reads green.
- */
 export function DeltaText({
   current,
   previous,

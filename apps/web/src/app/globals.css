@@ -4,7 +4,6 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* Neutral scale: every surface, border and text colour comes from here. */
   --color-bg: #ffffff;
   --color-surface: #fafafa;
   --color-surface-2: #f4f4f5;
@@ -15,12 +14,10 @@
   --color-fg-subtle: #71717a;
   --color-fg-faint: #a1a1aa;
 
-  /* Single interactive accent. */
   --color-accent: #2f5fd6;
   --color-accent-hover: #2650b8;
   --color-accent-soft: #eef2fc;
 
-  /* Colour carries meaning only. */
   --color-success: #15803d;
   --color-success-soft: #ecfdf3;
   --color-warning: #b45309;
@@ -30,7 +27,6 @@
   --color-info: #1d4ed8;
   --color-info-soft: #eff6ff;
 
-  /* Chart series: distinguishable, low saturation, colour-blind aware order. */
   --color-series-1: #2f5fd6;
   --color-series-2: #d97706;
   --color-series-3: #0f766e;
@@ -82,7 +78,6 @@
     @apply tabular text-right;
   }
 
-  /* Rendered decision memo (Markdown). Dense, document-like, no hero sizes. */
   .memo {
     @apply text-fg text-[13px] leading-5;
   }

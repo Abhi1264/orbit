@@ -22,11 +22,9 @@ USER_PROFILE_COLUMNS = [
     "preferred_payment",
 ]
 
-
 def reset_tables(client: Client) -> None:
     client.command("TRUNCATE TABLE events")
     client.command("TRUNCATE TABLE user_profiles")
-
 
 def load_events(client: Client, batches: Iterable[list[tuple]]) -> int:
     """Insert rows in ~100k-row batches (per ClickHouse insert-batch guidance)."""
@@ -42,7 +40,6 @@ def load_events(client: Client, batches: Iterable[list[tuple]]) -> int:
         client.insert("events", buffer, column_names=EVENT_COLUMNS)
         total += len(buffer)
     return total
-
 
 def load_user_profiles(client: Client, users: list[SimUser]) -> None:
     epoch = date(1970, 1, 1)

@@ -47,7 +47,6 @@ MIN_BASELINE_POINTS = 14
 MIN_DAILY_DENOMINATOR = 60
 MIN_ROLLING_DENOMINATOR = 200
 
-
 @dataclass(frozen=True)
 class Monitor:
     metric: str
@@ -63,7 +62,6 @@ class Monitor:
     @property
     def z_threshold(self) -> float:
         return Z_THRESHOLD if self.rolling_days == 1 else Z_THRESHOLD + 1.0
-
 
 MONITORS: tuple[Monitor, ...] = (
     # Conversion is watched both daily (sharp breaks) and on a trailing week (slow
@@ -91,7 +89,6 @@ MONITORS: tuple[Monitor, ...] = (
     Monitor("aov"),
 )
 
-
 class DetectedAnomaly(BaseModel):
     metric_key: str
     filters: list[dict[str, Any]]
@@ -107,7 +104,6 @@ class DetectedAnomaly(BaseModel):
     # Daily detail the UI can show without re-querying.
     days: list[dict[str, Any]]
 
-
 @dataclass
 class _Day:
     day: date
@@ -118,7 +114,6 @@ class _Day:
     z: float | None = None
     flagged: bool = False
     extras: dict[str, Any] = field(default_factory=dict)
-
 
 def _series_days(points: list[Point], start: date, end: date) -> list[_Day]:
     by_day = {str(p.bucket)[:10]: p for p in points}
@@ -132,7 +127,6 @@ def _series_days(points: list[Point], start: date, end: date) -> list[_Day]:
             days.append(_Day(day=d, value=p.value, numerator=p.numerator, denominator=p.denominator))
         d += timedelta(days=1)
     return days
-
 
 def _rolling(days: list[_Day], window: int, is_ratio: bool) -> list[_Day]:
     """Replace each day with the aggregate of its trailing `window` days."""
@@ -152,10 +146,8 @@ def _rolling(days: list[_Day], window: int, is_ratio: bool) -> list[_Day]:
         out.append(_Day(day=d.day, value=value, numerator=num, denominator=den if is_ratio else None))
     return out
 
-
 def _mad(values: list[float], center: float) -> float:
     return median(abs(v - center) for v in values)
-
 
 def _score_days(
     days: list[_Day], *, is_volume: bool, min_denominator: float, z_threshold: float = Z_THRESHOLD
@@ -214,13 +206,11 @@ def _score_days(
         )
         target.flagged = abs(rel) >= MIN_RELATIVE_CHANGE and (abs(z) >= z_threshold or continuing)
 
-
 def _significant(windows: list[list[_Day]]) -> list[list[_Day]]:
     """Drop one-day windows unless the day is extreme."""
     return [
         w for w in windows if len(w) > 1 or abs(max(w, key=lambda d: abs(d.z or 0)).z or 0) >= SINGLE_DAY_Z
     ]
-
 
 def _severity(z: float, rel: float, days: int) -> str:
     """Severity blends magnitude with persistence: one bad day is noise until it repeats."""
@@ -231,7 +221,6 @@ def _severity(z: float, rel: float, days: int) -> str:
     if abs(z) >= 4 or abs(rel) >= 0.15 or days >= 3:
         return "medium"
     return "low"
-
 
 def _windows(days: list[_Day]) -> list[list[_Day]]:
     """Group flagged days into windows, tolerating a single unflagged day between them."""
@@ -253,7 +242,6 @@ def _windows(days: list[_Day]) -> list[list[_Day]]:
         windows.append(current)
     return windows
 
-
 def _aggregate(window: list[_Day], is_ratio: bool) -> tuple[float, float]:
     """Actual and expected over the window: ratio metrics re-aggregate from num/den."""
     if is_ratio and all(d.denominator for d in window):
@@ -264,7 +252,6 @@ def _aggregate(window: list[_Day], is_ratio: bool) -> tuple[float, float]:
         actual = sum(d.value or 0 for d in window) / len(window)
     expected = sum(d.expected or 0 for d in window) / len(window)
     return actual, expected
-
 
 def detect_for_monitor(monitor: Monitor, as_of: date) -> list[DetectedAnomaly]:
     m = get_metric(monitor.metric)
@@ -338,7 +325,6 @@ def detect_for_monitor(monitor: Monitor, as_of: date) -> list[DetectedAnomaly]:
             )
     return found
 
-
 def detect_all(as_of: date, monitors: tuple[Monitor, ...] = MONITORS) -> list[DetectedAnomaly]:
     found: list[DetectedAnomaly] = []
     for monitor in monitors:
@@ -353,14 +339,11 @@ def detect_all(as_of: date, monitors: tuple[Monitor, ...] = MONITORS) -> list[De
             )
     return found
 
-
 def _filter_key(f: dict[str, Any]) -> tuple[str, str, str, str]:
     return (f["dimension"], f.get("operator", "eq"), str(f.get("value")), str(f.get("values")))
 
-
 def same_filters(a: list[dict[str, Any]], b: list[dict[str, Any]]) -> bool:
     return sorted(map(_filter_key, a)) == sorted(map(_filter_key, b))
-
 
 def persist(db: Session, project_id: int, detected: list[DetectedAnomaly], now: datetime) -> dict[str, int]:
     """Upsert detected windows: an anomaly that grew by a day updates in place."""
@@ -416,7 +399,6 @@ def persist(db: Session, project_id: int, detected: list[DetectedAnomaly], now: 
             updated += 1
     db.flush()
     return {"detected": len(detected), "created": created, "updated": updated}
-
 
 def run_detection(db: Session, project_id: int, as_of: date, now: datetime) -> dict[str, int]:
     detected = detect_all(as_of)

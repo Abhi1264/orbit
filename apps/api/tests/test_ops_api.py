@@ -127,9 +127,12 @@ def test_sop_crud_and_standalone_checklist(api_client) -> None:
         cl = api_client.patch(f"/api/ops/checklists/{cl['id']}/items/{key}", json={"done": True}).json()
     assert cl["status"] == "complete"
     assert api_client.get(f"/api/ops/sops/{sop['id']}").json()["run_count"] == 1
-    # No delete endpoint for SOPs by design (they are referenced by checklists); nothing to clean up
-    # beyond what a reseed resets, but keep the demo tidy by renaming so it sorts last.
-    api_client.patch(f"/api/ops/sops/{sop['id']}", json={"title": "zz test SOP (safe to ignore)"})
+    assert api_client.delete(f"/api/ops/sops/{sop['id']}").status_code == 204
+    # The checklist survives without its SOP back-reference.
+    survivor = api_client.get("/api/ops/checklists").json()[0]
+    assert survivor["id"] == cl["id"] and survivor["sop_id"] is None
+    assert api_client.get(f"/api/ops/sops/{sop['id']}").status_code == 404
+    assert api_client.delete(f"/api/ops/checklists/{cl['id']}").status_code == 204
 
 
 def test_knowledge_search_and_edit(api_client) -> None:

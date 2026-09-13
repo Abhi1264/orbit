@@ -19,7 +19,6 @@ router = APIRouter(tags=["anomalies"], dependencies=[Depends(require(Permission.
 
 SEVERITY_ORDER = {"high": 0, "medium": 1, "low": 2}
 
-
 def anomaly_out(a: Anomaly, data_end: date | None) -> AnomalyOut:
     m = get_metric(a.metric_key)
     filters = [Filter.model_validate(f) for f in a.filters]
@@ -44,7 +43,6 @@ def anomaly_out(a: Anomaly, data_end: date | None) -> AnomalyOut:
         detected_at=a.detected_at,
     )
 
-
 @router.get("/anomalies", response_model=list[AnomalyOut])
 def list_anomalies(
     _: CurrentUser,
@@ -67,14 +65,12 @@ def list_anomalies(
     out.sort(key=lambda a: (not a.ongoing, SEVERITY_ORDER[a.severity], -abs(a.zscore)))
     return out
 
-
 @router.get("/anomalies/{anomaly_id}", response_model=AnomalyOut)
 def get_anomaly(anomaly_id: int, _: CurrentUser, db: DbSession) -> AnomalyOut:
     a = db.get(Anomaly, anomaly_id)
     if a is None:
         raise NotFound("Anomaly", anomaly_id)
     return anomaly_out(a, get_meta().data_end)
-
 
 @router.patch("/anomalies/{anomaly_id}", response_model=AnomalyOut)
 def update_anomaly(
@@ -89,7 +85,6 @@ def update_anomaly(
     a.status = payload.status.value
     db.flush()
     return anomaly_out(a, get_meta().data_end)
-
 
 @router.post(
     "/anomalies/detect",

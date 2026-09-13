@@ -16,7 +16,6 @@ log = get_logger("clickhouse")
 
 SLOW_QUERY_MS = 500
 
-
 def _new_client(user: str, password: str) -> Client:
     settings = get_settings()
     return clickhouse_connect.get_client(
@@ -33,27 +32,22 @@ def _new_client(user: str, password: str) -> Client:
         pool_mgr=clickhouse_connect.driver.httputil.get_pool_manager(maxsize=32, num_pools=4),
     )
 
-
 @lru_cache
 def get_readonly_client() -> Client:
     settings = get_settings()
     return _new_client(settings.clickhouse_readonly_user, settings.clickhouse_readonly_password)
-
 
 @lru_cache
 def get_readwrite_client() -> Client:
     settings = get_settings()
     return _new_client(settings.clickhouse_user, settings.clickhouse_password)
 
-
 class AnalyticsQueryError(RuntimeError):
     pass
-
 
 def _cache_key(sql: str, params: dict[str, Any]) -> str:
     payload = json.dumps({"sql": sql, "params": params}, sort_keys=True, default=str)
     return "chq:" + hashlib.sha256(payload.encode()).hexdigest()
-
 
 def run_query(
     sql: str,

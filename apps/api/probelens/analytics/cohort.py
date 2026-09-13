@@ -28,7 +28,6 @@ MEASURE_LABELS = {
     "revenue_per_user": "Revenue in week k ÷ cohort size",
 }
 
-
 class CohortFilter(BaseModel):
     dimension: str
     value: str
@@ -39,7 +38,6 @@ class CohortFilter(BaseModel):
             raise ValueError(f"Cohort filters support {sorted(COHORT_FILTER_COLUMNS)}")
         return self
 
-
 class CohortQuery(BaseModel):
     cohort_type: CohortType = "signup"
     measure: Measure = "retention"
@@ -48,12 +46,10 @@ class CohortQuery(BaseModel):
     weeks: int = Field(default=8, ge=2, le=16)
     filters: list[CohortFilter] = Field(default_factory=list)
 
-
 class CohortRow(BaseModel):
     cohort: str
     size: int
     values: list[float | None]  # index k = weeks since cohort date
-
 
 class CohortResult(BaseModel):
     cohort_type: CohortType
@@ -62,7 +58,6 @@ class CohortResult(BaseModel):
     weeks: int
     rows: list[CohortRow]
     interpretation: dict[str, Any]
-
 
 def run_cohort(q: CohortQuery) -> CohortResult:
     cohort_col = "signup_date" if q.cohort_type == "signup" else "first_purchase_date"

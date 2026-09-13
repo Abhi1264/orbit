@@ -16,11 +16,9 @@ router = APIRouter(
     dependencies=[Depends(require(Permission.run_analytics))],
 )
 
-
 @router.get("/meta", response_model=AnalyticsMeta)
 def meta() -> AnalyticsMeta:
     return get_meta()
-
 
 @router.get("/overview", response_model=OverviewKpis)
 def overview(
@@ -31,23 +29,19 @@ def overview(
 ) -> OverviewKpis:
     return overview_kpis(date_from, date_to, compare_from, compare_to)
 
-
 @router.get("/inventory-risk", response_model=InventoryRiskResult)
 def inventory(
     db: DbSession, as_of: date, threshold_days: float = Query(default=7.0, ge=1, le=60)
 ) -> InventoryRiskResult:
     return inventory_risk(db, as_of, threshold_days)
 
-
 @router.post("/query", response_model=MetricQueryResult)
 def query(q: MetricQuery) -> MetricQueryResult:
     return run_metric_query(q)
 
-
 @router.post("/funnel", response_model=FunnelResult)
 def funnel(q: FunnelQuery) -> FunnelResult:
     return run_funnel(q)
-
 
 @router.post("/cohort", response_model=CohortResult)
 def cohort(q: CohortQuery) -> CohortResult:

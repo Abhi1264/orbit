@@ -7,7 +7,6 @@ from probelens.core.logging import get_logger
 
 log = get_logger("redis")
 
-
 @lru_cache
 def get_redis() -> redis.Redis | None:
     """Redis is a cache, not a dependency: if it is unreachable the app keeps working uncached."""
@@ -18,7 +17,6 @@ def get_redis() -> redis.Redis | None:
         log.warning("redis_unavailable", error=str(exc))
         return None
     return client
-
 
 def invalidate_analytics_cache() -> int:
     client = get_redis()

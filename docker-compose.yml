@@ -1,4 +1,4 @@
-name: probelens
+name: orbit
 
 services:
   postgres:
