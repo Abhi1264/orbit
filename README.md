@@ -57,6 +57,8 @@ In production set `APP_ENV=production` and a real `SECRET_KEY`. Swagger is then 
 make test
 ```
 
+Push and PR run lint, unit tests, then build the API/web images, seed `dev` data, run API integration tests, and Playwright against the compose stack. Locally: `make up && SEED_PROFILE=dev make seed`, then `make test` and `make e2e`.
+
 ## Layout
 
 ```

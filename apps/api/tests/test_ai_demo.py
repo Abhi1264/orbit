@@ -12,6 +12,7 @@ import pytest
 from probelens.ai.demo import run_demo
 from probelens.ai.schemas import AskContext
 from probelens.ai.tools import ToolContext
+from tests.util import require_db
 
 
 @pytest.fixture(scope="module")
@@ -22,11 +23,12 @@ def tctx() -> ToolContext:
 
         meta = get_meta()
         if not meta.data_end:
-            pytest.skip("no data loaded")
+            require_db("no data loaded")
         db = get_sessionmaker()()
         return ToolContext(db=db, today=meta.data_end, dimension_values=_dimension_values())
-    except Exception as exc:  # pragma: no cover - environment dependent
-        pytest.skip(f"databases not reachable: {exc}")
+    except Exception as exc:
+        require_db(f"databases not reachable: {exc}")
+        raise
 
 
 def _check_citations(answer, calls) -> None:

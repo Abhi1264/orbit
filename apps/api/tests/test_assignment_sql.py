@@ -2,9 +2,8 @@
 otherwise retroactive analysis of app-created experiments would be silently wrong.
 Needs a reachable ClickHouse; skipped otherwise."""
 
-import pytest
-
 from probelens.experiments.assignment import VariantSpec, assign, bucket, bucket_sql, variant_case_sql
+from tests.util import require_db
 
 
 def _client():
@@ -14,8 +13,9 @@ def _client():
         client = get_readonly_client()
         client.query("SELECT 1")
         return client
-    except Exception:
-        pytest.skip("ClickHouse not reachable")
+    except Exception as exc:
+        require_db(f"ClickHouse not reachable: {exc}")
+        raise
 
 
 def test_sql_bucket_matches_python() -> None:
