@@ -407,7 +407,7 @@ def _platform_of(filters: list[Filter], candidates: list[Candidate]) -> set[str]
 def _releases(
     db: Session, m: Metric, period: tuple[date, date], platforms: set[str], versions: set[str]
 ) -> list[ReleaseRef]:
-    lo, hi = period[0] - timedelta(days=10), period[1]
+    lo, hi = period[0] - timedelta(days=21), period[1]
     rows = db.scalars(
         select(Release)
         .where(Release.release_date >= lo, Release.release_date <= hi)
@@ -425,12 +425,12 @@ def _releases(
                 "strong",
                 f"Version {r.version} is itself one of the segments explaining the change",
             )
-        elif area_hit and platform_hit and -3 <= days_before <= 10:
+        elif area_hit and platform_hit and -3 <= days_before <= 21:
             relevance, reason = (
                 "strong",
                 f"Touches {', '.join(r.affected_areas)} and shipped {_days_phrase(days_before)}",
             )
-        elif area_hit or (platform_hit and -3 <= days_before <= 10):
+        elif area_hit or (platform_hit and -3 <= days_before <= 21):
             relevance, reason = "possible", f"Shipped {_days_phrase(days_before)} on {r.platform}"
         else:
             relevance, reason = (
@@ -810,7 +810,11 @@ def analyze(
             # rate; with the scope already pinned to its platform that is a real lead, and a
             # tight timing match makes it the leading one.
             confidence = "high" if 0 <= r.days_before_period <= 7 else "medium"
-        elif strong_platform or (r.platform == "all" and -3 <= r.days_before_period <= 3):
+        elif (
+            strong_platform
+            or r.platform in scoped_platforms
+            or (r.platform == "all" and -3 <= r.days_before_period <= 3)
+        ):
             confidence = "medium"
         else:
             confidence = "low"

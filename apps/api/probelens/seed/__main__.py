@@ -138,6 +138,9 @@ def main(argv: list[str] | None = None) -> int:
             raise
         finally:
             db.close()
+        from probelens.worker.jobs import mark_run
+
+        mark_run("detect_anomalies", True, as_of=end, **detection)
         log.info("seed_anomalies_done", **detection)
     log.info("seed_complete", seconds=round(time.perf_counter() - started, 1), events=total_events)
     return 0

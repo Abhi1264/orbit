@@ -25,7 +25,11 @@ def mark_run(job: str, ok: bool, **fields: object) -> None:
     redis = get_redis()
     if redis is None:
         return
-    payload = {"at": datetime.now(UTC).isoformat(), "ok": ok, **{k: str(v) for k, v in fields.items()}}
+    payload = {
+        "at": datetime.now(UTC).isoformat(),
+        "ok": str(ok),
+        **{k: str(v) for k, v in fields.items()},
+    }
     redis.hset(LAST_RUN_KEY.format(job=job), mapping=payload)
 
 

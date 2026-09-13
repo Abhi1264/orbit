@@ -309,19 +309,49 @@ def _dedupe(filters: list[Filter]) -> list[Filter]:
     return out
 
 
+def _anomaly_covers_scope(anomaly: dict[str, Any], filters: list[Filter]) -> bool:
+    """True when the anomaly is store-wide, the same scope, or a narrower slice of it."""
+    if anomaly.get("scope") in (_scope(filters), "store-wide"):
+        return True
+    asked = {(f.dimension, str(f.value)) for f in filters if f.operator == "eq" and f.value is not None}
+    if not asked:
+        return False
+    have = {
+        (str(f.get("dimension")), str(f.get("value")))
+        for f in (anomaly.get("filters") or [])
+        if f.get("operator", "eq") == "eq" and f.get("value") is not None
+    }
+    return asked <= have
+
+
 def _anchor_to_anomaly(
     anomalies: list[dict[str, Any]], filters: list[Filter], p0: date, p1: date
 ) -> dict | None:
     """The anomaly monitor knows when a move started; a 'why' about 'the last 7 days' should
     use that start, otherwise the baseline is polluted by the already-broken days."""
-    scope = _scope(filters)
+    best: dict[str, Any] | None = None
     for a in anomalies:
         a0, a1 = date.fromisoformat(a["period_start"]), date.fromisoformat(a["period_end"])
-        if a1 < p0 or a0 > p1:
+        if a1 < p0 or a0 > p1 or a0 >= p0 or (p0 - a0).days > 35:
             continue
-        if a["scope"] in (scope, "store-wide") and a0 < p0 and (p0 - a0).days <= 35:
-            return a
-    return None
+        if not _anomaly_covers_scope(a, filters):
+            continue
+        if best is None or a0 < date.fromisoformat(best["period_start"]):
+            best = a
+    return best
+
+
+def _why_candidates(cands: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Top readout plus the lead release, which otherwise falls off once more slices rank higher."""
+    shown = list(cands[:5])
+    titles = {c["title"] for c in shown}
+    lead = next(
+        (c for c in cands if c.get("kind") == "release" and c.get("confidence") in ("high", "medium")),
+        next((c for c in cands if c.get("kind") == "release"), None),
+    )
+    if lead and lead["title"] not in titles:
+        shown.append(lead)
+    return shown
 
 
 def _drill_recommendation(m, top: dict[str, Any]) -> str:
@@ -353,7 +383,7 @@ def _why(
     caveats: list[str] = []
 
     # Known anomalies first: they can re-anchor the period.
-    c_an = trace.call("list_anomalies", status="all", metric=metric, limit=15)
+    c_an = trace.call("list_anomalies", status="all", metric=metric, limit=30)
     anomalies = (c_an.data or {}).get("anomalies", []) if _ok(c_an) else []
     anchor = (
         _anchor_to_anomaly(anomalies, filters, p0, p1)
@@ -441,7 +471,8 @@ def _why(
             (r for r in rc.get("releases", []) if r["id"] == release_cands[0]["release_id"]), None
         )
 
-    for i, c in enumerate(cands[:5]):
+    shown = _why_candidates(cands)
+    for i, c in enumerate(shown):
         href = None
         if c["kind"] in ("segment", "mix_shift") and c.get("filters"):
             cf = _dedupe(filters + [Filter.model_validate(f) for f in c["filters"]])
@@ -457,7 +488,7 @@ def _why(
                 title=c["title"], confidence=c["confidence"], evidence=c["summary"], kind=c["kind"], href=href
             )
         )
-        if i >= 3:
+        if i >= 3 and c["kind"] != "release":
             continue
         basis = [c_rc.id] + (
             [c_bd.id] if c_bd and _ok(c_bd) and c["kind"] in ("segment", "mix_shift") else []
@@ -895,12 +926,14 @@ def _days_after(a: date, b: date) -> str:
 
 
 def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
-    c_an = trace.call("list_anomalies", status="open", limit=15)
+    c_an = trace.call("list_anomalies", status="all", limit=30)
     c_inv = trace.call("list_investigations", status="active")
     c_rel = trace.call(
         "list_releases", date_from=trace.ctx.today - timedelta(days=14), date_to=trace.ctx.today
     )
-    anomalies = (c_an.data or {}).get("anomalies", []) if _ok(c_an) else []
+    anomalies = [
+        a for a in ((c_an.data or {}).get("anomalies", []) if _ok(c_an) else []) if a["status"] != "resolved"
+    ]
     invs = (c_inv.data or {}).get("investigations", []) if _ok(c_inv) else []
     releases = (c_rel.data or {}).get("releases", []) if _ok(c_rel) else []
 
@@ -913,8 +946,8 @@ def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
     ongoing = [a for a in anomalies if a["ongoing"]]
     facts.append(
         Fact(
-            text=f"{len(anomalies)} open anomalies, {len(high)} high severity, {len(ongoing)} still ongoing "
-            f"as of {trace.ctx.today:%-d %b}.",
+            text=f"{len(anomalies)} unresolved anomalies, {len(high)} high severity, "
+            f"{len(ongoing)} still ongoing as of {trace.ctx.today:%-d %b}.",
             source=c_an.id,
         )
     )
@@ -946,6 +979,24 @@ def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
         facts.append(Fact(text=c_inv.summary, source=c_inv.id))
         for inv in invs[:3]:
             links.append(LinkOut(label=f"#{inv['id']} {inv['title']}", href=f"/investigations/{inv['id']}"))
+            scope = inv.get("scope") or "store-wide"
+            matching = [a for a in anomalies if a["scope"] == scope]
+            inferences.append(
+                Inference(
+                    text=(
+                        f"Investigation #{inv['id']} ({inv['title']}) is already open on {scope}"
+                        + (
+                            f" and covers {len(matching)} unresolved "
+                            f"anomal{'y' if len(matching) == 1 else 'ies'}"
+                            if matching
+                            else ""
+                        )
+                        + "; treat that thread as one story."
+                    ),
+                    confidence="medium",
+                    basis=[c_inv.id] + ([c_an.id] if matching else []),
+                )
+            )
     if releases:
         facts.append(Fact(text=c_rel.summary, source=c_rel.id))
         # Any high anomaly on a platform that shipped a release just before it started?
