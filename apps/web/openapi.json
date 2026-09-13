@@ -2147,6 +2147,1836 @@
         }
       }
     },
+    "/api/releases": {
+      "get": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "List Releases",
+        "operationId": "list_releases_api_releases_get",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Platform"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ReleaseStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReleaseSummary"
+                  },
+                  "title": "Response List Releases Api Releases Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Create Release",
+        "operationId": "create_release_api_releases_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/releases/{release_id}": {
+      "get": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Get Release",
+        "operationId": "get_release_api_releases__release_id__get",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Release Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Update Release",
+        "operationId": "update_release_api_releases__release_id__patch",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Release Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Delete Release",
+        "operationId": "delete_release_api_releases__release_id__delete",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Release Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/releases/{release_id}/events": {
+      "post": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Add Release Note",
+        "operationId": "add_release_note_api_releases__release_id__events_post",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Release Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseNoteCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/releases/{release_id}/checklists": {
+      "post": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Run Sop For Release",
+        "operationId": "run_sop_for_release_api_releases__release_id__checklists_post",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Release Id"
+            }
+          },
+          {
+            "name": "sop_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Sop Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/releases/{release_id}/impact": {
+      "get": {
+        "tags": [
+          "releases"
+        ],
+        "summary": "Release Impact",
+        "description": "Seven days after the release versus the seven days before, on the release's platform.\n\nThis is a read, not a causal estimate: anything else that happened in the same\nweek is mixed in. The experiment platform is the tool for causal answers; this view\nexists so a release owner sees the shape of the week immediately.",
+        "operationId": "release_impact_api_releases__release_id__impact_get",
+        "parameters": [
+          {
+            "name": "release_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Release Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReleaseImpact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/sops": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Sops",
+        "operationId": "list_sops_api_ops_sops_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SopOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Sops Api Ops Sops Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Create Sop",
+        "operationId": "create_sop_api_ops_sops_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SopCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SopOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/sops/{sop_id}": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Get Sop",
+        "operationId": "get_sop_api_ops_sops__sop_id__get",
+        "parameters": [
+          {
+            "name": "sop_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Sop Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SopOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Update Sop",
+        "operationId": "update_sop_api_ops_sops__sop_id__patch",
+        "parameters": [
+          {
+            "name": "sop_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Sop Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SopUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SopOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/checklists": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Checklists",
+        "operationId": "list_checklists_api_ops_checklists_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ChecklistStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "release_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Release Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChecklistOut"
+                  },
+                  "title": "Response List Checklists Api Ops Checklists Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Create Checklist",
+        "operationId": "create_checklist_api_ops_checklists_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChecklistCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChecklistOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/checklists/{checklist_id}/items/{key}": {
+      "patch": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Toggle Checklist Item",
+        "operationId": "toggle_checklist_item_api_ops_checklists__checklist_id__items__key__patch",
+        "parameters": [
+          {
+            "name": "checklist_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Checklist Id"
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChecklistItemToggle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChecklistOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/knowledge": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Knowledge",
+        "operationId": "list_knowledge_api_ops_knowledge_get",
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tag"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 2
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KnowledgeSummary"
+                  },
+                  "title": "Response List Knowledge Api Ops Knowledge Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Create Knowledge",
+        "operationId": "create_knowledge_api_ops_knowledge_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/knowledge/{doc_id}": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Get Knowledge",
+        "operationId": "get_knowledge_api_ops_knowledge__doc_id__get",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Update Knowledge",
+        "operationId": "update_knowledge_api_ops_knowledge__doc_id__patch",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Delete Knowledge",
+        "operationId": "delete_knowledge_api_ops_knowledge__doc_id__delete",
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Doc Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/feedback": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Feedback",
+        "operationId": "list_feedback_api_ops_feedback_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/FeedbackStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "theme",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Theme"
+            }
+          },
+          {
+            "name": "open_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Open Only"
+            }
+          },
+          {
+            "name": "linked_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Linked Type"
+            }
+          },
+          {
+            "name": "linked_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Linked Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackOut"
+                  },
+                  "title": "Response List Feedback Api Ops Feedback Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Create Feedback",
+        "operationId": "create_feedback_api_ops_feedback_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/feedback/themes": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Feedback Themes",
+        "operationId": "feedback_themes_api_ops_feedback_themes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ThemeSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Feedback Themes Api Ops Feedback Themes Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/feedback/stakeholders": {
+      "get": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "List Stakeholders",
+        "operationId": "list_stakeholders_api_ops_feedback_stakeholders_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StakeholderRef"
+                  },
+                  "type": "array",
+                  "title": "Response List Stakeholders Api Ops Feedback Stakeholders Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ops/feedback/{feedback_id}": {
+      "patch": {
+        "tags": [
+          "ops"
+        ],
+        "summary": "Update Feedback",
+        "operationId": "update_feedback_api_ops_feedback__feedback_id__patch",
+        "parameters": [
+          {
+            "name": "feedback_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Feedback Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decisions": {
+      "get": {
+        "tags": [
+          "decisions"
+        ],
+        "summary": "List Decisions",
+        "operationId": "list_decisions_api_decisions_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/DecisionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "investigation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Investigation Id"
+            }
+          },
+          {
+            "name": "release_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Release Id"
+            }
+          },
+          {
+            "name": "due_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Due Only"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DecisionSummary"
+                  },
+                  "title": "Response List Decisions Api Decisions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "decisions"
+        ],
+        "summary": "Create Decision",
+        "operationId": "create_decision_api_decisions_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/decisions/{decision_id}": {
+      "get": {
+        "tags": [
+          "decisions"
+        ],
+        "summary": "Get Decision",
+        "operationId": "get_decision_api_decisions__decision_id__get",
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Decision Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "decisions"
+        ],
+        "summary": "Update Decision",
+        "operationId": "update_decision_api_decisions__decision_id__patch",
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Decision Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "decisions"
+        ],
+        "summary": "Delete Decision",
+        "operationId": "delete_decision_api_decisions__decision_id__delete",
+        "parameters": [
+          {
+            "name": "decision_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Decision Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "tags": [
+          "search"
+        ],
+        "summary": "Search",
+        "operationId": "search_api_search_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200,
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 5,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated subset of result types",
+              "title": "Types"
+            },
+            "description": "Comma-separated subset of result types"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/ask": {
+      "post": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Ask Analyst",
+        "operationId": "ask_analyst_api_ai_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/plan": {
+      "post": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Plan Query",
+        "description": "Natural language \u2192 explorer query. Deterministic; the LLM is not needed for this.",
+        "operationId": "plan_query_api_ai_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/runs": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "List Runs",
+        "operationId": "list_runs_api_ai_runs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AiRunSummary"
+                  },
+                  "title": "Response List Runs Api Ai Runs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Get Run",
+        "operationId": "get_run_api_ai_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/status": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Analyst Status",
+        "operationId": "analyst_status_api_ai_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  },
+                  "type": "object",
+                  "title": "Response Analyst Status Api Ai Status Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/suggestions": {
+      "get": {
+        "tags": [
+          "ai"
+        ],
+        "summary": "Suggestions",
+        "operationId": "suggestions_api_ai_suggestions_get",
+        "parameters": [
+          {
+            "name": "metric",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metric"
+            }
+          },
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Experiment Id"
+            }
+          },
+          {
+            "name": "investigation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Investigation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Suggestion"
+                  },
+                  "title": "Response Suggestions Api Ai Suggestions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -2323,6 +4153,126 @@
         },
         "type": "object",
         "title": "ActionUpdate"
+      },
+      "AiRunSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "llm",
+              "demo"
+            ],
+            "title": "Mode"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "tool_count": {
+            "type": "integer",
+            "title": "Tool Count"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "error": {
+            "type": "string",
+            "title": "Error"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "question",
+          "mode",
+          "model",
+          "summary",
+          "tool_count",
+          "latency_ms",
+          "error",
+          "created_at"
+        ],
+        "title": "AiRunSummary"
+      },
+      "AnalystAnswer": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "inferences": {
+            "items": {
+              "$ref": "#/components/schemas/Inference"
+            },
+            "type": "array",
+            "title": "Inferences"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateOut"
+            },
+            "type": "array",
+            "title": "Candidates"
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/RecommendationItem"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "follow_ups": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Follow Ups"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/LinkOut"
+            },
+            "type": "array",
+            "title": "Links"
+          },
+          "caveats": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caveats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary"
+        ],
+        "title": "AnalystAnswer"
       },
       "AnalyticsMeta": {
         "properties": {
@@ -2522,6 +4472,165 @@
         ],
         "title": "AnomalyUpdate"
       },
+      "AskContext": {
+        "properties": {
+          "date_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date From"
+          },
+          "date_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date To"
+          },
+          "metric": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric"
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "investigation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Id"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          }
+        },
+        "type": "object",
+        "title": "AskContext",
+        "description": "Where the user is asking from; lets the analyst default sensibly."
+      },
+      "AskRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Question"
+          },
+          "context": {
+            "$ref": "#/components/schemas/AskContext"
+          },
+          "mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "llm",
+                  "demo"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "AskRequest"
+      },
+      "AskResponse": {
+        "properties": {
+          "run_id": {
+            "type": "integer",
+            "title": "Run Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "llm",
+              "demo"
+            ],
+            "title": "Mode"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/AnalystAnswer"
+          },
+          "tool_calls": {
+            "items": {
+              "$ref": "#/components/schemas/ToolCallRecord"
+            },
+            "type": "array",
+            "title": "Tool Calls"
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "mode",
+          "model",
+          "question",
+          "answer",
+          "tool_calls",
+          "latency_ms",
+          "created_at"
+        ],
+        "title": "AskResponse"
+      },
       "Candidate": {
         "properties": {
           "rank": {
@@ -2651,6 +4760,50 @@
         ],
         "title": "Candidate"
       },
+      "CandidateOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidence"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "segment"
+          },
+          "href": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Href"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "confidence",
+          "evidence"
+        ],
+        "title": "CandidateOut"
+      },
       "Change": {
         "properties": {
           "baseline": {
@@ -2763,6 +4916,212 @@
           "detail"
         ],
         "title": "Check"
+      },
+      "ChecklistCreate": {
+        "properties": {
+          "sop_id": {
+            "type": "integer",
+            "title": "Sop Id"
+          },
+          "release_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Id"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sop_id"
+        ],
+        "title": "ChecklistCreate"
+      },
+      "ChecklistItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "owner_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Role"
+          },
+          "done": {
+            "type": "boolean",
+            "title": "Done",
+            "default": false
+          },
+          "owner_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Id"
+          },
+          "done_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Done At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "ChecklistItem"
+      },
+      "ChecklistItemToggle": {
+        "properties": {
+          "done": {
+            "type": "boolean",
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": [
+          "done"
+        ],
+        "title": "ChecklistItemToggle"
+      },
+      "ChecklistOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "sop_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sop Id"
+          },
+          "release_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ChecklistStatus"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ChecklistItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "done_count": {
+            "type": "integer",
+            "title": "Done Count"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sop_id",
+          "release_id",
+          "title",
+          "owner",
+          "status",
+          "items",
+          "done_count",
+          "total_count",
+          "updated_at"
+        ],
+        "title": "ChecklistOut"
+      },
+      "ChecklistProgress": {
+        "properties": {
+          "done": {
+            "type": "integer",
+            "title": "Done"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "done",
+          "total"
+        ],
+        "title": "ChecklistProgress"
+      },
+      "ChecklistStatus": {
+        "type": "string",
+        "enum": [
+          "not_started",
+          "in_progress",
+          "complete"
+        ],
+        "title": "ChecklistStatus"
       },
       "CohortFilter": {
         "properties": {
@@ -3084,6 +5443,108 @@
         ],
         "title": "Contribution"
       },
+      "DecisionCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Title"
+          },
+          "context": {
+            "type": "string",
+            "title": "Context",
+            "default": ""
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence",
+            "default": ""
+          },
+          "alternatives": {
+            "type": "string",
+            "title": "Alternatives",
+            "default": ""
+          },
+          "decision": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Decision"
+          },
+          "expected_impact": {
+            "type": "string",
+            "title": "Expected Impact",
+            "default": ""
+          },
+          "status": {
+            "$ref": "#/components/schemas/DecisionStatus",
+            "default": "decided"
+          },
+          "decided_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided On"
+          },
+          "follow_up_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Date"
+          },
+          "investigation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Id"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "release_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "decision"
+        ],
+        "title": "DecisionCreate"
+      },
       "DecisionIn": {
         "properties": {
           "decision": {
@@ -3106,6 +5567,357 @@
           "reason"
         ],
         "title": "DecisionIn"
+      },
+      "DecisionOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DecisionStatus"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "decided_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Decided On"
+          },
+          "follow_up_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Date"
+          },
+          "follow_up_due": {
+            "type": "boolean",
+            "title": "Follow Up Due"
+          },
+          "linked": {
+            "items": {
+              "$ref": "#/components/schemas/EntityRef"
+            },
+            "type": "array",
+            "title": "Linked"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "context": {
+            "type": "string",
+            "title": "Context"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          },
+          "alternatives": {
+            "type": "string",
+            "title": "Alternatives"
+          },
+          "expected_impact": {
+            "type": "string",
+            "title": "Expected Impact"
+          },
+          "investigation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Id"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "release_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status",
+          "owner",
+          "decided_on",
+          "follow_up_date",
+          "follow_up_due",
+          "linked",
+          "decision",
+          "updated_at",
+          "context",
+          "evidence",
+          "alternatives",
+          "expected_impact",
+          "investigation_id",
+          "experiment_id",
+          "release_id",
+          "created_at"
+        ],
+        "title": "DecisionOut"
+      },
+      "DecisionStatus": {
+        "type": "string",
+        "enum": [
+          "proposed",
+          "decided",
+          "superseded"
+        ],
+        "title": "DecisionStatus"
+      },
+      "DecisionSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DecisionStatus"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "decided_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Decided On"
+          },
+          "follow_up_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Date"
+          },
+          "follow_up_due": {
+            "type": "boolean",
+            "title": "Follow Up Due"
+          },
+          "linked": {
+            "items": {
+              "$ref": "#/components/schemas/EntityRef"
+            },
+            "type": "array",
+            "title": "Linked"
+          },
+          "decision": {
+            "type": "string",
+            "title": "Decision"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status",
+          "owner",
+          "decided_on",
+          "follow_up_date",
+          "follow_up_due",
+          "linked",
+          "decision",
+          "updated_at"
+        ],
+        "title": "DecisionSummary"
+      },
+      "DecisionUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          },
+          "alternatives": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alternatives"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "expected_impact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Impact"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decided_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided On"
+          },
+          "follow_up_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Follow Up Date"
+          },
+          "investigation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Id"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "release_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Id"
+          }
+        },
+        "type": "object",
+        "title": "DecisionUpdate"
       },
       "DetectionSummary": {
         "properties": {
@@ -3202,6 +6014,41 @@
         ],
         "title": "DimensionInfo"
       },
+      "EntityRef": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id",
+          "title"
+        ],
+        "title": "EntityRef",
+        "description": "Enough to render a link to another object without a second request."
+      },
       "EntityType": {
         "type": "string",
         "enum": [
@@ -3211,7 +6058,8 @@
           "analysis",
           "decision",
           "sop",
-          "knowledge"
+          "knowledge",
+          "feedback"
         ],
         "title": "EntityType"
       },
@@ -4047,6 +6895,298 @@
         ],
         "title": "Exposure"
       },
+      "Fact": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "source"
+        ],
+        "title": "Fact"
+      },
+      "FeedbackCreate": {
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/FeedbackSource"
+          },
+          "theme": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 2,
+            "title": "Theme"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Body"
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/FeedbackSentiment",
+            "default": "neutral"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform"
+          },
+          "received_on": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received On"
+          },
+          "stakeholder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stakeholder Id"
+          },
+          "linked_entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linked Entity Type"
+          },
+          "linked_entity_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linked Entity Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "theme",
+          "body"
+        ],
+        "title": "FeedbackCreate"
+      },
+      "FeedbackOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "source": {
+            "$ref": "#/components/schemas/FeedbackSource"
+          },
+          "theme": {
+            "type": "string",
+            "title": "Theme"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/FeedbackSentiment"
+          },
+          "status": {
+            "$ref": "#/components/schemas/FeedbackStatus"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform"
+          },
+          "received_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Received On"
+          },
+          "stakeholder": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StakeholderRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "submitted_by": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "linked": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntityRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "theme",
+          "body",
+          "sentiment",
+          "status",
+          "platform",
+          "received_on",
+          "stakeholder",
+          "submitted_by",
+          "linked",
+          "created_at"
+        ],
+        "title": "FeedbackOut"
+      },
+      "FeedbackSentiment": {
+        "type": "string",
+        "enum": [
+          "negative",
+          "neutral",
+          "positive"
+        ],
+        "title": "FeedbackSentiment"
+      },
+      "FeedbackSource": {
+        "type": "string",
+        "enum": [
+          "support",
+          "interview",
+          "survey",
+          "sales",
+          "app_review",
+          "internal"
+        ],
+        "title": "FeedbackSource"
+      },
+      "FeedbackStatus": {
+        "type": "string",
+        "enum": [
+          "new",
+          "triaged",
+          "planned",
+          "addressed",
+          "dismissed"
+        ],
+        "title": "FeedbackStatus"
+      },
+      "FeedbackUpdate": {
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FeedbackStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "theme": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theme"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FeedbackSentiment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "linked_entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linked Entity Type"
+          },
+          "linked_entity_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linked Entity Id"
+          },
+          "unlink": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unlink"
+          }
+        },
+        "type": "object",
+        "title": "FeedbackUpdate"
+      },
       "Filter": {
         "properties": {
           "dimension": {
@@ -4532,6 +7672,138 @@
           "refuted"
         ],
         "title": "HypothesisState"
+      },
+      "ImpactMetric": {
+        "properties": {
+          "metric_key": {
+            "type": "string",
+            "title": "Metric Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "format": {
+            "type": "string",
+            "title": "Format"
+          },
+          "higher_is_better": {
+            "type": "boolean",
+            "title": "Higher Is Better"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          },
+          "abs_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abs Change"
+          },
+          "rel_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rel Change"
+          },
+          "formatted_before": {
+            "type": "string",
+            "title": "Formatted Before"
+          },
+          "formatted_after": {
+            "type": "string",
+            "title": "Formatted After"
+          },
+          "formatted_change": {
+            "type": "string",
+            "title": "Formatted Change"
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "good",
+              "bad",
+              "neutral",
+              "unknown"
+            ],
+            "title": "Tone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric_key",
+          "label",
+          "format",
+          "higher_is_better",
+          "before",
+          "after",
+          "abs_change",
+          "rel_change",
+          "formatted_before",
+          "formatted_after",
+          "formatted_change",
+          "tone"
+        ],
+        "title": "ImpactMetric"
+      },
+      "Inference": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidence"
+          },
+          "basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Basis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "confidence"
+        ],
+        "title": "Inference"
       },
       "InventoryRisk": {
         "properties": {
@@ -5116,6 +8388,167 @@
         "type": "object",
         "title": "InvestigationUpdate"
       },
+      "KnowledgeCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Body"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "KnowledgeCreate"
+      },
+      "KnowledgeOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "author": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "body",
+          "tags",
+          "author",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "KnowledgeOut"
+      },
+      "KnowledgeSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "author": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "excerpt": {
+            "type": "string",
+            "title": "Excerpt"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "tags",
+          "author",
+          "excerpt",
+          "updated_at"
+        ],
+        "title": "KnowledgeSummary"
+      },
+      "KnowledgeUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "title": "KnowledgeUpdate"
+      },
       "Kpi": {
         "properties": {
           "metric": {
@@ -5158,6 +8591,24 @@
           "compare_points"
         ],
         "title": "Kpi"
+      },
+      "LinkOut": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "href": {
+            "type": "string",
+            "title": "Href"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "href"
+        ],
+        "title": "LinkOut"
       },
       "LinkedExperiment": {
         "properties": {
@@ -5561,6 +9012,145 @@
         ],
         "title": "Permission"
       },
+      "PlanRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 2,
+            "title": "Text"
+          },
+          "context": {
+            "$ref": "#/components/schemas/AskContext"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "PlanRequest"
+      },
+      "PlanResponse": {
+        "properties": {
+          "query": {
+            "$ref": "#/components/schemas/PlannedQuery"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Confidence"
+          },
+          "unresolved": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unresolved"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "llm",
+              "demo"
+            ],
+            "title": "Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "explanation",
+          "confidence",
+          "mode"
+        ],
+        "title": "PlanResponse"
+      },
+      "PlannedQuery": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "breakdown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breakdown"
+          },
+          "granularity": {
+            "type": "string",
+            "enum": [
+              "hour",
+              "day",
+              "week",
+              "month"
+            ],
+            "title": "Granularity",
+            "default": "day"
+          },
+          "compare_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare From"
+          },
+          "compare_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare To"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "date_from",
+          "date_to"
+        ],
+        "title": "PlannedQuery"
+      },
       "Point": {
         "properties": {
           "bucket": {
@@ -5734,6 +9324,362 @@
         ],
         "title": "Recommendation"
       },
+      "RecommendationItem": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "now",
+              "next",
+              "later"
+            ],
+            "title": "Priority",
+            "default": "next"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "RecommendationItem"
+      },
+      "ReleaseCreate": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "platform": {
+            "type": "string",
+            "enum": [
+              "android",
+              "ios",
+              "web",
+              "all"
+            ],
+            "title": "Platform"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Release Date"
+          },
+          "affected_areas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Areas"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "sop_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sop Id",
+            "description": "Run this SOP as the launch checklist"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "name",
+          "platform",
+          "release_date"
+        ],
+        "title": "ReleaseCreate"
+      },
+      "ReleaseEventOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Occurred At"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "actor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "occurred_at",
+          "kind",
+          "note",
+          "actor"
+        ],
+        "title": "ReleaseEventOut"
+      },
+      "ReleaseImpact": {
+        "properties": {
+          "before_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Before Start"
+          },
+          "before_end": {
+            "type": "string",
+            "format": "date",
+            "title": "Before End"
+          },
+          "after_start": {
+            "type": "string",
+            "format": "date",
+            "title": "After Start"
+          },
+          "after_end": {
+            "type": "string",
+            "format": "date",
+            "title": "After End"
+          },
+          "scope": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scope"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactMetric"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "before_start",
+          "before_end",
+          "after_start",
+          "after_end",
+          "scope",
+          "metrics",
+          "note"
+        ],
+        "title": "ReleaseImpact"
+      },
+      "ReleaseNoteCreate": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Note"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "note",
+              "link"
+            ],
+            "title": "Kind",
+            "default": "note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "ReleaseNoteCreate"
+      },
+      "ReleaseOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReleaseStatus"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Release Date"
+          },
+          "rollout_percent": {
+            "type": "integer",
+            "title": "Rollout Percent"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "affected_areas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Areas"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "checklist_progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChecklistProgress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "open_investigations": {
+            "type": "integer",
+            "title": "Open Investigations",
+            "default": 0
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/ReleaseEventOut"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "checklists": {
+            "items": {
+              "$ref": "#/components/schemas/ChecklistOut"
+            },
+            "type": "array",
+            "title": "Checklists"
+          },
+          "investigations": {
+            "items": {
+              "$ref": "#/components/schemas/EntityRef"
+            },
+            "type": "array",
+            "title": "Investigations"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/EntityRef"
+            },
+            "type": "array",
+            "title": "Decisions"
+          },
+          "experiment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EntityRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "name",
+          "platform",
+          "status",
+          "release_date",
+          "rollout_percent",
+          "owner",
+          "affected_areas",
+          "experiment_id",
+          "updated_at",
+          "description",
+          "timeline",
+          "checklists",
+          "investigations",
+          "decisions",
+          "experiment",
+          "created_at"
+        ],
+        "title": "ReleaseOut"
+      },
       "ReleaseRef": {
         "properties": {
           "id": {
@@ -5800,6 +9746,207 @@
           "reason"
         ],
         "title": "ReleaseRef"
+      },
+      "ReleaseStatus": {
+        "type": "string",
+        "enum": [
+          "planned",
+          "in_progress",
+          "rolling_out",
+          "completed",
+          "rolled_back"
+        ],
+        "title": "ReleaseStatus"
+      },
+      "ReleaseSummary": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReleaseStatus"
+          },
+          "release_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Release Date"
+          },
+          "rollout_percent": {
+            "type": "integer",
+            "title": "Rollout Percent"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "affected_areas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Areas"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "checklist_progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChecklistProgress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "open_investigations": {
+            "type": "integer",
+            "title": "Open Investigations",
+            "default": 0
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "name",
+          "platform",
+          "status",
+          "release_date",
+          "rollout_percent",
+          "owner",
+          "affected_areas",
+          "experiment_id",
+          "updated_at"
+        ],
+        "title": "ReleaseSummary"
+      },
+      "ReleaseUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReleaseStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "release_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Release Date"
+          },
+          "rollout_percent": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rollout Percent"
+          },
+          "affected_areas": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affected Areas"
+          },
+          "experiment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiment Id"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note",
+            "description": "Timeline note explaining the change"
+          }
+        },
+        "type": "object",
+        "title": "ReleaseUpdate"
       },
       "Role": {
         "type": "string",
@@ -6046,6 +10193,96 @@
           "event"
         ],
         "title": "Scope"
+      },
+      "SearchHit": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "subtitle": {
+            "type": "string",
+            "title": "Subtitle"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "rank": {
+            "type": "number",
+            "title": "Rank"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "extra": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extra"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id",
+          "title",
+          "subtitle",
+          "rank"
+        ],
+        "title": "SearchHit"
+      },
+      "SearchResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "groups": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/SearchHit"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Groups"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "total",
+          "groups"
+        ],
+        "title": "SearchResponse"
       },
       "SegmentCreate": {
         "properties": {
@@ -6394,6 +10631,179 @@
         ],
         "title": "Series"
       },
+      "SopCreate": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 2,
+            "title": "Category"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SopItem"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "category",
+          "items"
+        ],
+        "title": "SopCreate"
+      },
+      "SopItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "owner_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Owner Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label"
+        ],
+        "title": "SopItem"
+      },
+      "SopOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SopItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "run_count": {
+            "type": "integer",
+            "title": "Run Count",
+            "default": 0
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "category",
+          "owner",
+          "items",
+          "updated_at"
+        ],
+        "title": "SopOut"
+      },
+      "SopUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 60,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "items": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/SopItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "title": "SopUpdate"
+      },
       "Srm": {
         "properties": {
           "chi2": {
@@ -6476,6 +10886,59 @@
         ],
         "title": "StakeholderOut"
       },
+      "StakeholderRef": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "team": {
+            "type": "string",
+            "title": "Team"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "team",
+          "title"
+        ],
+        "title": "StakeholderRef"
+      },
+      "Suggestion": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "why",
+              "what",
+              "funnel",
+              "experiment",
+              "attention"
+            ],
+            "title": "Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "kind"
+        ],
+        "title": "Suggestion"
+      },
       "SupportingBreakdown": {
         "properties": {
           "title": {
@@ -6502,6 +10965,40 @@
           "rows"
         ],
         "title": "SupportingBreakdown"
+      },
+      "ThemeSummary": {
+        "properties": {
+          "theme": {
+            "type": "string",
+            "title": "Theme"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "open": {
+            "type": "integer",
+            "title": "Open"
+          },
+          "negative": {
+            "type": "integer",
+            "title": "Negative"
+          },
+          "last_received": {
+            "type": "string",
+            "format": "date",
+            "title": "Last Received"
+          }
+        },
+        "type": "object",
+        "required": [
+          "theme",
+          "total",
+          "open",
+          "negative",
+          "last_received"
+        ],
+        "title": "ThemeSummary"
       },
       "TimelinePoint": {
         "properties": {
@@ -6539,6 +11036,63 @@
           "users"
         ],
         "title": "TimelinePoint"
+      },
+      "ToolCallRecord": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "args": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Args"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "ms": {
+            "type": "integer",
+            "title": "Ms"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "args",
+          "summary",
+          "ms"
+        ],
+        "title": "ToolCallRecord"
       },
       "Total": {
         "properties": {

@@ -5,8 +5,15 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from probelens.models.base import Base, TimestampMixin
-from probelens.models.core import User, enum_col, search_vector
-from probelens.models.enums import ChecklistStatus, DecisionStatus, ReleaseStatus
+from probelens.models.core import Stakeholder, User, enum_col, search_vector
+from probelens.models.enums import (
+    ChecklistStatus,
+    DecisionStatus,
+    FeedbackSentiment,
+    FeedbackSource,
+    FeedbackStatus,
+    ReleaseStatus,
+)
 
 
 class Release(Base, TimestampMixin):
@@ -121,6 +128,35 @@ class Decision(Base, TimestampMixin):
     search_vector = search_vector("title", "context", "evidence", "decision")
 
     __table_args__ = (Index("ix_decisions_search", "search_vector", postgresql_using="gin"),)
+
+
+class Feedback(Base, TimestampMixin):
+    """Stakeholder and customer feedback intake. Each item carries a theme so the
+    ops view can show which problems keep recurring, and an optional link to the
+    investigation, experiment, release, or decision that answers it."""
+
+    __tablename__ = "feedback"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
+    stakeholder_id: Mapped[int | None] = mapped_column(ForeignKey("stakeholders.id"))
+    submitted_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    source: Mapped[FeedbackSource] = mapped_column(enum_col(FeedbackSource))
+    theme: Mapped[str] = mapped_column(String(60), index=True)
+    body: Mapped[str] = mapped_column(Text)
+    sentiment: Mapped[FeedbackSentiment] = mapped_column(
+        enum_col(FeedbackSentiment), default=FeedbackSentiment.neutral
+    )
+    status: Mapped[FeedbackStatus] = mapped_column(enum_col(FeedbackStatus), default=FeedbackStatus.new)
+    platform: Mapped[str | None] = mapped_column(String(20))
+    received_on: Mapped[date] = mapped_column(Date)
+    linked_entity_type: Mapped[str | None] = mapped_column(String(32))
+    linked_entity_id: Mapped[int | None] = mapped_column(Integer)
+
+    stakeholder: Mapped[Stakeholder | None] = relationship()
+    submitted_by: Mapped[User] = relationship()
+    search_vector = search_vector("theme", "body")
+
+    __table_args__ = (Index("ix_feedback_search", "search_vector", postgresql_using="gin"),)
 
 
 class AiRun(Base):

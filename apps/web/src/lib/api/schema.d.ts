@@ -617,6 +617,437 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/releases": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Releases */
+    get: operations["list_releases_api_releases_get"];
+    put?: never;
+    /** Create Release */
+    post: operations["create_release_api_releases_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/releases/{release_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Release */
+    get: operations["get_release_api_releases__release_id__get"];
+    put?: never;
+    post?: never;
+    /** Delete Release */
+    delete: operations["delete_release_api_releases__release_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Release */
+    patch: operations["update_release_api_releases__release_id__patch"];
+    trace?: never;
+  };
+  "/api/releases/{release_id}/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Add Release Note */
+    post: operations["add_release_note_api_releases__release_id__events_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/releases/{release_id}/checklists": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Run Sop For Release */
+    post: operations["run_sop_for_release_api_releases__release_id__checklists_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/releases/{release_id}/impact": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Release Impact
+     * @description Seven days after the release versus the seven days before, on the release's platform.
+     *
+     *     This is a read, not a causal estimate: anything else that happened in the same
+     *     week is mixed in. The experiment platform is the tool for causal answers; this view
+     *     exists so a release owner sees the shape of the week immediately.
+     */
+    get: operations["release_impact_api_releases__release_id__impact_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/sops": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Sops */
+    get: operations["list_sops_api_ops_sops_get"];
+    put?: never;
+    /** Create Sop */
+    post: operations["create_sop_api_ops_sops_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/sops/{sop_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Sop */
+    get: operations["get_sop_api_ops_sops__sop_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update Sop */
+    patch: operations["update_sop_api_ops_sops__sop_id__patch"];
+    trace?: never;
+  };
+  "/api/ops/checklists": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Checklists */
+    get: operations["list_checklists_api_ops_checklists_get"];
+    put?: never;
+    /** Create Checklist */
+    post: operations["create_checklist_api_ops_checklists_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/checklists/{checklist_id}/items/{key}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Toggle Checklist Item */
+    patch: operations["toggle_checklist_item_api_ops_checklists__checklist_id__items__key__patch"];
+    trace?: never;
+  };
+  "/api/ops/knowledge": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Knowledge */
+    get: operations["list_knowledge_api_ops_knowledge_get"];
+    put?: never;
+    /** Create Knowledge */
+    post: operations["create_knowledge_api_ops_knowledge_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/knowledge/{doc_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Knowledge */
+    get: operations["get_knowledge_api_ops_knowledge__doc_id__get"];
+    put?: never;
+    post?: never;
+    /** Delete Knowledge */
+    delete: operations["delete_knowledge_api_ops_knowledge__doc_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Knowledge */
+    patch: operations["update_knowledge_api_ops_knowledge__doc_id__patch"];
+    trace?: never;
+  };
+  "/api/ops/feedback": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Feedback */
+    get: operations["list_feedback_api_ops_feedback_get"];
+    put?: never;
+    /** Create Feedback */
+    post: operations["create_feedback_api_ops_feedback_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/feedback/themes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Feedback Themes */
+    get: operations["feedback_themes_api_ops_feedback_themes_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/feedback/stakeholders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Stakeholders */
+    get: operations["list_stakeholders_api_ops_feedback_stakeholders_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ops/feedback/{feedback_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update Feedback */
+    patch: operations["update_feedback_api_ops_feedback__feedback_id__patch"];
+    trace?: never;
+  };
+  "/api/decisions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Decisions */
+    get: operations["list_decisions_api_decisions_get"];
+    put?: never;
+    /** Create Decision */
+    post: operations["create_decision_api_decisions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/decisions/{decision_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Decision */
+    get: operations["get_decision_api_decisions__decision_id__get"];
+    put?: never;
+    post?: never;
+    /** Delete Decision */
+    delete: operations["delete_decision_api_decisions__decision_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Decision */
+    patch: operations["update_decision_api_decisions__decision_id__patch"];
+    trace?: never;
+  };
+  "/api/search": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Search */
+    get: operations["search_api_search_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ai/ask": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Ask Analyst */
+    post: operations["ask_analyst_api_ai_ask_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ai/plan": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Plan Query
+     * @description Natural language → explorer query. Deterministic; the LLM is not needed for this.
+     */
+    post: operations["plan_query_api_ai_plan_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ai/runs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Runs */
+    get: operations["list_runs_api_ai_runs_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ai/runs/{run_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Run */
+    get: operations["get_run_api_ai_runs__run_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ai/status": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Analyst Status */
+    get: operations["analyst_status_api_ai_status_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/ai/suggestions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Suggestions */
+    get: operations["suggestions_api_ai_suggestions_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/health": {
     parameters: {
       query?: never;
@@ -677,6 +1108,52 @@ export interface components {
       status?: components["schemas"]["ActionStatus"] | null;
       /** Due Date */
       due_date?: string | null;
+    };
+    /** AiRunSummary */
+    AiRunSummary: {
+      /** Id */
+      id: number;
+      /** Question */
+      question: string;
+      /**
+       * Mode
+       * @enum {string}
+       */
+      mode: "llm" | "demo";
+      /** Model */
+      model: string;
+      /** Summary */
+      summary: string;
+      /** Tool Count */
+      tool_count: number;
+      /** Latency Ms */
+      latency_ms: number;
+      /** Error */
+      error: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** AnalystAnswer */
+    AnalystAnswer: {
+      /** Summary */
+      summary: string;
+      /** Facts */
+      facts?: components["schemas"]["Fact"][];
+      /** Inferences */
+      inferences?: components["schemas"]["Inference"][];
+      /** Candidates */
+      candidates?: components["schemas"]["CandidateOut"][];
+      /** Recommendations */
+      recommendations?: components["schemas"]["RecommendationItem"][];
+      /** Follow Ups */
+      follow_ups?: string[];
+      /** Links */
+      links?: components["schemas"]["LinkOut"][];
+      /** Caveats */
+      caveats?: string[];
     };
     /** AnalyticsMeta */
     AnalyticsMeta: {
@@ -751,6 +1228,56 @@ export interface components {
     AnomalyUpdate: {
       status: components["schemas"]["AnomalyStatus"];
     };
+    /**
+     * AskContext
+     * @description Where the user is asking from; lets the analyst default sensibly.
+     */
+    AskContext: {
+      /** Date From */
+      date_from?: string | null;
+      /** Date To */
+      date_to?: string | null;
+      /** Metric */
+      metric?: string | null;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+      /** Investigation Id */
+      investigation_id?: number | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+    };
+    /** AskRequest */
+    AskRequest: {
+      /** Question */
+      question: string;
+      context?: components["schemas"]["AskContext"];
+      /** Mode */
+      mode?: ("llm" | "demo") | null;
+    };
+    /** AskResponse */
+    AskResponse: {
+      /** Run Id */
+      run_id: number;
+      /**
+       * Mode
+       * @enum {string}
+       */
+      mode: "llm" | "demo";
+      /** Model */
+      model: string;
+      /** Question */
+      question: string;
+      answer: components["schemas"]["AnalystAnswer"];
+      /** Tool Calls */
+      tool_calls: components["schemas"]["ToolCallRecord"][];
+      /** Latency Ms */
+      latency_ms: number;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
     /** Candidate */
     Candidate: {
       /** Rank */
@@ -790,6 +1317,25 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** CandidateOut */
+    CandidateOut: {
+      /** Title */
+      title: string;
+      /**
+       * Confidence
+       * @enum {string}
+       */
+      confidence: "low" | "medium" | "high";
+      /** Evidence */
+      evidence: string;
+      /**
+       * Kind
+       * @default segment
+       */
+      kind: string;
+      /** Href */
+      href?: string | null;
+    };
     /** Change */
     Change: {
       /** Baseline */
@@ -818,6 +1364,74 @@ export interface components {
       /** Detail */
       detail: string;
     };
+    /** ChecklistCreate */
+    ChecklistCreate: {
+      /** Sop Id */
+      sop_id: number;
+      /** Release Id */
+      release_id?: number | null;
+      /** Title */
+      title?: string | null;
+    };
+    /** ChecklistItem */
+    ChecklistItem: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Owner Role */
+      owner_role?: string | null;
+      /**
+       * Done
+       * @default false
+       */
+      done: boolean;
+      /** Owner Id */
+      owner_id?: number | null;
+      /** Done At */
+      done_at?: string | null;
+    };
+    /** ChecklistItemToggle */
+    ChecklistItemToggle: {
+      /** Done */
+      done: boolean;
+    };
+    /** ChecklistOut */
+    ChecklistOut: {
+      /** Id */
+      id: number;
+      /** Sop Id */
+      sop_id: number | null;
+      /** Release Id */
+      release_id: number | null;
+      /** Title */
+      title: string;
+      owner: components["schemas"]["UserSummary"];
+      status: components["schemas"]["ChecklistStatus"];
+      /** Items */
+      items: components["schemas"]["ChecklistItem"][];
+      /** Done Count */
+      done_count: number;
+      /** Total Count */
+      total_count: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** ChecklistProgress */
+    ChecklistProgress: {
+      /** Done */
+      done: number;
+      /** Total */
+      total: number;
+    };
+    /**
+     * ChecklistStatus
+     * @enum {string}
+     */
+    ChecklistStatus: "not_started" | "in_progress" | "complete";
     /** CohortFilter */
     CohortFilter: {
       /** Dimension */
@@ -944,6 +1558,45 @@ export interface components {
        */
       is_new: boolean;
     };
+    /** DecisionCreate */
+    DecisionCreate: {
+      /** Title */
+      title: string;
+      /**
+       * Context
+       * @default
+       */
+      context: string;
+      /**
+       * Evidence
+       * @default
+       */
+      evidence: string;
+      /**
+       * Alternatives
+       * @default
+       */
+      alternatives: string;
+      /** Decision */
+      decision: string;
+      /**
+       * Expected Impact
+       * @default
+       */
+      expected_impact: string;
+      /** @default decided */
+      status: components["schemas"]["DecisionStatus"];
+      /** Decided On */
+      decided_on?: string | null;
+      /** Follow Up Date */
+      follow_up_date?: string | null;
+      /** Investigation Id */
+      investigation_id?: number | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+      /** Release Id */
+      release_id?: number | null;
+    };
     /** DecisionIn */
     DecisionIn: {
       decision: components["schemas"]["ExperimentDecision"];
@@ -954,6 +1607,110 @@ export interface components {
        * @default true
        */
       log: boolean;
+    };
+    /** DecisionOut */
+    DecisionOut: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      status: components["schemas"]["DecisionStatus"];
+      owner: components["schemas"]["UserSummary"];
+      /**
+       * Decided On
+       * Format: date
+       */
+      decided_on: string;
+      /** Follow Up Date */
+      follow_up_date: string | null;
+      /** Follow Up Due */
+      follow_up_due: boolean;
+      /** Linked */
+      linked: components["schemas"]["EntityRef"][];
+      /** Decision */
+      decision: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Context */
+      context: string;
+      /** Evidence */
+      evidence: string;
+      /** Alternatives */
+      alternatives: string;
+      /** Expected Impact */
+      expected_impact: string;
+      /** Investigation Id */
+      investigation_id: number | null;
+      /** Experiment Id */
+      experiment_id: number | null;
+      /** Release Id */
+      release_id: number | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /**
+     * DecisionStatus
+     * @enum {string}
+     */
+    DecisionStatus: "proposed" | "decided" | "superseded";
+    /** DecisionSummary */
+    DecisionSummary: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      status: components["schemas"]["DecisionStatus"];
+      owner: components["schemas"]["UserSummary"];
+      /**
+       * Decided On
+       * Format: date
+       */
+      decided_on: string;
+      /** Follow Up Date */
+      follow_up_date: string | null;
+      /** Follow Up Due */
+      follow_up_due: boolean;
+      /** Linked */
+      linked: components["schemas"]["EntityRef"][];
+      /** Decision */
+      decision: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** DecisionUpdate */
+    DecisionUpdate: {
+      /** Title */
+      title?: string | null;
+      /** Context */
+      context?: string | null;
+      /** Evidence */
+      evidence?: string | null;
+      /** Alternatives */
+      alternatives?: string | null;
+      /** Decision */
+      decision?: string | null;
+      /** Expected Impact */
+      expected_impact?: string | null;
+      status?: components["schemas"]["DecisionStatus"] | null;
+      /** Decided On */
+      decided_on?: string | null;
+      /** Follow Up Date */
+      follow_up_date?: string | null;
+      /** Investigation Id */
+      investigation_id?: number | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+      /** Release Id */
+      release_id?: number | null;
     };
     /** DetectionSummary */
     DetectionSummary: {
@@ -996,10 +1753,25 @@ export interface components {
       values: string[];
     };
     /**
+     * EntityRef
+     * @description Enough to render a link to another object without a second request.
+     */
+    EntityRef: {
+      /** Type */
+      type: string;
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Status */
+      status?: string | null;
+    };
+    /**
      * EntityType
      * @enum {string}
      */
-    EntityType: "investigation" | "experiment" | "release" | "analysis" | "decision" | "sop" | "knowledge";
+    EntityType:
+      "investigation" | "experiment" | "release" | "analysis" | "decision" | "sop" | "knowledge" | "feedback";
     /** ExperimentCreate */
     ExperimentCreate: {
       /** Name */
@@ -1264,6 +2036,88 @@ export interface components {
       contaminated_users: number;
       srm: components["schemas"]["Srm"] | null;
     };
+    /** Fact */
+    Fact: {
+      /** Text */
+      text: string;
+      /** Source */
+      source: string;
+    };
+    /** FeedbackCreate */
+    FeedbackCreate: {
+      source: components["schemas"]["FeedbackSource"];
+      /** Theme */
+      theme: string;
+      /** Body */
+      body: string;
+      /** @default neutral */
+      sentiment: components["schemas"]["FeedbackSentiment"];
+      /** Platform */
+      platform?: string | null;
+      /** Received On */
+      received_on?: string | null;
+      /** Stakeholder Id */
+      stakeholder_id?: number | null;
+      /** Linked Entity Type */
+      linked_entity_type?: string | null;
+      /** Linked Entity Id */
+      linked_entity_id?: number | null;
+    };
+    /** FeedbackOut */
+    FeedbackOut: {
+      /** Id */
+      id: number;
+      source: components["schemas"]["FeedbackSource"];
+      /** Theme */
+      theme: string;
+      /** Body */
+      body: string;
+      sentiment: components["schemas"]["FeedbackSentiment"];
+      status: components["schemas"]["FeedbackStatus"];
+      /** Platform */
+      platform: string | null;
+      /**
+       * Received On
+       * Format: date
+       */
+      received_on: string;
+      stakeholder: components["schemas"]["StakeholderRef"] | null;
+      submitted_by: components["schemas"]["UserSummary"];
+      linked: components["schemas"]["EntityRef"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /**
+     * FeedbackSentiment
+     * @enum {string}
+     */
+    FeedbackSentiment: "negative" | "neutral" | "positive";
+    /**
+     * FeedbackSource
+     * @enum {string}
+     */
+    FeedbackSource: "support" | "interview" | "survey" | "sales" | "app_review" | "internal";
+    /**
+     * FeedbackStatus
+     * @enum {string}
+     */
+    FeedbackStatus: "new" | "triaged" | "planned" | "addressed" | "dismissed";
+    /** FeedbackUpdate */
+    FeedbackUpdate: {
+      status?: components["schemas"]["FeedbackStatus"] | null;
+      /** Theme */
+      theme?: string | null;
+      sentiment?: components["schemas"]["FeedbackSentiment"] | null;
+      /** Linked Entity Type */
+      linked_entity_type?: string | null;
+      /** Linked Entity Id */
+      linked_entity_id?: number | null;
+      /** Unlink */
+      unlink?: boolean | null;
+    };
     /** Filter */
     Filter: {
       /** Dimension */
@@ -1421,6 +2275,48 @@ export interface components {
      * @enum {string}
      */
     HypothesisState: "proposed" | "supported" | "refuted";
+    /** ImpactMetric */
+    ImpactMetric: {
+      /** Metric Key */
+      metric_key: string;
+      /** Label */
+      label: string;
+      /** Format */
+      format: string;
+      /** Higher Is Better */
+      higher_is_better: boolean;
+      /** Before */
+      before: number | null;
+      /** After */
+      after: number | null;
+      /** Abs Change */
+      abs_change: number | null;
+      /** Rel Change */
+      rel_change: number | null;
+      /** Formatted Before */
+      formatted_before: string;
+      /** Formatted After */
+      formatted_after: string;
+      /** Formatted Change */
+      formatted_change: string;
+      /**
+       * Tone
+       * @enum {string}
+       */
+      tone: "good" | "bad" | "neutral" | "unknown";
+    };
+    /** Inference */
+    Inference: {
+      /** Text */
+      text: string;
+      /**
+       * Confidence
+       * @enum {string}
+       */
+      confidence: "low" | "medium" | "high";
+      /** Basis */
+      basis?: string[];
+    };
     /** InventoryRisk */
     InventoryRisk: {
       /** Product Id */
@@ -1636,6 +2532,63 @@ export interface components {
       /** Baseline End */
       baseline_end?: string | null;
     };
+    /** KnowledgeCreate */
+    KnowledgeCreate: {
+      /** Title */
+      title: string;
+      /** Body */
+      body: string;
+      /** Tags */
+      tags?: string[];
+    };
+    /** KnowledgeOut */
+    KnowledgeOut: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Body */
+      body: string;
+      /** Tags */
+      tags: string[];
+      author: components["schemas"]["UserSummary"];
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** KnowledgeSummary */
+    KnowledgeSummary: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Tags */
+      tags: string[];
+      author: components["schemas"]["UserSummary"];
+      /** Excerpt */
+      excerpt: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** KnowledgeUpdate */
+    KnowledgeUpdate: {
+      /** Title */
+      title?: string | null;
+      /** Body */
+      body?: string | null;
+      /** Tags */
+      tags?: string[] | null;
+    };
     /** Kpi */
     Kpi: {
       metric: components["schemas"]["MetricInfo"];
@@ -1645,6 +2598,13 @@ export interface components {
       points: components["schemas"]["Point"][];
       /** Compare Points */
       compare_points: components["schemas"]["Point"][];
+    };
+    /** LinkOut */
+    LinkOut: {
+      /** Label */
+      label: string;
+      /** Href */
+      href: string;
     };
     /** LinkedExperiment */
     LinkedExperiment: {
@@ -1810,6 +2770,59 @@ export interface components {
       | "manage_decisions"
       | "use_analyst"
       | "manage_users";
+    /** PlanRequest */
+    PlanRequest: {
+      /** Text */
+      text: string;
+      context?: components["schemas"]["AskContext"];
+    };
+    /** PlanResponse */
+    PlanResponse: {
+      query: components["schemas"]["PlannedQuery"];
+      /** Explanation */
+      explanation: string;
+      /**
+       * Confidence
+       * @enum {string}
+       */
+      confidence: "low" | "medium" | "high";
+      /** Unresolved */
+      unresolved?: string[];
+      /**
+       * Mode
+       * @enum {string}
+       */
+      mode: "llm" | "demo";
+    };
+    /** PlannedQuery */
+    PlannedQuery: {
+      /** Metric */
+      metric: string;
+      /**
+       * Date From
+       * Format: date
+       */
+      date_from: string;
+      /**
+       * Date To
+       * Format: date
+       */
+      date_to: string;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+      /** Breakdown */
+      breakdown?: string | null;
+      /**
+       * Granularity
+       * @default day
+       * @enum {string}
+       */
+      granularity: "hour" | "day" | "week" | "month";
+      /** Compare From */
+      compare_from?: string | null;
+      /** Compare To */
+      compare_to?: string | null;
+    };
     /** Point */
     Point: {
       /** Bucket */
@@ -1857,6 +2870,154 @@ export interface components {
       /** Checks */
       checks: components["schemas"]["Check"][];
     };
+    /** RecommendationItem */
+    RecommendationItem: {
+      /** Text */
+      text: string;
+      /**
+       * Priority
+       * @default next
+       * @enum {string}
+       */
+      priority: "now" | "next" | "later";
+    };
+    /** ReleaseCreate */
+    ReleaseCreate: {
+      /** Version */
+      version: string;
+      /** Name */
+      name: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /**
+       * Platform
+       * @enum {string}
+       */
+      platform: "android" | "ios" | "web" | "all";
+      /**
+       * Release Date
+       * Format: date
+       */
+      release_date: string;
+      /** Affected Areas */
+      affected_areas?: string[];
+      /** Experiment Id */
+      experiment_id?: number | null;
+      /**
+       * Sop Id
+       * @description Run this SOP as the launch checklist
+       */
+      sop_id?: number | null;
+    };
+    /** ReleaseEventOut */
+    ReleaseEventOut: {
+      /** Id */
+      id: number;
+      /**
+       * Occurred At
+       * Format: date-time
+       */
+      occurred_at: string;
+      /** Kind */
+      kind: string;
+      /** Note */
+      note: string;
+      actor: components["schemas"]["UserSummary"] | null;
+    };
+    /** ReleaseImpact */
+    ReleaseImpact: {
+      /**
+       * Before Start
+       * Format: date
+       */
+      before_start: string;
+      /**
+       * Before End
+       * Format: date
+       */
+      before_end: string;
+      /**
+       * After Start
+       * Format: date
+       */
+      after_start: string;
+      /**
+       * After End
+       * Format: date
+       */
+      after_end: string;
+      /** Scope */
+      scope: string[];
+      /** Metrics */
+      metrics: components["schemas"]["ImpactMetric"][];
+      /** Note */
+      note: string;
+    };
+    /** ReleaseNoteCreate */
+    ReleaseNoteCreate: {
+      /** Note */
+      note: string;
+      /**
+       * Kind
+       * @default note
+       * @enum {string}
+       */
+      kind: "note" | "link";
+    };
+    /** ReleaseOut */
+    ReleaseOut: {
+      /** Id */
+      id: number;
+      /** Version */
+      version: string;
+      /** Name */
+      name: string;
+      /** Platform */
+      platform: string;
+      status: components["schemas"]["ReleaseStatus"];
+      /**
+       * Release Date
+       * Format: date
+       */
+      release_date: string;
+      /** Rollout Percent */
+      rollout_percent: number;
+      owner: components["schemas"]["UserSummary"];
+      /** Affected Areas */
+      affected_areas: string[];
+      /** Experiment Id */
+      experiment_id: number | null;
+      checklist_progress?: components["schemas"]["ChecklistProgress"] | null;
+      /**
+       * Open Investigations
+       * @default 0
+       */
+      open_investigations: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Description */
+      description: string;
+      /** Timeline */
+      timeline: components["schemas"]["ReleaseEventOut"][];
+      /** Checklists */
+      checklists: components["schemas"]["ChecklistOut"][];
+      /** Investigations */
+      investigations: components["schemas"]["EntityRef"][];
+      /** Decisions */
+      decisions: components["schemas"]["EntityRef"][];
+      experiment: components["schemas"]["EntityRef"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
     /** ReleaseRef */
     ReleaseRef: {
       /** Id */
@@ -1885,6 +3046,67 @@ export interface components {
       relevance: "strong" | "possible" | "weak";
       /** Reason */
       reason: string;
+    };
+    /**
+     * ReleaseStatus
+     * @enum {string}
+     */
+    ReleaseStatus: "planned" | "in_progress" | "rolling_out" | "completed" | "rolled_back";
+    /** ReleaseSummary */
+    ReleaseSummary: {
+      /** Id */
+      id: number;
+      /** Version */
+      version: string;
+      /** Name */
+      name: string;
+      /** Platform */
+      platform: string;
+      status: components["schemas"]["ReleaseStatus"];
+      /**
+       * Release Date
+       * Format: date
+       */
+      release_date: string;
+      /** Rollout Percent */
+      rollout_percent: number;
+      owner: components["schemas"]["UserSummary"];
+      /** Affected Areas */
+      affected_areas: string[];
+      /** Experiment Id */
+      experiment_id: number | null;
+      checklist_progress?: components["schemas"]["ChecklistProgress"] | null;
+      /**
+       * Open Investigations
+       * @default 0
+       */
+      open_investigations: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** ReleaseUpdate */
+    ReleaseUpdate: {
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
+      status?: components["schemas"]["ReleaseStatus"] | null;
+      /** Release Date */
+      release_date?: string | null;
+      /** Rollout Percent */
+      rollout_percent?: number | null;
+      /** Affected Areas */
+      affected_areas?: string[] | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+      /**
+       * Note
+       * @description Timeline note explaining the change
+       */
+      note?: string | null;
     };
     /**
      * Role
@@ -2004,6 +3226,38 @@ export interface components {
      * @enum {string}
      */
     Scope: "session" | "event";
+    /** SearchHit */
+    SearchHit: {
+      /** Type */
+      type: string;
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Subtitle */
+      subtitle: string;
+      /** Status */
+      status?: string | null;
+      /** Rank */
+      rank: number;
+      /** Updated At */
+      updated_at?: string | null;
+      /** Extra */
+      extra?: {
+        [key: string]: unknown;
+      };
+    };
+    /** SearchResponse */
+    SearchResponse: {
+      /** Query */
+      query: string;
+      /** Total */
+      total: number;
+      /** Groups */
+      groups: {
+        [key: string]: components["schemas"]["SearchHit"][];
+      };
+    };
     /** SegmentCreate */
     SegmentCreate: {
       /** Name */
@@ -2113,6 +3367,64 @@ export interface components {
       /** Compare Points */
       compare_points?: components["schemas"]["Point"][];
     };
+    /** SopCreate */
+    SopCreate: {
+      /** Title */
+      title: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /** Category */
+      category: string;
+      /** Items */
+      items: components["schemas"]["SopItem"][];
+    };
+    /** SopItem */
+    SopItem: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Owner Role */
+      owner_role?: string | null;
+    };
+    /** SopOut */
+    SopOut: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      /** Description */
+      description: string;
+      /** Category */
+      category: string;
+      owner: components["schemas"]["UserSummary"];
+      /** Items */
+      items: components["schemas"]["SopItem"][];
+      /**
+       * Run Count
+       * @default 0
+       */
+      run_count: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** SopUpdate */
+    SopUpdate: {
+      /** Title */
+      title?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Category */
+      category?: string | null;
+      /** Items */
+      items?: components["schemas"]["SopItem"][] | null;
+    };
     /** Srm */
     Srm: {
       /** Chi2 */
@@ -2149,6 +3461,27 @@ export interface components {
       /** Title */
       title: string;
     };
+    /** StakeholderRef */
+    StakeholderRef: {
+      /** Id */
+      id: number;
+      /** Name */
+      name: string;
+      /** Team */
+      team: string;
+      /** Title */
+      title: string;
+    };
+    /** Suggestion */
+    Suggestion: {
+      /** Text */
+      text: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "why" | "what" | "funnel" | "experiment" | "attention";
+    };
     /** SupportingBreakdown */
     SupportingBreakdown: {
       /** Title */
@@ -2159,6 +3492,22 @@ export interface components {
       rows: {
         [key: string]: unknown;
       }[];
+    };
+    /** ThemeSummary */
+    ThemeSummary: {
+      /** Theme */
+      theme: string;
+      /** Total */
+      total: number;
+      /** Open */
+      open: number;
+      /** Negative */
+      negative: number;
+      /**
+       * Last Received
+       * Format: date
+       */
+      last_received: string;
     };
     /** TimelinePoint */
     TimelinePoint: {
@@ -2175,6 +3524,27 @@ export interface components {
       users: {
         [key: string]: number;
       };
+    };
+    /** ToolCallRecord */
+    ToolCallRecord: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Args */
+      args: {
+        [key: string]: unknown;
+      };
+      /** Summary */
+      summary: string;
+      /** Ms */
+      ms: number;
+      /** Error */
+      error?: string | null;
+      /** Data */
+      data?: {
+        [key: string]: unknown;
+      } | null;
     };
     /** Total */
     Total: {
@@ -3801,6 +5171,1168 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_releases_api_releases_get: {
+    parameters: {
+      query?: {
+        platform?: string | null;
+        status?: components["schemas"]["ReleaseStatus"] | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseSummary"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_release_api_releases_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReleaseCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_release_api_releases__release_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        release_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_release_api_releases__release_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        release_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_release_api_releases__release_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        release_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReleaseUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  add_release_note_api_releases__release_id__events_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        release_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReleaseNoteCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  run_sop_for_release_api_releases__release_id__checklists_post: {
+    parameters: {
+      query: {
+        sop_id: number;
+      };
+      header?: never;
+      path: {
+        release_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  release_impact_api_releases__release_id__impact_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        release_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ReleaseImpact"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_sops_api_ops_sops_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SopOut"][];
+        };
+      };
+    };
+  };
+  create_sop_api_ops_sops_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SopCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SopOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_sop_api_ops_sops__sop_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        sop_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SopOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_sop_api_ops_sops__sop_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        sop_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SopUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SopOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_checklists_api_ops_checklists_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["ChecklistStatus"] | null;
+        release_id?: number | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChecklistOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_checklist_api_ops_checklists_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChecklistCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChecklistOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  toggle_checklist_item_api_ops_checklists__checklist_id__items__key__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        checklist_id: number;
+        key: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ChecklistItemToggle"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ChecklistOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_knowledge_api_ops_knowledge_get: {
+    parameters: {
+      query?: {
+        tag?: string | null;
+        q?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KnowledgeSummary"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_knowledge_api_ops_knowledge_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KnowledgeCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KnowledgeOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_knowledge_api_ops_knowledge__doc_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        doc_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KnowledgeOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_knowledge_api_ops_knowledge__doc_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        doc_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_knowledge_api_ops_knowledge__doc_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        doc_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KnowledgeUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["KnowledgeOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_feedback_api_ops_feedback_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["FeedbackStatus"] | null;
+        theme?: string | null;
+        open_only?: boolean;
+        linked_type?: string | null;
+        linked_id?: number | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FeedbackOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_feedback_api_ops_feedback_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FeedbackCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FeedbackOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  feedback_themes_api_ops_feedback_themes_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ThemeSummary"][];
+        };
+      };
+    };
+  };
+  list_stakeholders_api_ops_feedback_stakeholders_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StakeholderRef"][];
+        };
+      };
+    };
+  };
+  update_feedback_api_ops_feedback__feedback_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        feedback_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FeedbackUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FeedbackOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_decisions_api_decisions_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["DecisionStatus"] | null;
+        experiment_id?: number | null;
+        investigation_id?: number | null;
+        release_id?: number | null;
+        due_only?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DecisionSummary"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_decision_api_decisions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecisionCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DecisionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_decision_api_decisions__decision_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        decision_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DecisionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_decision_api_decisions__decision_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        decision_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_decision_api_decisions__decision_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        decision_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecisionUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DecisionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  search_api_search_get: {
+    parameters: {
+      query: {
+        q: string;
+        limit?: number;
+        /** @description Comma-separated subset of result types */
+        types?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SearchResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  ask_analyst_api_ai_ask_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AskRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AskResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  plan_query_api_ai_plan_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PlanRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PlanResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_runs_api_ai_runs_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AiRunSummary"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_run_api_ai_runs__run_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        run_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AskResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  analyst_status_api_ai_status_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            [key: string]: string | boolean;
+          };
+        };
+      };
+    };
+  };
+  suggestions_api_ai_suggestions_get: {
+    parameters: {
+      query?: {
+        metric?: string | null;
+        experiment_id?: number | null;
+        investigation_id?: number | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Suggestion"][];
+        };
       };
       /** @description Validation Error */
       422: {

@@ -17,6 +17,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/menu";
+import { AskAnalystButton } from "@/components/analyst/ask-analyst-button";
+import { NlQueryBar } from "@/components/analytics/nl-query-bar";
 import { PageHeader, Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { ChartSkeleton, EmptyState, ErrorState } from "@/components/ui/states";
 import { SegmentedControl } from "@/components/ui/tabs";
@@ -30,6 +32,7 @@ import {
 import { usePermission } from "@/lib/api/hooks";
 import { formatMetric, type MetricFormat } from "@/lib/format";
 import { useRange } from "@/lib/range";
+import { analystHref } from "@/lib/links";
 import { useUrlState } from "@/lib/url-state";
 
 type Granularity = "hour" | "day" | "week";
@@ -106,6 +109,18 @@ function Explorer() {
         description="Pick a metric, slice it, and compare against the previous period. Every view is a shareable URL."
         actions={
           <>
+            {range.ready ? (
+              <AskAnalystButton
+                size="sm"
+                href={analystHref({
+                  q: `Why did ${(metricInfo?.label ?? metric).toLowerCase()} change?`,
+                  metric,
+                  filters,
+                  from: range.from,
+                  to: range.to,
+                })}
+              />
+            ) : null}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm">
@@ -146,6 +161,23 @@ function Explorer() {
           </>
         }
       />
+
+      {range.ready ? (
+        <NlQueryBar
+          context={{ metric, filters, from: range.from, to: range.to }}
+          onApply={(q) =>
+            url.set({
+              metric: q.metric,
+              breakdown: q.breakdown ?? null,
+              granularity: q.granularity === "day" ? null : q.granularity,
+              f: q.filters?.length ? JSON.stringify(q.filters) : null,
+              from: q.date_from,
+              to: q.date_to,
+              compare: q.compare_from ? "previous_period" : undefined,
+            })
+          }
+        />
+      ) : null}
 
       <Panel className="mb-4">
         <PanelBody className="flex flex-wrap items-end gap-3">

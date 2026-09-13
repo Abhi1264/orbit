@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AskAnalystButton } from "@/components/analyst/ask-analyst-button";
 import { CommentThread } from "@/components/comments/comment-thread";
 import { DecisionDialog, MemoDialog } from "@/components/experiments/decision-dialogs";
 import {
@@ -27,6 +28,8 @@ import {
 } from "@/lib/api/experiments";
 import { useMe, usePermission } from "@/lib/api/hooks";
 import { formatDate, formatDateTime } from "@/lib/format";
+import { useDecisions } from "@/lib/api/ops";
+import { analystHref, decisionHref } from "@/lib/links";
 
 function DesignPanel({ exp }: { exp: ExperimentOut }) {
   const guardrails = exp.guardrail_metrics;
@@ -123,6 +126,7 @@ function ExperimentDetail({ id }: { id: number }) {
   const canManage = usePermission("manage_experiments");
   const canDecide = usePermission("decide_experiments");
   const exp = useExperiment(id);
+  const logged = useDecisions({ experiment_id: id });
   const started = exp.data ? exp.data.status !== "draft" : false;
   const results = useExperimentResults(id, started);
   const { update, remove } = useExperimentMutations(id);
@@ -157,11 +161,24 @@ function ExperimentDetail({ id }: { id: number }) {
             {data.name}
             <StatusBadge status={data.status} className="px-2 py-0.5 text-xs" />
             {data.decision ? <StatusBadge status={data.decision} className="px-2 py-0.5 text-xs" /> : null}
+            {logged.data?.length ? (
+              <Link
+                href={decisionHref(logged.data[0].id)}
+                className="text-accent text-xs font-normal hover:underline"
+              >
+                In decision log →
+              </Link>
+            ) : null}
           </span>
         }
         description={data.hypothesis}
         actions={
           <>
+            {started ? (
+              <AskAnalystButton
+                href={analystHref({ experimentId: data.id, q: "Should we ship this experiment?" })}
+              />
+            ) : null}
             {started ? (
               <Button variant="secondary" onClick={() => setMemoOpen(true)}>
                 <FileText className="size-3.5" />

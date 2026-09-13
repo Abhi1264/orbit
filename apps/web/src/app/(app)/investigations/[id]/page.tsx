@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AskAnalystButton } from "@/components/analyst/ask-analyst-button";
 import { CommentThread } from "@/components/comments/comment-thread";
+import { DecisionDialog } from "@/components/decisions/decision-dialog";
 import { TrendChart, type Band, type Marker } from "@/components/charts/trend-chart";
 import { SeverityBadge } from "@/components/investigations/anomaly-inbox";
 import { FindingsPanel } from "@/components/investigations/findings-panel";
@@ -28,7 +30,8 @@ import {
   useRootCause,
 } from "@/lib/api/investigations";
 import { formatDate, formatDateTime, formatMetric, type MetricFormat } from "@/lib/format";
-import { exploreHref } from "@/lib/links";
+import { useDecisions, useReleases } from "@/lib/api/ops";
+import { analystHref, decisionHref, exploreHref, releaseHref } from "@/lib/links";
 
 const STATUSES: { value: InvestigationStatus; label: string; help: string }[] = [
   { value: "open", label: "Open", help: "Observed, nobody digging yet" },
@@ -154,6 +157,10 @@ function DecisionPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit: boole
   const [resolve, setResolve] = useState(inv.status !== "resolved" && inv.status !== "closed");
   const supported = inv.findings.filter((f) => f.kind === "hypothesis" && f.state === "supported");
   const recommendations = inv.findings.filter((f) => f.kind === "recommendation");
+  const evidence = inv.findings.filter((f) => f.kind === "evidence");
+  const canLog = usePermission("manage_decisions");
+  const logged = useDecisions({ investigation_id: inv.id });
+  const [logging, setLogging] = useState(false);
 
   if (!editing) {
     return (
@@ -166,12 +173,41 @@ function DecisionPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit: boole
               : "What we concluded and what we are doing about it."
           }
           actions={
-            canEdit ? (
-              <Button size="sm" onClick={() => setEditing(true)}>
-                {inv.decision ? "Edit" : "Write decision"}
-              </Button>
-            ) : null
+            <>
+              {inv.decision && canLog && logged.isSuccess && logged.data.length === 0 ? (
+                <Button size="sm" onClick={() => setLogging(true)}>
+                  Add to decision log
+                </Button>
+              ) : null}
+              {logged.data?.length ? (
+                <Link href={decisionHref(logged.data[0].id)} className="text-accent text-xs hover:underline">
+                  In decision log →
+                </Link>
+              ) : null}
+              {canEdit ? (
+                <Button size="sm" onClick={() => setEditing(true)}>
+                  {inv.decision ? "Edit" : "Write decision"}
+                </Button>
+              ) : null}
+            </>
           }
+        />
+        <DecisionDialog
+          open={logging}
+          existing={null}
+          onClose={() => setLogging(false)}
+          prefill={{
+            title: inv.title,
+            context: inv.observation,
+            evidence: [
+              ...supported.map((h) => `Supported: ${h.title}`),
+              ...evidence.map((e) => e.title),
+            ].join("\n"),
+            decision: inv.decision,
+            expected_impact: recommendations.map((r) => r.title).join("\n"),
+            investigation_id: inv.id,
+            release_id: inv.release?.id ?? null,
+          }}
         />
         <PanelBody>
           {inv.decision ? (
@@ -259,7 +295,9 @@ function DecisionPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit: boole
 
 // --------------------------------------------------------------------------- details
 
-function DetailsPanel({ inv }: { inv: InvestigationOut }) {
+function DetailsPanel({ inv, canManage }: { inv: InvestigationOut; canManage: boolean }) {
+  const releases = useReleases();
+  const { update } = useInvestigationMutations(inv.id);
   const items: { label: string; value: React.ReactNode }[] = [
     { label: "Owner", value: inv.owner.name },
     { label: "Metric", value: inv.metric_label },
@@ -296,10 +334,45 @@ function DetailsPanel({ inv }: { inv: InvestigationOut }) {
       ),
     });
   }
-  if (inv.release) {
+  // Releases are candidate causes; linking one records the call so the release page shows it.
+  const nearby = (releases.data ?? []).filter(
+    (r) => r.release_date <= inv.period_end && r.release_date >= shiftIso(inv.baseline_start, -14),
+  );
+  items.push({
+    label: "Release",
+    value: canManage ? (
+      <Select
+        aria-label="Linked release"
+        value={inv.release?.id ?? ""}
+        onChange={(e) => update.mutate({ release_id: e.target.value ? Number(e.target.value) : null })}
+        className="h-7 w-full max-w-64 text-xs"
+      >
+        <option value="">Not attributed to a release</option>
+        {[
+          ...nearby,
+          ...(inv.release && !nearby.some((r) => r.id === inv.release?.id) ? [inv.release] : []),
+        ].map((r) => (
+          <option key={r.id} value={r.id}>
+            {r.platform} {r.version} · {formatDate(r.release_date)}
+          </option>
+        ))}
+      </Select>
+    ) : inv.release ? (
+      <Link href={releaseHref(inv.release.id)} className="text-accent hover:underline">
+        {inv.release.platform} {inv.release.version} · {formatDate(inv.release.release_date)}
+      </Link>
+    ) : (
+      <span className="text-fg-subtle">—</span>
+    ),
+  });
+  if (inv.release && canManage) {
     items.push({
-      label: "Release",
-      value: `${inv.release.platform} ${inv.release.version} · ${formatDate(inv.release.release_date)}`,
+      label: "",
+      value: (
+        <Link href={releaseHref(inv.release.id)} className="text-accent text-xs hover:underline">
+          Open {inv.release.version} →
+        </Link>
+      ),
     });
   }
   if (inv.experiment) {
@@ -372,45 +445,57 @@ function InvestigationDetail({ id }: { id: number }) {
           </>
         }
         actions={
-          canEdit ? (
-            <>
-              <Tooltip content={STATUSES.find((s) => s.value === data.status)?.help ?? ""}>
-                <Select
-                  aria-label="Status"
-                  value={data.status}
-                  onChange={(e) => update.mutate({ status: e.target.value as InvestigationStatus })}
-                  className="w-36"
-                >
-                  {STATUSES.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </Select>
-              </Tooltip>
-              {canDelete ? (
-                <Tooltip content="Delete investigation">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Delete investigation"
-                    loading={remove.isPending}
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          `Delete "${data.title}"? Findings and actions go with it; the anomaly returns to the inbox.`,
-                        )
-                      ) {
-                        remove.mutate(data.id, { onSuccess: () => router.push("/investigations") });
-                      }
-                    }}
+          <>
+            <AskAnalystButton
+              href={analystHref({
+                investigationId: data.id,
+                metric: data.metric_key,
+                filters: data.filters,
+                from: data.period_start,
+                to: data.period_end,
+                q: `Why did ${data.metric_label.toLowerCase()} change?`,
+              })}
+            />
+            {canEdit ? (
+              <>
+                <Tooltip content={STATUSES.find((s) => s.value === data.status)?.help ?? ""}>
+                  <Select
+                    aria-label="Status"
+                    value={data.status}
+                    onChange={(e) => update.mutate({ status: e.target.value as InvestigationStatus })}
+                    className="w-36"
                   >
-                    <Trash2 className="size-3.5" />
-                  </Button>
+                    {STATUSES.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </Select>
                 </Tooltip>
-              ) : null}
-            </>
-          ) : null
+                {canDelete ? (
+                  <Tooltip content="Delete investigation">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Delete investigation"
+                      loading={remove.isPending}
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `Delete "${data.title}"? Findings and actions go with it; the anomaly returns to the inbox.`,
+                          )
+                        ) {
+                          remove.mutate(data.id, { onSuccess: () => router.push("/investigations") });
+                        }
+                      }}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Button>
+                  </Tooltip>
+                ) : null}
+              </>
+            ) : null}
+          </>
         }
       />
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -421,7 +506,7 @@ function InvestigationDetail({ id }: { id: number }) {
           <DecisionPanel inv={data} canEdit={canEdit} />
         </div>
         <div className="space-y-5">
-          <DetailsPanel inv={data} />
+          <DetailsPanel inv={data} canManage={canManage} />
           <ActionsPanel inv={data} canEdit={canEdit} />
           <StakeholdersPanel inv={data} canEdit={canEdit} />
           <CommentThread entityType="investigation" entityId={data.id} />

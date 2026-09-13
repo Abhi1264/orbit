@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 
+import { CommandPalette } from "@/components/shell/command-palette";
 import { DateRangePicker } from "@/components/shell/date-range-picker";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,6 +46,7 @@ export function Topbar({
         </DropdownMenu>
       </div>
       <div className="flex items-center gap-2">
+        <CommandPalette />
         {children}
         <DateRangePicker dataStart={dataStart} dataEnd={dataEnd} />
         <DropdownMenu>

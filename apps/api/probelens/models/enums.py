@@ -78,6 +78,7 @@ class EntityType(StrEnum):
     decision = "decision"
     sop = "sop"
     knowledge = "knowledge"
+    feedback = "feedback"
 
 
 class DecisionStatus(StrEnum):
@@ -90,3 +91,26 @@ class ChecklistStatus(StrEnum):
     not_started = "not_started"
     in_progress = "in_progress"
     complete = "complete"
+
+
+class FeedbackSource(StrEnum):
+    support = "support"
+    interview = "interview"
+    survey = "survey"
+    sales = "sales"
+    app_review = "app_review"
+    internal = "internal"
+
+
+class FeedbackSentiment(StrEnum):
+    negative = "negative"
+    neutral = "neutral"
+    positive = "positive"
+
+
+class FeedbackStatus(StrEnum):
+    new = "new"
+    triaged = "triaged"
+    planned = "planned"
+    addressed = "addressed"
+    dismissed = "dismissed"
