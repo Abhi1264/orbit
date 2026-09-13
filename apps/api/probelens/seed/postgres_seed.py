@@ -176,6 +176,7 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
             traffic_percent=spec.traffic_percent,
             has_exposure_events=True,
             min_sample_per_variant=3000,
+            min_relative_effect=spec.min_relative_effect,
         )
         exp.variants = [
             ExperimentVariant(key=k, name=n, weight=w, is_control=c, description="")

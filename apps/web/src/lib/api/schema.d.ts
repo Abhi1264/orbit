@@ -494,6 +494,94 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/experiments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Experiments */
+    get: operations["list_experiments_api_experiments_get"];
+    put?: never;
+    /** Create Experiment */
+    post: operations["create_experiment_api_experiments_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/experiments/{experiment_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Experiment */
+    get: operations["get_experiment_api_experiments__experiment_id__get"];
+    put?: never;
+    post?: never;
+    /** Delete Experiment */
+    delete: operations["delete_experiment_api_experiments__experiment_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Experiment */
+    patch: operations["update_experiment_api_experiments__experiment_id__patch"];
+    trace?: never;
+  };
+  "/api/experiments/{experiment_id}/results": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Experiment Results */
+    get: operations["experiment_results_api_experiments__experiment_id__results_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/experiments/{experiment_id}/memo": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Experiment Memo */
+    get: operations["experiment_memo_api_experiments__experiment_id__memo_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/experiments/{experiment_id}/decision": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Record Decision */
+    post: operations["record_decision_api_experiments__experiment_id__decision_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/comments/{entity_type}/{entity_id}": {
     parameters: {
       query?: never;
@@ -721,6 +809,15 @@ export interface components {
       /** Period Denominator */
       period_denominator: number | null;
     };
+    /** Check */
+    Check: {
+      /** Name */
+      name: string;
+      /** Passed */
+      passed: boolean;
+      /** Detail */
+      detail: string;
+    };
     /** CohortFilter */
     CohortFilter: {
       /** Dimension */
@@ -847,6 +944,17 @@ export interface components {
        */
       is_new: boolean;
     };
+    /** DecisionIn */
+    DecisionIn: {
+      decision: components["schemas"]["ExperimentDecision"];
+      /** Reason */
+      reason: string;
+      /**
+       * Log
+       * @default true
+       */
+      log: boolean;
+    };
     /** DetectionSummary */
     DetectionSummary: {
       /**
@@ -892,6 +1000,119 @@ export interface components {
      * @enum {string}
      */
     EntityType: "investigation" | "experiment" | "release" | "analysis" | "decision" | "sop" | "knowledge";
+    /** ExperimentCreate */
+    ExperimentCreate: {
+      /** Name */
+      name: string;
+      /** Hypothesis */
+      hypothesis: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /** Primary Metric */
+      primary_metric: string;
+      /** Guardrail Metrics */
+      guardrail_metrics?: string[];
+      /** Audience Filters */
+      audience_filters?: components["schemas"]["Filter"][];
+      /**
+       * Traffic Percent
+       * @default 100
+       */
+      traffic_percent: number;
+      /**
+       * Min Sample Per Variant
+       * @default 2000
+       */
+      min_sample_per_variant: number;
+      /**
+       * Min Relative Effect
+       * @default 0.02
+       */
+      min_relative_effect: number;
+      /**
+       * Min Duration Days
+       * @default 7
+       */
+      min_duration_days: number;
+      /** Start Date */
+      start_date?: string | null;
+      /** End Date */
+      end_date?: string | null;
+      /** Key */
+      key?: string | null;
+      /** Variants */
+      variants: components["schemas"]["VariantIn"][];
+    };
+    /**
+     * ExperimentDecision
+     * @enum {string}
+     */
+    ExperimentDecision: "ship" | "iterate" | "stop" | "continue";
+    /** ExperimentOut */
+    ExperimentOut: {
+      /** Id */
+      id: number;
+      /** Key */
+      key: string;
+      /** Name */
+      name: string;
+      status: components["schemas"]["ExperimentStatus"];
+      owner: components["schemas"]["UserSummary"];
+      /**
+       * Start Date
+       * Format: date
+       */
+      start_date: string;
+      /** End Date */
+      end_date: string | null;
+      /** Primary Metric */
+      primary_metric: string;
+      /** Primary Metric Label */
+      primary_metric_label: string;
+      /** Guardrail Metrics */
+      guardrail_metrics: string[];
+      /** Traffic Percent */
+      traffic_percent: number;
+      /** Variant Count */
+      variant_count: number;
+      decision: components["schemas"]["ExperimentDecision"] | null;
+      /** Has Exposure Events */
+      has_exposure_events: boolean;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /** Hypothesis */
+      hypothesis: string;
+      /** Description */
+      description: string;
+      /** Audience Filters */
+      audience_filters: components["schemas"]["Filter"][];
+      /** Filter Labels */
+      filter_labels: string[];
+      /** Min Sample Per Variant */
+      min_sample_per_variant: number;
+      /** Min Relative Effect */
+      min_relative_effect: number;
+      /** Min Duration Days */
+      min_duration_days: number;
+      /** Variants */
+      variants: components["schemas"]["VariantOut"][];
+      /** Decision Reason */
+      decision_reason: string;
+      /** Decided At */
+      decided_at: string | null;
+      decided_by: components["schemas"]["UserSummary"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
     /** ExperimentRef */
     ExperimentRef: {
       /** Id */
@@ -920,6 +1141,128 @@ export interface components {
       relevance: "strong" | "possible" | "weak";
       /** Reason */
       reason: string;
+    };
+    /** ExperimentResults */
+    ExperimentResults: {
+      /** Experiment Key */
+      experiment_key: string;
+      /**
+       * As Of
+       * Format: date
+       */
+      as_of: string;
+      /**
+       * Window Start
+       * Format: date
+       */
+      window_start: string;
+      /**
+       * Window End
+       * Format: date
+       */
+      window_end: string;
+      /** Control */
+      control: string;
+      exposure: components["schemas"]["Exposure"];
+      /** Metrics */
+      metrics: components["schemas"]["MetricReadout"][];
+      /** Timeline */
+      timeline: components["schemas"]["TimelinePoint"][];
+      /** Segments */
+      segments: components["schemas"]["SegmentReadout"][];
+      power: components["schemas"]["Power"];
+      recommendation: components["schemas"]["Recommendation"];
+      /** Notes */
+      notes: string[];
+    };
+    /**
+     * ExperimentStatus
+     * @enum {string}
+     */
+    ExperimentStatus: "draft" | "running" | "completed" | "stopped";
+    /** ExperimentSummary */
+    ExperimentSummary: {
+      /** Id */
+      id: number;
+      /** Key */
+      key: string;
+      /** Name */
+      name: string;
+      status: components["schemas"]["ExperimentStatus"];
+      owner: components["schemas"]["UserSummary"];
+      /**
+       * Start Date
+       * Format: date
+       */
+      start_date: string;
+      /** End Date */
+      end_date: string | null;
+      /** Primary Metric */
+      primary_metric: string;
+      /** Primary Metric Label */
+      primary_metric_label: string;
+      /** Guardrail Metrics */
+      guardrail_metrics: string[];
+      /** Traffic Percent */
+      traffic_percent: number;
+      /** Variant Count */
+      variant_count: number;
+      decision: components["schemas"]["ExperimentDecision"] | null;
+      /** Has Exposure Events */
+      has_exposure_events: boolean;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** ExperimentUpdate */
+    ExperimentUpdate: {
+      /** Name */
+      name?: string | null;
+      /** Hypothesis */
+      hypothesis?: string | null;
+      /** Description */
+      description?: string | null;
+      status?: components["schemas"]["ExperimentStatus"] | null;
+      /** Primary Metric */
+      primary_metric?: string | null;
+      /** Guardrail Metrics */
+      guardrail_metrics?: string[] | null;
+      /** Audience Filters */
+      audience_filters?: components["schemas"]["Filter"][] | null;
+      /** Traffic Percent */
+      traffic_percent?: number | null;
+      /** Min Sample Per Variant */
+      min_sample_per_variant?: number | null;
+      /** Min Relative Effect */
+      min_relative_effect?: number | null;
+      /** Min Duration Days */
+      min_duration_days?: number | null;
+      /** Start Date */
+      start_date?: string | null;
+      /** End Date */
+      end_date?: string | null;
+      /** Variants */
+      variants?: components["schemas"]["VariantIn"][] | null;
+    };
+    /** Exposure */
+    Exposure: {
+      /** Total Users */
+      total_users: number;
+      /** By Variant */
+      by_variant: {
+        [key: string]: number;
+      };
+      /** First Exposure */
+      first_exposure: string | null;
+      /** Last Exposure */
+      last_exposure: string | null;
+      /** Days Running */
+      days_running: number;
+      /** Contaminated Users */
+      contaminated_users: number;
+      srm: components["schemas"]["Srm"] | null;
     };
     /** Filter */
     Filter: {
@@ -1341,6 +1684,16 @@ export interface components {
       /** Password */
       password: string;
     };
+    /** MemoOut */
+    MemoOut: {
+      /** Markdown */
+      markdown: string;
+      /**
+       * As Of
+       * Format: date
+       */
+      as_of: string;
+    };
     /**
      * MetricFormat
      * @enum {string}
@@ -1403,6 +1756,26 @@ export interface components {
       /** Series */
       series: components["schemas"]["Series"][];
     };
+    /** MetricReadout */
+    MetricReadout: {
+      /** Metric Key */
+      metric_key: string;
+      /** Label */
+      label: string;
+      /** Format */
+      format: string;
+      /** Higher Is Better */
+      higher_is_better: boolean;
+      /**
+       * Role
+       * @enum {string}
+       */
+      role: "primary" | "guardrail";
+      /** Variants */
+      variants: components["schemas"]["VariantStat"][];
+      /** Comparisons */
+      comparisons: components["schemas"]["VariantComparison"][];
+    };
     /** OverviewKpis */
     OverviewKpis: {
       /**
@@ -1447,6 +1820,42 @@ export interface components {
       numerator: number;
       /** Denominator */
       denominator: number | null;
+    };
+    /** Power */
+    Power: {
+      /** Baseline */
+      baseline: number | null;
+      /** Required N Per Variant */
+      required_n_per_variant: number | null;
+      /** Smallest Variant N */
+      smallest_variant_n: number;
+      /** Detectable Effect Now */
+      detectable_effect_now: number | null;
+      /** Users Per Day */
+      users_per_day: number | null;
+      /** Projected Days To Power */
+      projected_days_to_power: number | null;
+    };
+    /** Recommendation */
+    Recommendation: {
+      /**
+       * Decision
+       * @enum {string}
+       */
+      decision: "ship" | "iterate" | "stop" | "continue";
+      /**
+       * Confidence
+       * @enum {string}
+       */
+      confidence: "low" | "medium" | "high";
+      /** Headline */
+      headline: string;
+      /** Reasons */
+      reasons: string[];
+      /** Risks */
+      risks: string[];
+      /** Checks */
+      checks: components["schemas"]["Check"][];
     };
     /** ReleaseRef */
     ReleaseRef: {
@@ -1665,6 +2074,32 @@ export interface components {
       /** Compare To */
       compare_to?: string | null;
     };
+    /** SegmentReadout */
+    SegmentReadout: {
+      /** Dimension */
+      dimension: string;
+      /** Label */
+      label: string;
+      /** Rows */
+      rows: components["schemas"]["SegmentRow"][];
+    };
+    /** SegmentRow */
+    SegmentRow: {
+      /** Segment */
+      segment: string;
+      /** Users */
+      users: number;
+      /** Control */
+      control: number | null;
+      /** Treatment */
+      treatment: number | null;
+      /** Rel Diff */
+      rel_diff: number | null;
+      /** P Value */
+      p_value: number | null;
+      /** Significant */
+      significant: boolean;
+    };
     /** Series */
     Series: {
       /** Key */
@@ -1677,6 +2112,19 @@ export interface components {
       points?: components["schemas"]["Point"][];
       /** Compare Points */
       compare_points?: components["schemas"]["Point"][];
+    };
+    /** Srm */
+    Srm: {
+      /** Chi2 */
+      chi2: number;
+      /** P Value */
+      p_value: number;
+      /** Mismatch */
+      mismatch: boolean;
+      /** Expected */
+      expected: {
+        [key: string]: number;
+      };
     };
     /** StakeholderAssignment */
     StakeholderAssignment: {
@@ -1711,6 +2159,22 @@ export interface components {
       rows: {
         [key: string]: unknown;
       }[];
+    };
+    /** TimelinePoint */
+    TimelinePoint: {
+      /**
+       * Day
+       * Format: date
+       */
+      day: string;
+      /** Cumulative */
+      cumulative: {
+        [key: string]: number | null;
+      };
+      /** Users */
+      users: {
+        [key: string]: number;
+      };
     };
     /** Total */
     Total: {
@@ -1755,6 +2219,95 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** VariantComparison */
+    VariantComparison: {
+      /** Variant */
+      variant: string;
+      /** Abs Diff */
+      abs_diff: number;
+      /** Rel Diff */
+      rel_diff: number | null;
+      /** Ci Low */
+      ci_low: number;
+      /** Ci High */
+      ci_high: number;
+      /** Rel Ci Low */
+      rel_ci_low: number | null;
+      /** Rel Ci High */
+      rel_ci_high: number | null;
+      /** P Value */
+      p_value: number;
+      /** Significant */
+      significant: boolean;
+      /**
+       * Direction
+       * @enum {string}
+       */
+      direction: "better" | "worse" | "flat";
+    };
+    /** VariantIn */
+    VariantIn: {
+      /** Key */
+      key: string;
+      /** Name */
+      name: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /**
+       * Weight
+       * @default 50
+       */
+      weight: number;
+      /**
+       * Is Control
+       * @default false
+       */
+      is_control: boolean;
+    };
+    /** VariantOut */
+    VariantOut: {
+      /** Key */
+      key: string;
+      /** Name */
+      name: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /**
+       * Weight
+       * @default 50
+       */
+      weight: number;
+      /**
+       * Is Control
+       * @default false
+       */
+      is_control: boolean;
+      /** Id */
+      id: number;
+    };
+    /** VariantStat */
+    VariantStat: {
+      /** Key */
+      key: string;
+      /** Users */
+      users: number;
+      /** Value */
+      value: number | null;
+      /** Numerator */
+      numerator: number;
+      /** Denominator */
+      denominator: number;
+      /** Ci Low */
+      ci_low: number | null;
+      /** Ci High */
+      ci_high: number | null;
     };
   };
   responses: never;
@@ -2890,6 +3443,266 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["RootCauseAnalysis"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_experiments_api_experiments_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["ExperimentStatus"] | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentSummary"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_experiment_api_experiments_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExperimentCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_experiment_api_experiments__experiment_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_experiment_api_experiments__experiment_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_experiment_api_experiments__experiment_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExperimentUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  experiment_results_api_experiments__experiment_id__results_get: {
+    parameters: {
+      query?: {
+        as_of?: string | null;
+      };
+      header?: never;
+      path: {
+        experiment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentResults"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  experiment_memo_api_experiments__experiment_id__memo_get: {
+    parameters: {
+      query?: {
+        as_of?: string | null;
+      };
+      header?: never;
+      path: {
+        experiment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MemoOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  record_decision_api_experiments__experiment_id__decision_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        experiment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecisionIn"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ExperimentOut"];
         };
       };
       /** @description Validation Error */

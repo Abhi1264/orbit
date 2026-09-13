@@ -228,3 +228,19 @@ def get_metric(key: str) -> Metric:
         return METRICS[key]
     except KeyError as exc:
         raise ValueError(f"Unknown metric '{key}'") from exc
+
+
+def format_value(fmt: MetricFormat | str, v: float | None) -> str:
+    """Human-readable metric value for generated prose (findings, memos, AI answers)."""
+    if v is None:
+        return "n/a"
+    f = fmt.value if isinstance(fmt, MetricFormat) else fmt
+    if f == "percent":
+        return f"{v * 100:.1f}%"
+    if f == "currency":
+        return f"₹{v:,.0f}"
+    if f == "days":
+        return f"{v:.1f} days"
+    if f == "ratio":
+        return f"{v:.2f}"
+    return f"{v:,.0f}"

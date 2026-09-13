@@ -21,3 +21,7 @@ export function exploreHref(opts: {
 export function investigationHref(id: number): `/investigations/${number}` {
   return `/investigations/${id}`;
 }
+
+export function experimentHref(id: number): `/experiments/${number}` {
+  return `/experiments/${id}`;
+}

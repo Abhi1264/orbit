@@ -34,6 +34,8 @@ class ExperimentSpec:
     guardrail_metrics: tuple[str, ...]
     variants: tuple[tuple[str, str, int, bool], ...]  # key, name, weight, is_control
     traffic_percent: int = 100
+    # Smallest relative lift on the primary metric worth shipping for; drives the power check.
+    min_relative_effect: float = 0.03
     # Simulation effects applied to the treatment variant.
     effects: dict[str, float] = field(default_factory=dict)
     exposure_event: str = "product_view"
@@ -141,6 +143,7 @@ class Scenarios:
                 ("control", "Existing CTA", 50, True),
                 ("treatment", "Sticky high-contrast CTA", 50, False),
             ),
+            min_relative_effect=0.05,
             effects={"add_to_cart_rate": 1.08, "return_rate": 1.16},
             exposure_event="product_view",
         ),
@@ -159,6 +162,7 @@ class Scenarios:
                 ("control", "No nudge", 50, True),
                 ("treatment", "Progress bar nudge", 50, False),
             ),
+            min_relative_effect=0.04,
             effects={"checkout_conversion": 1.05, "aov": 1.03},
             exposure_event="checkout_started",
         ),

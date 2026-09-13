@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from probelens.analytics.dimensions import Filter
 from probelens.analytics.meta import get_meta
-from probelens.analytics.metrics import METRICS, get_metric
+from probelens.analytics.metrics import METRICS, format_value, get_metric
 from probelens.analytics.rootcause import RootCauseAnalysis, analyze
 from probelens.api.deps import CurrentUser, DbSession, require
 from probelens.api.routes.anomalies import anomaly_out
@@ -50,16 +50,6 @@ from probelens.services.projects import default_project_id
 router = APIRouter(tags=["investigations"], dependencies=[Depends(require(Permission.view))])
 
 _write = Depends(require(Permission.manage_investigations))
-
-
-def _fmt_value(fmt: str, v: float) -> str:
-    if fmt == "percent":
-        return f"{v * 100:.1f}%"
-    if fmt == "currency":
-        return f"₹{v:,.0f}"
-    if fmt == "days":
-        return f"{v:.1f} days"
-    return f"{v:,.0f}"
 
 
 def _load(db: Session, investigation_id: int) -> Investigation:
@@ -191,8 +181,8 @@ def create_investigation(payload: InvestigationCreate, user: CurrentUser, db: Db
                 kind=FindingKind.observation,
                 title=(
                     f"{m.label} {'rose' if anomaly.direction == 'up' else 'fell'} to "
-                    f"{_fmt_value(m.format.value, anomaly.actual)} against an expected "
-                    f"{_fmt_value(m.format.value, anomaly.expected)}"
+                    f"{format_value(m.format, anomaly.actual)} against an expected "
+                    f"{format_value(m.format, anomaly.expected)}"
                 ),
                 body=(
                     f"Detected by the anomaly monitor: robust z-score {anomaly.zscore:+.1f} over "

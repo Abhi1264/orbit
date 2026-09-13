@@ -81,6 +81,38 @@
   .data-table .num {
     @apply tabular text-right;
   }
+
+  /* Rendered decision memo (Markdown). Dense, document-like, no hero sizes. */
+  .memo {
+    @apply text-fg text-[13px] leading-5;
+  }
+  .memo h1 {
+    @apply text-fg mb-2 text-base font-semibold tracking-tight;
+  }
+  .memo h2 {
+    @apply text-fg border-border mt-4 mb-1.5 border-b pb-1 text-[13px] font-semibold;
+  }
+  .memo h3 {
+    @apply text-fg-muted text-2xs mt-3 mb-1 font-medium tracking-wide uppercase;
+  }
+  .memo p {
+    @apply my-1.5;
+  }
+  .memo ul {
+    @apply my-1.5 list-disc space-y-0.5 pl-5;
+  }
+  .memo em {
+    @apply text-fg-subtle;
+  }
+  .memo table {
+    @apply tabular my-2 w-full border-collapse text-xs;
+  }
+  .memo th {
+    @apply border-border bg-surface-2 text-fg-subtle border px-2 py-1 text-left font-medium;
+  }
+  .memo td {
+    @apply border-border border px-2 py-1;
+  }
 }
 
 .select-chevron {

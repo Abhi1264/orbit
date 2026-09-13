@@ -39,6 +39,7 @@ class Experiment(Base, TimestampMixin):
     decided_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
 
     owner: Mapped[User] = relationship(foreign_keys=[owner_id])
+    decided_by: Mapped[User | None] = relationship(foreign_keys=[decided_by_id])
     variants: Mapped[list["ExperimentVariant"]] = relationship(
         back_populates="experiment", cascade="all, delete-orphan", order_by="ExperimentVariant.id"
     )

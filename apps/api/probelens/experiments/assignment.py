@@ -27,7 +27,7 @@ def bucket(experiment_key: str, user_id: int) -> int:
 def bucket_sql(experiment_key_param: str, user_col: str = "user_id") -> str:
     return (
         f"reinterpretAsUInt32(substring(MD5(concat({{{experiment_key_param}:String}}, ':', "
-        f"toString({user_col})), 1, 4)) % {BUCKETS}"
+        f"toString({user_col}))), 1, 4)) % {BUCKETS}"
     )
 
 

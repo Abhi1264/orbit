@@ -21,7 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from probelens.analytics.dimensions import DIMENSIONS, Filter, Scope
-from probelens.analytics.metrics import Metric, get_metric
+from probelens.analytics.metrics import Metric, format_value, get_metric
 from probelens.analytics.query import MetricQuery, Series, run_metric_query
 from probelens.models import Experiment, Release
 from probelens.models.enums import ExperimentStatus, ReleaseStatus
@@ -539,16 +539,7 @@ def _experiments(db: Session, m: Metric, period: tuple[date, date]) -> list[Expe
 
 
 def _fmt(m: Metric, v: float | None) -> str:
-    if v is None:
-        return "n/a"
-    f = m.format.value
-    if f == "percent":
-        return f"{v * 100:.1f}%"
-    if f == "currency":
-        return f"₹{v:,.0f}"
-    if f == "days":
-        return f"{v:.1f} days"
-    return f"{v:,.0f}"
+    return format_value(m.format, v)
 
 
 def _pct(v: float | None) -> str:
