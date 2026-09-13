@@ -324,6 +324,31 @@ def _anomaly_covers_scope(anomaly: dict[str, Any], filters: list[Filter]) -> boo
     return all(have[d] == asked[d] for d in have if d in asked)
 
 
+def _as_date(v: date | str) -> date:
+    return v if isinstance(v, date) else date.fromisoformat(v)
+
+
+def _release_anchor(
+    releases: list[dict[str, Any]], metric: str, filters: list[Filter], p0: date
+) -> dict[str, Any] | None:
+    """When the monitor only flags the last few days, the shipping date is the real start."""
+    m = get_metric(metric)
+    platforms = {str(f.value) for f in filters if f.dimension == "platform" and f.operator == "eq"}
+    best: dict[str, Any] | None = None
+    best_d: date | None = None
+    for r in releases:
+        rd = _as_date(r["release_date"])
+        if r.get("status") == "planned" or rd >= p0 or (p0 - rd).days > 35:
+            continue
+        if platforms and r["platform"] not in platforms and r["platform"] != "all":
+            continue
+        if not _areas_touch_metric(m, list(r.get("affected_areas") or [])):
+            continue
+        if best_d is None or rd > best_d:
+            best, best_d = r, rd
+    return best
+
+
 def _anchor_to_anomaly(
     anomalies: list[dict[str, Any]], filters: list[Filter], p0: date, p1: date
 ) -> dict | None:
@@ -428,6 +453,39 @@ def _why(
             f"Period widened to {p0:%-d %b}–{p1:%-d %b}: the monitor flagged this move starting {p0:%-d %b}, "
             "so the baseline is taken from before it."
         )
+    else:
+        from sqlalchemy import select
+
+        from probelens.models import Release
+
+        rows = list(
+            trace.ctx.db.scalars(
+                select(Release).where(
+                    Release.release_date < p0, Release.release_date >= p0 - timedelta(days=35)
+                )
+            )
+        )
+        hit = _release_anchor(
+            [
+                {
+                    "version": r.version,
+                    "release_date": r.release_date,
+                    "platform": r.platform,
+                    "status": getattr(r.status, "value", r.status),
+                    "affected_areas": list(r.affected_areas or []),
+                }
+                for r in rows
+            ],
+            metric,
+            filters,
+            p0,
+        )
+        if hit:
+            p0 = _as_date(hit["release_date"])
+            caveats.append(
+                f"Period widened to {p0:%-d %b}–{p1:%-d %b}: {hit['version']} shipped {p0:%-d %b}, "
+                "so the baseline is taken from before it."
+            )
     b1 = p0 - timedelta(days=1)
     b0 = b1 - timedelta(days=27)
 

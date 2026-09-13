@@ -7,9 +7,11 @@ and the same question always produces the same answer.
 
 from __future__ import annotations
 
+from datetime import date
+
 import pytest
 
-from probelens.ai.demo import _anomaly_covers_scope, _merge_nearby_releases, run_demo
+from probelens.ai.demo import _anomaly_covers_scope, _merge_nearby_releases, _release_anchor, run_demo
 from probelens.ai.schemas import AskContext
 from probelens.ai.tools import ToolContext
 from probelens.analytics.dimensions import Filter
@@ -39,6 +41,25 @@ def test_upi_anomaly_covers_android_question() -> None:
     ios = {"scope": "Platform = ios", "filters": [{"dimension": "platform", "value": "ios"}]}
     assert _anomaly_covers_scope(upi, android)
     assert not _anomaly_covers_scope(ios, android)
+
+
+def test_release_anchor_uses_payment_sdk_date() -> None:
+    android = [Filter(dimension="platform", operator="eq", value="android")]
+    hit = _release_anchor(
+        [
+            {
+                "version": "8.4.0",
+                "release_date": "2026-08-24",
+                "platform": "android",
+                "status": "completed",
+                "affected_areas": ["payments"],
+            }
+        ],
+        "payment_success_rate",
+        android,
+        date(2026, 9, 7),
+    )
+    assert hit and hit["version"] == "8.4.0"
 
 
 @pytest.fixture(scope="module")
