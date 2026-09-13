@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS probelens.events
     payment_method  LowCardinality(String) DEFAULT '',  -- upi | card | cod | wallet | netbanking
     payment_gateway LowCardinality(String) DEFAULT '',
     failure_reason  LowCardinality(String) DEFAULT '',
+    return_reason   LowCardinality(String) DEFAULT '',
     search_query    LowCardinality(String) DEFAULT '',
     delivery_days   UInt8 DEFAULT 0,
     properties      String DEFAULT ''                    -- opaque JSON for rarely-queried extras

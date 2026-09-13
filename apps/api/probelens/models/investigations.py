@@ -38,14 +38,16 @@ class Investigation(Base, TimestampMixin):
 
     owner: Mapped[User] = relationship()
     findings: Mapped[list["InvestigationFinding"]] = relationship(
-        back_populates="investigation", cascade="all, delete-orphan", order_by="InvestigationFinding.id"
+        back_populates="investigation",
+        cascade="all, delete-orphan",
+        order_by="InvestigationFinding.id",
     )
     actions: Mapped[list["InvestigationAction"]] = relationship(
-        back_populates="investigation", cascade="all, delete-orphan", order_by="InvestigationAction.id"
+        back_populates="investigation",
+        cascade="all, delete-orphan",
+        order_by="InvestigationAction.id",
     )
-    stakeholders: Mapped[list["InvestigationStakeholder"]] = relationship(
-        cascade="all, delete-orphan"
-    )
+    stakeholders: Mapped[list["InvestigationStakeholder"]] = relationship(cascade="all, delete-orphan")
     search_vector = search_vector("title", "observation", "decision")
 
     __table_args__ = (Index("ix_investigations_search", "search_vector", postgresql_using="gin"),)

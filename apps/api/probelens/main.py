@@ -36,7 +36,9 @@ def create_app() -> FastAPI:
 
     @app.exception_handler(AnalyticsQueryError)
     async def analytics_error(_: Request, exc: AnalyticsQueryError) -> JSONResponse:
-        return JSONResponse(status_code=502, content={"detail": "Analytics query failed", "error": str(exc)[:300]})
+        return JSONResponse(
+            status_code=502, content={"detail": "Analytics query failed", "error": str(exc)[:300]}
+        )
 
     @app.get("/api/health", tags=["system"])
     def health() -> dict:

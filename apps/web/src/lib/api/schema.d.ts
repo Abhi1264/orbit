@@ -72,6 +72,197 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/analytics/meta": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Meta */
+    get: operations["meta_api_analytics_meta_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/analytics/overview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Overview */
+    get: operations["overview_api_analytics_overview_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/analytics/inventory-risk": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Inventory */
+    get: operations["inventory_api_analytics_inventory_risk_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/analytics/query": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Query */
+    post: operations["query_api_analytics_query_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/analytics/funnel": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Funnel */
+    post: operations["funnel_api_analytics_funnel_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/analytics/cohort": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cohort */
+    post: operations["cohort_api_analytics_cohort_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/saved-analyses": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Saved */
+    get: operations["list_saved_api_saved_analyses_get"];
+    put?: never;
+    /** Create Saved */
+    post: operations["create_saved_api_saved_analyses_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/saved-analyses/{analysis_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Saved */
+    get: operations["get_saved_api_saved_analyses__analysis_id__get"];
+    put?: never;
+    post?: never;
+    /** Delete Saved */
+    delete: operations["delete_saved_api_saved_analyses__analysis_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/segments": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Segments */
+    get: operations["list_segments_api_segments_get"];
+    put?: never;
+    /** Create Segment */
+    post: operations["create_segment_api_segments_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/segments/{segment_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Update Segment */
+    put: operations["update_segment_api_segments__segment_id__put"];
+    post?: never;
+    /** Delete Segment */
+    delete: operations["delete_segment_api_segments__segment_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/segments/preview": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Preview Segment */
+    post: operations["preview_segment_api_segments_preview_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/health": {
     parameters: {
       query?: never;
@@ -93,20 +284,331 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** AnalyticsMeta */
+    AnalyticsMeta: {
+      /** Data Start */
+      data_start: string | null;
+      /** Data End */
+      data_end: string | null;
+      /** Total Events */
+      total_events: number;
+      /** Metrics */
+      metrics: components["schemas"]["MetricInfo"][];
+      /** Dimensions */
+      dimensions: components["schemas"]["DimensionInfo"][];
+      /** Funnel Events */
+      funnel_events: {
+        [key: string]: string;
+      };
+    };
+    /** CohortFilter */
+    CohortFilter: {
+      /** Dimension */
+      dimension: string;
+      /** Value */
+      value: string;
+    };
+    /** CohortQuery */
+    CohortQuery: {
+      /**
+       * Cohort Type
+       * @default signup
+       * @enum {string}
+       */
+      cohort_type: "signup" | "first_purchase";
+      /**
+       * Measure
+       * @default retention
+       * @enum {string}
+       */
+      measure: "retention" | "repeat_purchase" | "revenue_per_user";
+      /**
+       * Date From
+       * Format: date
+       */
+      date_from: string;
+      /**
+       * Date To
+       * Format: date
+       */
+      date_to: string;
+      /**
+       * Weeks
+       * @default 8
+       */
+      weeks: number;
+      /** Filters */
+      filters?: components["schemas"]["CohortFilter"][];
+    };
+    /** CohortResult */
+    CohortResult: {
+      /**
+       * Cohort Type
+       * @enum {string}
+       */
+      cohort_type: "signup" | "first_purchase";
+      /**
+       * Measure
+       * @enum {string}
+       */
+      measure: "retention" | "repeat_purchase" | "revenue_per_user";
+      /** Measure Definition */
+      measure_definition: string;
+      /** Weeks */
+      weeks: number;
+      /** Rows */
+      rows: components["schemas"]["CohortRow"][];
+      /** Interpretation */
+      interpretation: {
+        [key: string]: unknown;
+      };
+    };
+    /** CohortRow */
+    CohortRow: {
+      /** Cohort */
+      cohort: string;
+      /** Size */
+      size: number;
+      /** Values */
+      values: (number | null)[];
+    };
+    /** DimensionInfo */
+    DimensionInfo: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      scope: components["schemas"]["Scope"];
+      /** Values */
+      values: string[];
+    };
+    /** Filter */
+    Filter: {
+      /** Dimension */
+      dimension: string;
+      /**
+       * Operator
+       * @default eq
+       * @enum {string}
+       */
+      operator: "eq" | "neq" | "in" | "not_in";
+      /** Value */
+      value?: string | number | null;
+      /** Values */
+      values?: (string | number)[] | null;
+    };
+    /** FunnelQuery */
+    FunnelQuery: {
+      /** Steps */
+      steps?: string[];
+      /**
+       * Date From
+       * Format: date
+       */
+      date_from: string;
+      /**
+       * Date To
+       * Format: date
+       */
+      date_to: string;
+      /** Segments */
+      segments?: components["schemas"]["FunnelSegment"][];
+      /** Breakdown */
+      breakdown?: string | null;
+      /**
+       * Limit
+       * @default 6
+       */
+      limit: number;
+    };
+    /** FunnelResult */
+    FunnelResult: {
+      /** Steps */
+      steps: string[];
+      /** Window Seconds */
+      window_seconds: number;
+      /** Series */
+      series: components["schemas"]["FunnelSeries"][];
+      /** Interpretation */
+      interpretation: {
+        [key: string]: unknown;
+      };
+    };
+    /** FunnelSegment */
+    FunnelSegment: {
+      /**
+       * Label
+       * @default All sessions
+       */
+      label: string;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+    };
+    /** FunnelSeries */
+    FunnelSeries: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Filters */
+      filters: string[];
+      /** Total Sessions */
+      total_sessions: number;
+      /** Steps */
+      steps: components["schemas"]["FunnelStep"][];
+    };
+    /** FunnelStep */
+    FunnelStep: {
+      /** Event */
+      event: string;
+      /** Label */
+      label: string;
+      /** Sessions */
+      sessions: number;
+      /** Users */
+      users: number;
+      /** Step Conversion */
+      step_conversion: number | null;
+      /** Overall Conversion */
+      overall_conversion: number | null;
+      /** Drop Off */
+      drop_off: number;
+    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
+    /** InventoryRisk */
+    InventoryRisk: {
+      /** Product Id */
+      product_id: number;
+      /** Sku */
+      sku: string;
+      /** Name */
+      name: string;
+      /** Category */
+      category: string;
+      /** Stock Units */
+      stock_units: number;
+      /** Units Sold 14D */
+      units_sold_14d: number;
+      /** Daily Velocity */
+      daily_velocity: number;
+      /** Days Of Cover */
+      days_of_cover: number | null;
+      /** Revenue 14D */
+      revenue_14d: number;
+    };
+    /** InventoryRiskResult */
+    InventoryRiskResult: {
+      /**
+       * As Of
+       * Format: date
+       */
+      as_of: string;
+      /** Threshold Days */
+      threshold_days: number;
+      /** Items */
+      items: components["schemas"]["InventoryRisk"][];
+    };
+    /** Kpi */
+    Kpi: {
+      metric: components["schemas"]["MetricInfo"];
+      current: components["schemas"]["Total"];
+      previous: components["schemas"]["Total"] | null;
+      /** Points */
+      points: components["schemas"]["Point"][];
+      /** Compare Points */
+      compare_points: components["schemas"]["Point"][];
+    };
     /** LoginRequest */
     LoginRequest: {
-      /**
-       * Email
-       * Format: email
-       */
+      /** Email */
       email: string;
       /** Password */
       password: string;
+    };
+    /**
+     * MetricFormat
+     * @enum {string}
+     */
+    MetricFormat: "count" | "currency" | "percent" | "ratio" | "number" | "days";
+    /** MetricInfo */
+    MetricInfo: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Description */
+      description: string;
+      format: components["schemas"]["MetricFormat"];
+      /** Higher Is Better */
+      higher_is_better: boolean;
+      /** Is Proportion */
+      is_proportion: boolean;
+    };
+    /** MetricQuery */
+    MetricQuery: {
+      /** Metric */
+      metric: string;
+      /**
+       * Date From
+       * Format: date
+       */
+      date_from: string;
+      /**
+       * Date To
+       * Format: date
+       */
+      date_to: string;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+      /** Breakdown */
+      breakdown?: string | null;
+      /**
+       * Granularity
+       * @default day
+       */
+      granularity: ("hour" | "day" | "week") | null;
+      /** Compare From */
+      compare_from?: string | null;
+      /** Compare To */
+      compare_to?: string | null;
+      /**
+       * Limit
+       * @default 8
+       */
+      limit: number;
+    };
+    /** MetricQueryResult */
+    MetricQueryResult: {
+      metric: components["schemas"]["MetricInfo"];
+      /** Interpretation */
+      interpretation: {
+        [key: string]: unknown;
+      };
+      /** Series */
+      series: components["schemas"]["Series"][];
+    };
+    /** OverviewKpis */
+    OverviewKpis: {
+      /**
+       * Date From
+       * Format: date
+       */
+      date_from: string;
+      /**
+       * Date To
+       * Format: date
+       */
+      date_to: string;
+      /** Compare From */
+      compare_from: string | null;
+      /** Compare To */
+      compare_to: string | null;
+      /** Kpis */
+      kpis: components["schemas"]["Kpi"][];
     };
     /**
      * Permission
@@ -123,11 +625,170 @@ export interface components {
       | "manage_decisions"
       | "use_analyst"
       | "manage_users";
+    /** Point */
+    Point: {
+      /** Bucket */
+      bucket: string;
+      /** Value */
+      value: number | null;
+      /** Numerator */
+      numerator: number;
+      /** Denominator */
+      denominator: number | null;
+    };
     /**
      * Role
      * @enum {string}
      */
     Role: "admin" | "pm" | "analyst" | "viewer";
+    /** SavedAnalysisCreate */
+    SavedAnalysisCreate: {
+      /** Name */
+      name: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "analysis" | "funnel" | "cohort";
+      /** Config */
+      config: {
+        [key: string]: unknown;
+      };
+    };
+    /** SavedAnalysisOut */
+    SavedAnalysisOut: {
+      /** Name */
+      name: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "analysis" | "funnel" | "cohort";
+      /** Config */
+      config: {
+        [key: string]: unknown;
+      };
+      /** Id */
+      id: number;
+      owner: components["schemas"]["UserSummary"];
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /**
+     * Scope
+     * @enum {string}
+     */
+    Scope: "session" | "event";
+    /** SegmentCreate */
+    SegmentCreate: {
+      /** Name */
+      name: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string;
+      /** Conditions */
+      conditions: components["schemas"]["Filter"][];
+    };
+    /** SegmentMetric */
+    SegmentMetric: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Format */
+      format: string;
+      /** Value */
+      value: number | null;
+      /** Compare Value */
+      compare_value?: number | null;
+      /** Baseline Value */
+      baseline_value?: number | null;
+    };
+    /** SegmentOut */
+    SegmentOut: {
+      /** Id */
+      id: number;
+      /** Name */
+      name: string;
+      /** Description */
+      description: string;
+      /** Conditions */
+      conditions: components["schemas"]["Filter"][];
+      owner: components["schemas"]["UserSummary"];
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** SegmentPreview */
+    SegmentPreview: {
+      /** Conditions */
+      conditions: string[];
+      /** Metrics */
+      metrics: components["schemas"]["SegmentMetric"][];
+    };
+    /** SegmentPreviewRequest */
+    SegmentPreviewRequest: {
+      /** Conditions */
+      conditions?: components["schemas"]["Filter"][];
+      /**
+       * Date From
+       * Format: date
+       */
+      date_from: string;
+      /**
+       * Date To
+       * Format: date
+       */
+      date_to: string;
+      /** Compare From */
+      compare_from?: string | null;
+      /** Compare To */
+      compare_to?: string | null;
+    };
+    /** Series */
+    Series: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      total: components["schemas"]["Total"];
+      compare_total?: components["schemas"]["Total"] | null;
+      /** Points */
+      points?: components["schemas"]["Point"][];
+      /** Compare Points */
+      compare_points?: components["schemas"]["Point"][];
+    };
+    /** Total */
+    Total: {
+      /** Value */
+      value: number | null;
+      /** Numerator */
+      numerator: number;
+      /** Denominator */
+      denominator: number | null;
+    };
     /** UserOut */
     UserOut: {
       /** Id */
@@ -259,6 +920,454 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["UserSummary"][];
+        };
+      };
+    };
+  };
+  meta_api_analytics_meta_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AnalyticsMeta"];
+        };
+      };
+    };
+  };
+  overview_api_analytics_overview_get: {
+    parameters: {
+      query: {
+        date_from: string;
+        date_to: string;
+        compare_from?: string | null;
+        compare_to?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["OverviewKpis"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  inventory_api_analytics_inventory_risk_get: {
+    parameters: {
+      query: {
+        as_of: string;
+        threshold_days?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InventoryRiskResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  query_api_analytics_query_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MetricQuery"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MetricQueryResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  funnel_api_analytics_funnel_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FunnelQuery"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FunnelResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  cohort_api_analytics_cohort_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CohortQuery"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CohortResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_saved_api_saved_analyses_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SavedAnalysisOut"][];
+        };
+      };
+    };
+  };
+  create_saved_api_saved_analyses_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SavedAnalysisCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SavedAnalysisOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_saved_api_saved_analyses__analysis_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        analysis_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SavedAnalysisOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_saved_api_saved_analyses__analysis_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        analysis_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_segments_api_segments_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SegmentOut"][];
+        };
+      };
+    };
+  };
+  create_segment_api_segments_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SegmentCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SegmentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_segment_api_segments__segment_id__put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        segment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SegmentCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SegmentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_segment_api_segments__segment_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        segment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  preview_segment_api_segments_preview_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SegmentPreviewRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SegmentPreview"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

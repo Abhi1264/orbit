@@ -107,6 +107,621 @@
         }
       }
     },
+    "/api/analytics/meta": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Meta",
+        "operationId": "meta_api_analytics_meta_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsMeta"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/overview": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Overview",
+        "operationId": "overview_api_analytics_overview_get",
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Date From"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Date To"
+            }
+          },
+          {
+            "name": "compare_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Compare From"
+            }
+          },
+          {
+            "name": "compare_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Compare To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewKpis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/inventory-risk": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Inventory",
+        "operationId": "inventory_api_analytics_inventory_risk_get",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "As Of"
+            }
+          },
+          {
+            "name": "threshold_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 60,
+              "minimum": 1,
+              "default": 7.0,
+              "title": "Threshold Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InventoryRiskResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/query": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Query",
+        "operationId": "query_api_analytics_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetricQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MetricQueryResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/funnel": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Funnel",
+        "operationId": "funnel_api_analytics_funnel_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FunnelQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FunnelResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/cohort": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Cohort",
+        "operationId": "cohort_api_analytics_cohort_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CohortQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CohortResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saved-analyses": {
+      "get": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "List Saved",
+        "operationId": "list_saved_api_saved_analyses_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SavedAnalysisOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Saved Api Saved Analyses Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Create Saved",
+        "operationId": "create_saved_api_saved_analyses_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavedAnalysisCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedAnalysisOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/saved-analyses/{analysis_id}": {
+      "get": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Get Saved",
+        "operationId": "get_saved_api_saved_analyses__analysis_id__get",
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Analysis Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedAnalysisOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Delete Saved",
+        "operationId": "delete_saved_api_saved_analyses__analysis_id__delete",
+        "parameters": [
+          {
+            "name": "analysis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Analysis Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/segments": {
+      "get": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "List Segments",
+        "operationId": "list_segments_api_segments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SegmentOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Segments Api Segments Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Create Segment",
+        "operationId": "create_segment_api_segments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/segments/{segment_id}": {
+      "put": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Update Segment",
+        "operationId": "update_segment_api_segments__segment_id__put",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Segment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Delete Segment",
+        "operationId": "delete_segment_api_segments__segment_id__delete",
+        "parameters": [
+          {
+            "name": "segment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Segment Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/segments/preview": {
+      "post": {
+        "tags": [
+          "saved"
+        ],
+        "summary": "Preview Segment",
+        "operationId": "preview_segment_api_segments_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentPreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentPreview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -133,6 +748,518 @@
   },
   "components": {
     "schemas": {
+      "AnalyticsMeta": {
+        "properties": {
+          "data_start": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Start"
+          },
+          "data_end": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data End"
+          },
+          "total_events": {
+            "type": "integer",
+            "title": "Total Events"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MetricInfo"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/DimensionInfo"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "funnel_events": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Funnel Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data_start",
+          "data_end",
+          "total_events",
+          "metrics",
+          "dimensions",
+          "funnel_events"
+        ],
+        "title": "AnalyticsMeta"
+      },
+      "CohortFilter": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "title": "Dimension"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension",
+          "value"
+        ],
+        "title": "CohortFilter"
+      },
+      "CohortQuery": {
+        "properties": {
+          "cohort_type": {
+            "type": "string",
+            "enum": [
+              "signup",
+              "first_purchase"
+            ],
+            "title": "Cohort Type",
+            "default": "signup"
+          },
+          "measure": {
+            "type": "string",
+            "enum": [
+              "retention",
+              "repeat_purchase",
+              "revenue_per_user"
+            ],
+            "title": "Measure",
+            "default": "retention"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "weeks": {
+            "type": "integer",
+            "maximum": 16.0,
+            "minimum": 2.0,
+            "title": "Weeks",
+            "default": 8
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/CohortFilter"
+            },
+            "type": "array",
+            "title": "Filters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_from",
+          "date_to"
+        ],
+        "title": "CohortQuery"
+      },
+      "CohortResult": {
+        "properties": {
+          "cohort_type": {
+            "type": "string",
+            "enum": [
+              "signup",
+              "first_purchase"
+            ],
+            "title": "Cohort Type"
+          },
+          "measure": {
+            "type": "string",
+            "enum": [
+              "retention",
+              "repeat_purchase",
+              "revenue_per_user"
+            ],
+            "title": "Measure"
+          },
+          "measure_definition": {
+            "type": "string",
+            "title": "Measure Definition"
+          },
+          "weeks": {
+            "type": "integer",
+            "title": "Weeks"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/CohortRow"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "interpretation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Interpretation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cohort_type",
+          "measure",
+          "measure_definition",
+          "weeks",
+          "rows",
+          "interpretation"
+        ],
+        "title": "CohortResult"
+      },
+      "CohortRow": {
+        "properties": {
+          "cohort": {
+            "type": "string",
+            "title": "Cohort"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          },
+          "values": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Values"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cohort",
+          "size",
+          "values"
+        ],
+        "title": "CohortRow"
+      },
+      "DimensionInfo": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/Scope"
+          },
+          "values": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Values"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "scope",
+          "values"
+        ],
+        "title": "DimensionInfo"
+      },
+      "Filter": {
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "title": "Dimension"
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              "eq",
+              "neq",
+              "in",
+              "not_in"
+            ],
+            "title": "Operator",
+            "default": "eq"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "values": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Values"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension"
+        ],
+        "title": "Filter"
+      },
+      "FunnelQuery": {
+        "properties": {
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 2,
+            "title": "Steps"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/FunnelSegment"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Segments"
+          },
+          "breakdown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breakdown"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 6
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_from",
+          "date_to"
+        ],
+        "title": "FunnelQuery"
+      },
+      "FunnelResult": {
+        "properties": {
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "window_seconds": {
+            "type": "integer",
+            "title": "Window Seconds"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/FunnelSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "interpretation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Interpretation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "steps",
+          "window_seconds",
+          "series",
+          "interpretation"
+        ],
+        "title": "FunnelResult"
+      },
+      "FunnelSegment": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "default": "All sessions"
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "title": "Filters"
+          }
+        },
+        "type": "object",
+        "title": "FunnelSegment"
+      },
+      "FunnelSeries": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "filters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "total_sessions": {
+            "type": "integer",
+            "title": "Total Sessions"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/FunnelStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "filters",
+          "total_sessions",
+          "steps"
+        ],
+        "title": "FunnelSeries"
+      },
+      "FunnelStep": {
+        "properties": {
+          "event": {
+            "type": "string",
+            "title": "Event"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "sessions": {
+            "type": "integer",
+            "title": "Sessions"
+          },
+          "users": {
+            "type": "integer",
+            "title": "Users"
+          },
+          "step_conversion": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Conversion"
+          },
+          "overall_conversion": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overall Conversion"
+          },
+          "drop_off": {
+            "type": "integer",
+            "title": "Drop Off"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event",
+          "label",
+          "sessions",
+          "users",
+          "step_conversion",
+          "overall_conversion",
+          "drop_off"
+        ],
+        "title": "FunnelStep"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -146,15 +1273,148 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "InventoryRisk": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "stock_units": {
+            "type": "integer",
+            "title": "Stock Units"
+          },
+          "units_sold_14d": {
+            "type": "integer",
+            "title": "Units Sold 14D"
+          },
+          "daily_velocity": {
+            "type": "number",
+            "title": "Daily Velocity"
+          },
+          "days_of_cover": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Of Cover"
+          },
+          "revenue_14d": {
+            "type": "number",
+            "title": "Revenue 14D"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "sku",
+          "name",
+          "category",
+          "stock_units",
+          "units_sold_14d",
+          "daily_velocity",
+          "days_of_cover",
+          "revenue_14d"
+        ],
+        "title": "InventoryRisk"
+      },
+      "InventoryRiskResult": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "threshold_days": {
+            "type": "number",
+            "title": "Threshold Days"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InventoryRisk"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "threshold_days",
+          "items"
+        ],
+        "title": "InventoryRiskResult"
+      },
+      "Kpi": {
+        "properties": {
+          "metric": {
+            "$ref": "#/components/schemas/MetricInfo"
+          },
+          "current": {
+            "$ref": "#/components/schemas/Total"
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Total"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "compare_points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "title": "Compare Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "current",
+          "previous",
+          "points",
+          "compare_points"
+        ],
+        "title": "Kpi"
+      },
       "LoginRequest": {
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
+            "maxLength": 255,
+            "minLength": 3,
             "title": "Email"
           },
           "password": {
             "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
             "title": "Password"
           }
         },
@@ -164,6 +1424,226 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "MetricFormat": {
+        "type": "string",
+        "enum": [
+          "count",
+          "currency",
+          "percent",
+          "ratio",
+          "number",
+          "days"
+        ],
+        "title": "MetricFormat"
+      },
+      "MetricInfo": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "format": {
+            "$ref": "#/components/schemas/MetricFormat"
+          },
+          "higher_is_better": {
+            "type": "boolean",
+            "title": "Higher Is Better"
+          },
+          "is_proportion": {
+            "type": "boolean",
+            "title": "Is Proportion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "description",
+          "format",
+          "higher_is_better",
+          "is_proportion"
+        ],
+        "title": "MetricInfo"
+      },
+      "MetricQuery": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "filters": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "title": "Filters"
+          },
+          "breakdown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breakdown"
+          },
+          "granularity": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "hour",
+                  "day",
+                  "week"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Granularity",
+            "default": "day"
+          },
+          "compare_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare From"
+          },
+          "compare_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare To"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 8
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "date_from",
+          "date_to"
+        ],
+        "title": "MetricQuery"
+      },
+      "MetricQueryResult": {
+        "properties": {
+          "metric": {
+            "$ref": "#/components/schemas/MetricInfo"
+          },
+          "interpretation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Interpretation"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/Series"
+            },
+            "type": "array",
+            "title": "Series"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "interpretation",
+          "series"
+        ],
+        "title": "MetricQueryResult"
+      },
+      "OverviewKpis": {
+        "properties": {
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "compare_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare From"
+          },
+          "compare_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare To"
+          },
+          "kpis": {
+            "items": {
+              "$ref": "#/components/schemas/Kpi"
+            },
+            "type": "array",
+            "title": "Kpis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_from",
+          "date_to",
+          "compare_from",
+          "compare_to",
+          "kpis"
+        ],
+        "title": "OverviewKpis"
       },
       "Permission": {
         "type": "string",
@@ -181,6 +1661,48 @@
         ],
         "title": "Permission"
       },
+      "Point": {
+        "properties": {
+          "bucket": {
+            "type": "string",
+            "title": "Bucket"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "numerator": {
+            "type": "number",
+            "title": "Numerator"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bucket",
+          "value",
+          "numerator",
+          "denominator"
+        ],
+        "title": "Point"
+      },
       "Role": {
         "type": "string",
         "enum": [
@@ -190,6 +1712,394 @@
           "viewer"
         ],
         "title": "Role"
+      },
+      "SavedAnalysisCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "analysis",
+              "funnel",
+              "cohort"
+            ],
+            "title": "Kind"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "config"
+        ],
+        "title": "SavedAnalysisCreate"
+      },
+      "SavedAnalysisOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "analysis",
+              "funnel",
+              "cohort"
+            ],
+            "title": "Kind"
+          },
+          "config": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Config"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "kind",
+          "config",
+          "id",
+          "owner",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SavedAnalysisOut"
+      },
+      "Scope": {
+        "type": "string",
+        "enum": [
+          "session",
+          "event"
+        ],
+        "title": "Scope"
+      },
+      "SegmentCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Conditions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "conditions"
+        ],
+        "title": "SegmentCreate"
+      },
+      "SegmentMetric": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "format": {
+            "type": "string",
+            "title": "Format"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "compare_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare Value"
+          },
+          "baseline_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "format",
+          "value"
+        ],
+        "title": "SegmentMetric"
+      },
+      "SegmentOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "title": "Conditions"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserSummary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "conditions",
+          "owner",
+          "created_at"
+        ],
+        "title": "SegmentOut"
+      },
+      "SegmentPreview": {
+        "properties": {
+          "conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Conditions"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentMetric"
+            },
+            "type": "array",
+            "title": "Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conditions",
+          "metrics"
+        ],
+        "title": "SegmentPreview"
+      },
+      "SegmentPreviewRequest": {
+        "properties": {
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Conditions"
+          },
+          "date_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Date From"
+          },
+          "date_to": {
+            "type": "string",
+            "format": "date",
+            "title": "Date To"
+          },
+          "compare_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare From"
+          },
+          "compare_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compare To"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date_from",
+          "date_to"
+        ],
+        "title": "SegmentPreviewRequest"
+      },
+      "Series": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "total": {
+            "$ref": "#/components/schemas/Total"
+          },
+          "compare_total": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Total"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "compare_points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "title": "Compare Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "total"
+        ],
+        "title": "Series"
+      },
+      "Total": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "numerator": {
+            "type": "number",
+            "title": "Numerator"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "numerator",
+          "denominator"
+        ],
+        "title": "Total"
       },
       "UserOut": {
         "properties": {
