@@ -8,7 +8,8 @@ import type { DimensionInfo, Filter } from "@/lib/api/analytics";
 
 export function describeFilter(f: Filter, dims: DimensionInfo[]) {
   const label = dims.find((d) => d.key === f.dimension)?.label ?? f.dimension;
-  const op = f.operator === "neq" ? "≠" : f.operator === "in" ? "in" : f.operator === "not_in" ? "not in" : "=";
+  const op =
+    f.operator === "neq" ? "≠" : f.operator === "in" ? "in" : f.operator === "not_in" ? "not in" : "=";
   const value = f.values ? f.values.join(", ") : String(f.value ?? "");
   return `${label} ${op} ${value}`;
 }
@@ -40,7 +41,7 @@ export function FilterBuilder({
         const dim = dimensions.find((d) => d.key === f.dimension);
         const values = dim?.values ?? [];
         return (
-          <div key={i} className="flex items-center gap-1 rounded-sm border border-border bg-surface p-1">
+          <div key={i} className="border-border bg-surface flex items-center gap-1 rounded-sm border p-1">
             <Select
               aria-label="Dimension"
               className="h-6 w-auto border-0 bg-transparent py-0 pl-1 text-xs"
@@ -89,7 +90,7 @@ export function FilterBuilder({
             <button
               type="button"
               aria-label="Remove filter"
-              className="rounded-sm p-0.5 text-fg-subtle hover:bg-surface-2 hover:text-fg"
+              className="text-fg-subtle hover:bg-surface-2 hover:text-fg rounded-sm p-0.5"
               onClick={() => remove(i)}
             >
               <X className="size-3" />

@@ -9,6 +9,7 @@ import { Sparkline } from "@/components/charts/sparkline";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { Badge } from "@/components/ui/badge";
 import { DeltaText } from "@/components/ui/delta";
+import { AttentionPanel } from "@/components/investigations/attention-panel";
 import { PageHeader, Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { ChartSkeleton, EmptyState, ErrorState, Skeleton } from "@/components/ui/states";
 import { useFunnel, useInventoryRisk, useMetricQuery, useOverview } from "@/lib/api/analytics";
@@ -18,7 +19,14 @@ import { useRange } from "@/lib/range";
 function KpiStrip() {
   const range = useRange();
   const overview = useOverview(
-    range.ready ? { date_from: range.from, date_to: range.to, compare_from: range.compareFrom, compare_to: range.compareTo } : null,
+    range.ready
+      ? {
+          date_from: range.from,
+          date_to: range.to,
+          compare_from: range.compareFrom,
+          compare_to: range.compareTo,
+        }
+      : null,
   );
   if (overview.isError) return <ErrorState error={overview.error} onRetry={() => overview.refetch()} />;
   return (
@@ -28,14 +36,18 @@ function KpiStrip() {
           <Link
             key={kpi.metric.key}
             href={`/analytics?metric=${kpi.metric.key}` as "/"}
-            className="group rounded-md border border-border bg-bg p-3 transition-colors hover:border-border-strong"
+            className="group border-border bg-bg hover:border-border-strong rounded-md border p-3 transition-colors"
           >
-            <div className="flex items-center justify-between text-xs text-fg-subtle">
+            <div className="text-fg-subtle flex items-center justify-between text-xs">
               {kpi.metric.label}
               <ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" />
             </div>
             <div className="tabular mt-1 text-xl font-semibold tracking-tight">
-              {formatMetric(kpi.current.value, kpi.metric.format as MetricFormat, kpi.metric.format === "currency")}
+              {formatMetric(
+                kpi.current.value,
+                kpi.metric.format as MetricFormat,
+                kpi.metric.format === "currency",
+              )}
             </div>
             <div className="mt-0.5 text-xs">
               <DeltaText
@@ -51,7 +63,7 @@ function KpiStrip() {
             </div>
           </Link>
         ) : (
-          <div key={i} className="rounded-md border border-border p-3">
+          <div key={i} className="border-border rounded-md border p-3">
             <Skeleton className="h-3 w-20" />
             <Skeleton className="mt-2 h-6 w-24" />
             <Skeleton className="mt-3 h-8 w-full" />
@@ -85,13 +97,22 @@ function ConversionPanel() {
         title="Checkout conversion"
         description="Orders ÷ sessions that started checkout. Dashed line is the comparison period."
         actions={
-          <Link href={"/analytics?metric=checkout_conversion&breakdown=platform" as "/"} className="text-xs text-accent hover:underline">
+          <Link
+            href={"/analytics?metric=checkout_conversion&breakdown=platform" as "/"}
+            className="text-accent text-xs hover:underline"
+          >
             Break down
           </Link>
         }
       />
       <PanelBody>
-        {q.isPending ? <ChartSkeleton height={220} /> : q.isError ? <ErrorState error={q.error} /> : q.data ? <TrendChart result={q.data} granularity={range.days > 60 ? "week" : "day"} height={220} /> : null}
+        {q.isPending ? (
+          <ChartSkeleton height={220} />
+        ) : q.isError ? (
+          <ErrorState error={q.error} />
+        ) : q.data ? (
+          <TrendChart result={q.data} granularity={range.days > 60 ? "week" : "day"} height={220} />
+        ) : null}
       </PanelBody>
     </Panel>
   );
@@ -117,13 +138,19 @@ function FunnelPanel() {
         title="Purchase funnel"
         description="Sessions reaching each step, in order."
         actions={
-          <Link href={"/funnels" as "/"} className="text-xs text-accent hover:underline">
+          <Link href={"/funnels" as "/"} className="text-accent text-xs hover:underline">
             Open funnels
           </Link>
         }
       />
       <PanelBody>
-        {q.isPending ? <ChartSkeleton height={200} /> : q.isError ? <ErrorState error={q.error} /> : q.data ? <FunnelChart result={q.data} /> : null}
+        {q.isPending ? (
+          <ChartSkeleton height={200} />
+        ) : q.isError ? (
+          <ErrorState error={q.error} />
+        ) : q.data ? (
+          <FunnelChart result={q.data} />
+        ) : null}
       </PanelBody>
     </Panel>
   );
@@ -137,7 +164,11 @@ function InventoryPanel() {
       <PanelHeader
         title="Stock-out risk"
         description="Stock covers < 7 days of trailing 14-day sales."
-        actions={q.data ? <Badge tone={q.data.items.length ? "warning" : "neutral"}>{q.data.items.length} products</Badge> : null}
+        actions={
+          q.data ? (
+            <Badge tone={q.data.items.length ? "warning" : "neutral"}>{q.data.items.length} products</Badge>
+          ) : null
+        }
       />
       {q.isPending ? (
         <PanelBody>
@@ -160,12 +191,18 @@ function InventoryPanel() {
               <tr key={i.product_id}>
                 <td>
                   <div className="truncate">{i.name}</div>
-                  <div className="font-mono text-2xs text-fg-subtle">{i.sku}</div>
+                  <div className="text-2xs text-fg-subtle font-mono">{i.sku}</div>
                 </td>
                 <td className="num">{i.stock_units}</td>
                 <td className="num">{formatCompactCount(i.units_sold_14d)}</td>
                 <td className="num">
-                  <span className={i.days_of_cover !== null && i.days_of_cover !== undefined && i.days_of_cover < 3 ? "text-danger" : "text-warning"}>
+                  <span
+                    className={
+                      i.days_of_cover !== null && i.days_of_cover !== undefined && i.days_of_cover < 3
+                        ? "text-danger"
+                        : "text-warning"
+                    }
+                  >
                     {i.days_of_cover?.toFixed(1)} d
                   </span>
                 </td>
@@ -186,15 +223,22 @@ function Overview() {
     <>
       <PageHeader
         title="Overview"
-        description={range.ready ? `Threadline · ${range.from} → ${range.to}, compared with ${range.compareFrom ?? "—"} → ${range.compareTo ?? "—"}` : undefined}
+        description={
+          range.ready
+            ? `Threadline · ${range.from} → ${range.to}, compared with ${range.compareFrom ?? "—"} → ${range.compareTo ?? "—"}`
+            : undefined
+        }
       />
       <div className="space-y-4">
         <KpiStrip />
         <div className="grid gap-4 xl:grid-cols-[3fr_2fr]">
           <ConversionPanel />
+          <AttentionPanel />
+        </div>
+        <div className="grid gap-4 xl:grid-cols-[3fr_2fr]">
+          <FunnelPanel />
           <InventoryPanel />
         </div>
-        <FunnelPanel />
       </div>
     </>
   );

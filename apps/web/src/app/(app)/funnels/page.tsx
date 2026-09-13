@@ -13,7 +13,14 @@ import { type Filter, type FunnelQuery, useFunnel } from "@/lib/api/analytics";
 import { useRange } from "@/lib/range";
 import { useUrlState } from "@/lib/url-state";
 
-const DEFAULT_STEPS = ["home_view", "product_view", "add_to_cart", "checkout_started", "payment_started", "order_completed"];
+const DEFAULT_STEPS = [
+  "home_view",
+  "product_view",
+  "add_to_cart",
+  "checkout_started",
+  "payment_started",
+  "order_completed",
+];
 
 interface Segment {
   label: string;
@@ -59,7 +66,7 @@ function Funnels() {
             <PanelBody className="space-y-2">
               {steps.map((s, i) => (
                 <div key={`${s}-${i}`} className="flex items-center gap-1.5">
-                  <span className="w-4 text-right text-2xs text-fg-subtle">{i + 1}</span>
+                  <span className="text-2xs text-fg-subtle w-4 text-right">{i + 1}</span>
                   <Select
                     aria-label={`Step ${i + 1}`}
                     value={s}
@@ -116,13 +123,17 @@ function Funnels() {
               {!breakdown ? (
                 <div className="space-y-3">
                   {segments.map((seg, i) => (
-                    <div key={i} className="rounded-sm border border-border p-2">
+                    <div key={i} className="border-border rounded-sm border p-2">
                       <div className="mb-2 flex items-center gap-1.5">
                         <Input
                           aria-label={`Segment ${i + 1} name`}
                           className="h-7 text-xs"
                           value={seg.label}
-                          onChange={(e) => setSegments(segments.map((x, idx) => (idx === i ? { ...x, label: e.target.value } : x)))}
+                          onChange={(e) =>
+                            setSegments(
+                              segments.map((x, idx) => (idx === i ? { ...x, label: e.target.value } : x)),
+                            )
+                          }
                         />
                         <Button
                           variant="ghost"
@@ -137,7 +148,9 @@ function Funnels() {
                       <FilterBuilder
                         compact
                         filters={seg.filters}
-                        onChange={(f) => setSegments(segments.map((x, idx) => (idx === i ? { ...x, filters: f } : x)))}
+                        onChange={(f) =>
+                          setSegments(segments.map((x, idx) => (idx === i ? { ...x, filters: f } : x)))
+                        }
                         dimensions={meta?.dimensions ?? []}
                       />
                     </div>
@@ -146,7 +159,9 @@ function Funnels() {
                     variant="ghost"
                     size="sm"
                     disabled={segments.length >= 4}
-                    onClick={() => setSegments([...segments, { label: `Segment ${segments.length + 1}`, filters: [] }])}
+                    onClick={() =>
+                      setSegments([...segments, { label: `Segment ${segments.length + 1}`, filters: [] }])
+                    }
                   >
                     <Plus className="size-3.5" /> Add segment
                   </Button>

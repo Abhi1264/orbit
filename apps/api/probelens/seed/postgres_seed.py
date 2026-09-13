@@ -3,9 +3,10 @@ match the scenarios baked into the event stream."""
 
 from datetime import UTC, datetime, time, timedelta
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
+from probelens.analytics.anomalies import same_filters
 from probelens.core.security import hash_password
 from probelens.models import (
     AiRun,
@@ -651,3 +652,31 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         "android_release_id": android.id,
         "investigations": {"paid_social": inv_paid.id, "footwear": inv_old.id},
     }
+
+
+def link_anomalies_to_investigations(db: Session, project_id: int) -> int:
+    """Attach detected anomalies to the seeded investigations that are about them.
+
+    Matching is on metric + scope + overlapping window, the same rule a PM would
+    apply by hand. Runs after detection so the demo opens with the paid-social
+    investigation already tied to its inbox entry.
+    """
+    linked = 0
+    investigations = db.scalars(select(Investigation).where(Investigation.project_id == project_id)).all()
+    anomalies = db.scalars(
+        select(Anomaly).where(Anomaly.project_id == project_id, Anomaly.investigation_id.is_(None))
+    ).all()
+    for inv in investigations:
+        for a in anomalies:
+            if a.investigation_id is not None or a.metric_key != inv.metric_key:
+                continue
+            if not same_filters(a.filters, inv.filters):
+                continue
+            if a.period_end < inv.period_start or a.period_start > inv.period_end:
+                continue
+            a.investigation_id = inv.id
+            closed = inv.status in (InvestigationStatus.resolved, InvestigationStatus.closed)
+            a.status = "resolved" if closed else "investigating"
+            linked += 1
+    db.flush()
+    return linked

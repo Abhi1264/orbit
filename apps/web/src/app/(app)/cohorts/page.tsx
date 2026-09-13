@@ -57,20 +57,35 @@ function Cohorts() {
       <Panel className="mb-4">
         <PanelBody className="flex flex-wrap items-end gap-3">
           <Field label="Cohort by" htmlFor="cohort-type">
-            <Select id="cohort-type" value={cohortType} onChange={(e) => url.set({ type: e.target.value })} className="w-40">
+            <Select
+              id="cohort-type"
+              value={cohortType}
+              onChange={(e) => url.set({ type: e.target.value })}
+              className="w-40"
+            >
               <option value="signup">Signup week</option>
               <option value="first_purchase">First purchase week</option>
             </Select>
           </Field>
           <Field label="Measure" htmlFor="cohort-measure">
-            <Select id="cohort-measure" value={measure} onChange={(e) => url.set({ measure: e.target.value })} className="w-44">
+            <Select
+              id="cohort-measure"
+              value={measure}
+              onChange={(e) => url.set({ measure: e.target.value })}
+              className="w-44"
+            >
               <option value="retention">Retention (any session)</option>
               <option value="repeat_purchase">Repeat purchase</option>
               <option value="revenue_per_user">Revenue per user</option>
             </Select>
           </Field>
           <Field label="Weeks" htmlFor="cohort-weeks">
-            <Select id="cohort-weeks" value={String(weeks)} onChange={(e) => url.set({ weeks: e.target.value })} className="w-20">
+            <Select
+              id="cohort-weeks"
+              value={String(weeks)}
+              onChange={(e) => url.set({ weeks: e.target.value })}
+              className="w-20"
+            >
               {[4, 6, 8, 10, 12].map((w) => (
                 <option key={w} value={w}>
                   {w}
@@ -98,7 +113,12 @@ function Cohorts() {
                 ))}
               </Select>
               {filterDim ? (
-                <Select aria-label="Filter value" value={filterValue ?? ""} onChange={(e) => url.set({ fv: e.target.value })} className="w-32">
+                <Select
+                  aria-label="Filter value"
+                  value={filterValue ?? ""}
+                  onChange={(e) => url.set({ fv: e.target.value })}
+                  className="w-32"
+                >
                   {values.map((v) => (
                     <option key={v} value={v}>
                       {v}
@@ -113,8 +133,16 @@ function Cohorts() {
 
       <Panel>
         <PanelHeader
-          title={result.data ? `${result.data.interpretation.cohort as string} · ${measure.replace(/_/g, " ")}` : "Cohorts"}
-          description={result.data ? `${result.data.measure_definition}. Cohorts from ${dateFrom} to ${range.to}.` : undefined}
+          title={
+            result.data
+              ? `${result.data.interpretation.cohort as string} · ${measure.replace(/_/g, " ")}`
+              : "Cohorts"
+          }
+          description={
+            result.data
+              ? `${result.data.measure_definition}. Cohorts from ${dateFrom} to ${range.to}.`
+              : undefined
+          }
         />
         {result.isPending ? (
           <TableSkeleton rows={8} cols={10} />
@@ -123,7 +151,10 @@ function Cohorts() {
         ) : result.data && result.data.rows.length ? (
           <CohortHeatmap result={result.data} />
         ) : (
-          <EmptyState title="No cohorts in range" description="Widen the date range to include more cohort weeks." />
+          <EmptyState
+            title="No cohorts in range"
+            description="Widen the date range to include more cohort weeks."
+          />
         )}
       </Panel>
     </>

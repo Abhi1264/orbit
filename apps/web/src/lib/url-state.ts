@@ -27,7 +27,7 @@ export function useUrlState() {
   const get = useCallback((key: string) => params.get(key), [params]);
 
   const getJson = useCallback(
-    <T,>(key: string, fallback: T): T => {
+    <T>(key: string, fallback: T): T => {
       const raw = params.get(key);
       if (!raw) return fallback;
       try {

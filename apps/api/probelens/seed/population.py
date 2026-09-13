@@ -32,6 +32,7 @@ CITIES: list[tuple[str, str, str, float]] = [
 ]
 
 PLATFORMS = [("android", 0.56), ("ios", 0.24), ("web", 0.20)]
+CAMPAIGN_PLATFORMS = [("android", 0.62), ("ios", 0.26), ("web", 0.12)]  # social ads skew mobile
 TRAFFIC_SOURCES = [
     ("organic", 0.30),
     ("direct", 0.24),
@@ -80,22 +81,38 @@ class SimUser:
     update_delay_days: int
     update_bucket: int  # 0-99, gates staged rollout
     first_purchase_date: date | None = None
+    # Acquired by the paid-social campaign: low purchase intent, rarely returns.
+    campaign_acquired: bool = False
     delivery_delayed: bool = False
     orders: int = 0
     session_seq: int = field(default=0)
 
 
-def generate_users(rng: random.Random, count: int, start: date, end: date) -> list[SimUser]:
+# Users acquired by the paid-social campaign, as a fraction of the organic population.
+# They are added on top of `count` so the organic base is unchanged.
+CAMPAIGN_USER_RATIO = 0.50
+
+
+def generate_users(
+    rng: random.Random, count: int, start: date, end: date, campaign_start: date | None = None
+) -> list[SimUser]:
     users: list[SimUser] = []
     window_days = (end - start).days + 1
+    campaign_days = (end - campaign_start).days + 1 if campaign_start else 0
+    campaign_count = int(count * CAMPAIGN_USER_RATIO) if campaign_start else 0
     city_weights = [c[3] for c in CITIES]
-    for uid in range(1, count + 1):
-        # ~12% of users sign up inside the window (they appear as "new" on their first day).
-        if rng.random() < 0.12:
+    for uid in range(1, count + campaign_count + 1):
+        campaign_acquired = uid > count
+        if campaign_acquired and campaign_start is not None:
+            # Broad lookalike audiences: sign up steadily through the campaign, mostly on
+            # mobile, with little intent to buy and little reason to come back.
+            signup = campaign_start + timedelta(days=rng.randrange(campaign_days))
+        elif rng.random() < 0.12:
+            # ~12% of organic users sign up inside the window ("new" on their first day).
             signup = start + timedelta(days=int(rng.random() ** 1.1 * window_days))
         else:
             signup = start - timedelta(days=rng.randint(1, 540))
-        platform = weighted_choice(rng, PLATFORMS)
+        platform = weighted_choice(rng, CAMPAIGN_PLATFORMS if campaign_acquired else PLATFORMS)
         device = "desktop" if platform == "web" and rng.random() < 0.55 else "mobile"
         if platform != "web" and rng.random() < 0.06:
             device = "tablet"
@@ -121,10 +138,13 @@ def generate_users(rng: random.Random, count: int, start: date, end: date) -> li
                 country=country,
                 city=city,
                 city_tier=tier,
-                acquisition_source=weighted_choice(rng, TRAFFIC_SOURCES),
+                acquisition_source="paid_social"
+                if campaign_acquired
+                else weighted_choice(rng, TRAFFIC_SOURCES),
                 payment_method=weighted_choice(rng, PAYMENT_METHODS) if country == "IN" else "card",
-                activity=min(1.0, rng.lognormvariate(-1.75, 0.75)),
+                activity=min(1.0, rng.lognormvariate(-1.75, 0.75)) * (0.25 if campaign_acquired else 1.0),
                 intent=rng.lognormvariate(0, 0.45),
+                campaign_acquired=campaign_acquired,
                 category_affinity=affinity,
                 version_before=version_before,
                 update_delay_days=int(rng.expovariate(1 / 3.0)),

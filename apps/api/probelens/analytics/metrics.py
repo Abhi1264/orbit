@@ -213,7 +213,8 @@ METRICS: dict[str, Metric] = {
             "Mean days from order to delivery for delivered lines.",
             MetricFormat.days,
             _E,
-            "avgIf(delivery_days, event_name = 'delivery_completed')",
+            "sumIf(delivery_days, event_name = 'delivery_completed')",
+            "countIf(event_name = 'delivery_completed')",
             higher_is_better=False,
         ),
     ]

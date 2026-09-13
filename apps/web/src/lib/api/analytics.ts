@@ -56,12 +56,14 @@ export function useCohort(q: CohortQuery | null) {
   });
 }
 
-export function useOverview(params: {
-  date_from: string;
-  date_to: string;
-  compare_from?: string | null;
-  compare_to?: string | null;
-} | null) {
+export function useOverview(
+  params: {
+    date_from: string;
+    date_to: string;
+    compare_from?: string | null;
+    compare_to?: string | null;
+  } | null,
+) {
   return useQuery({
     queryKey: ["analytics", "overview", params],
     queryFn: async () =>
@@ -85,7 +87,8 @@ export function useOverview(params: {
 export function useInventoryRisk(asOf: string | undefined) {
   return useQuery({
     queryKey: ["analytics", "inventory", asOf],
-    queryFn: async () => unwrap(await api.GET("/api/analytics/inventory-risk", { params: { query: { as_of: asOf! } } })),
+    queryFn: async () =>
+      unwrap(await api.GET("/api/analytics/inventory-risk", { params: { query: { as_of: asOf! } } })),
     enabled: !!asOf,
   });
 }
@@ -144,7 +147,9 @@ export function useSavedAnalysisMutations() {
   });
   const remove = useMutation({
     mutationFn: async (id: number) => {
-      const r = await api.DELETE("/api/saved-analyses/{analysis_id}", { params: { path: { analysis_id: id } } });
+      const r = await api.DELETE("/api/saved-analyses/{analysis_id}", {
+        params: { path: { analysis_id: id } },
+      });
       if (r.error) throw r.error;
     },
     onSuccess: invalidate,

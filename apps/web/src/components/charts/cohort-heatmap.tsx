@@ -34,12 +34,18 @@ export function CohortHeatmap({ result }: { result: CohortResult }) {
         <tbody>
           {result.rows.map((row) => (
             <tr key={row.cohort}>
-              <td className="whitespace-nowrap">{formatDate(row.cohort, { month: "short", day: "numeric" })}</td>
+              <td className="whitespace-nowrap">
+                {formatDate(row.cohort, { month: "short", day: "numeric" })}
+              </td>
               <td className="num text-fg-subtle">{formatCompactCount(row.size)}</td>
               {row.values.map((v, k) => (
                 <td key={k} className="num p-0">
                   <div className="px-2 py-1.5 text-xs" style={cellStyle(v, max)}>
-                    {v === null ? "" : isCurrency ? formatMetric(v, "currency", true) : formatMetric(v, "percent")}
+                    {v === null
+                      ? ""
+                      : isCurrency
+                        ? formatMetric(v, "currency", true)
+                        : formatMetric(v, "percent")}
                   </div>
                 </td>
               ))}

@@ -198,7 +198,9 @@ class Simulator:
                 is_signup_day = user.signup_date == day
                 if is_signup_day or self.rng.random() < user.activity * dow:
                     self._session(rows, user, day, is_signup_day, forced_source=None)
-                if campaign_live and self.rng.random() < 0.04:
+                # Retargeting leg of the campaign: existing customers see the ads too and
+                # convert normally. The damage comes from who the ads *acquire*.
+                if campaign_live and not user.campaign_acquired and self.rng.random() < 0.005:
                     self._session(rows, user, day, False, forced_source="paid_social")
             if on_progress:
                 on_progress(day, len(rows))
@@ -213,9 +215,12 @@ class Simulator:
         hour = rng.choices(range(24), weights=_HOUR_WEIGHTS, k=1)[0]
         ts = datetime(day.year, day.month, day.day, hour, rng.randint(0, 59), rng.randint(0, 59), tzinfo=UTC)
         session_id = rng.getrandbits(63)
-        source = forced_source or (
-            user.acquisition_source if rng.random() < 0.55 else weighted_choice(rng, TRAFFIC_SOURCES)
-        )
+        if forced_source:
+            source = forced_source
+        elif is_new or rng.random() < 0.55:
+            source = user.acquisition_source  # first session is by definition the acquiring channel
+        else:
+            source = weighted_choice(rng, TRAFFIC_SOURCES)
         app_version = self._app_version(user, day)
         user_type = "new" if is_new else "returning"
         exposures: dict[str, str] = {}
@@ -223,7 +228,7 @@ class Simulator:
         intent = user.intent
         if user.delivery_delayed:
             intent *= sc.delayed_user_repurchase_multiplier
-        low_intent_campaign = forced_source == "paid_social"
+        low_intent_campaign = user.campaign_acquired
         if low_intent_campaign:
             intent *= sc.paid_social_conversion_multiplier
 

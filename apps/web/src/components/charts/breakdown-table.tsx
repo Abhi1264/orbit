@@ -45,14 +45,20 @@ export function BreakdownTable({
             >
               <td>
                 <span className="flex items-center gap-2">
-                  <span className="inline-block size-2 rounded-full" style={{ background: SERIES_COLORS[i % SERIES_COLORS.length] }} />
+                  <span
+                    className="inline-block size-2 rounded-full"
+                    style={{ background: SERIES_COLORS[i % SERIES_COLORS.length] }}
+                  />
                   <span className="truncate">{s.label}</span>
                   {isLowVolume(s, result.series) ? <Badge>low volume</Badge> : null}
                 </span>
               </td>
               <td>
-                <div className="h-1.5 w-full rounded-full bg-surface-2">
-                  <div className="h-1.5 rounded-full" style={{ width: `${width}%`, background: SERIES_COLORS[i % SERIES_COLORS.length] }} />
+                <div className="bg-surface-2 h-1.5 w-full rounded-full">
+                  <div
+                    className="h-1.5 rounded-full"
+                    style={{ width: `${width}%`, background: SERIES_COLORS[i % SERIES_COLORS.length] }}
+                  />
                 </div>
               </td>
               <td className="num font-medium">{formatMetric(s.total.value, format)}</td>
@@ -66,7 +72,9 @@ export function BreakdownTable({
                   />
                 </td>
               ) : null}
-              {volumeLabel ? <td className="num text-fg-subtle">{formatCompactCount(s.total.denominator ?? 0)}</td> : null}
+              {volumeLabel ? (
+                <td className="num text-fg-subtle">{formatCompactCount(s.total.denominator ?? 0)}</td>
+              ) : null}
             </tr>
           );
         })}

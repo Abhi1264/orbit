@@ -11,18 +11,18 @@ import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { PageHeader, Panel, PanelBody, PanelHeader } from "@/components/ui/panel";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/ui/states";
-import { type Filter, type SegmentOut, useSegmentMutations, useSegmentPreview, useSegments } from "@/lib/api/analytics";
+import {
+  type Filter,
+  type SegmentOut,
+  useSegmentMutations,
+  useSegmentPreview,
+  useSegments,
+} from "@/lib/api/analytics";
 import { useMe } from "@/lib/api/hooks";
 import { formatMetric, type MetricFormat } from "@/lib/format";
 import { useRange } from "@/lib/range";
 
-function SegmentEditor({
-  initial,
-  onClose,
-}: {
-  initial: SegmentOut | null;
-  onClose: () => void;
-}) {
+function SegmentEditor({ initial, onClose }: { initial: SegmentOut | null; onClose: () => void }) {
   const range = useRange();
   const { create, update } = useSegmentMutations();
   const [name, setName] = useState(initial?.name ?? "");
@@ -30,7 +30,13 @@ function SegmentEditor({
   const [conditions, setConditions] = useState<Filter[]>(initial?.conditions ?? []);
   const preview = useSegmentPreview(
     range.ready && conditions.length
-      ? { conditions, date_from: range.from, date_to: range.to, compare_from: range.compareFrom, compare_to: range.compareTo }
+      ? {
+          conditions,
+          date_from: range.from,
+          date_to: range.to,
+          compare_from: range.compareFrom,
+          compare_to: range.compareTo,
+        }
       : null,
   );
   const pending = create.isPending || update.isPending;
@@ -55,16 +61,27 @@ function SegmentEditor({
             <Input id="seg-name" value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
           </Field>
           <Field label="Description" htmlFor="seg-desc">
-            <Textarea id="seg-desc" value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-14" />
+            <Textarea
+              id="seg-desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="min-h-14"
+            />
           </Field>
           <Field label="Conditions" hint="All conditions must match (AND).">
-            <FilterBuilder filters={conditions} onChange={setConditions} dimensions={range.meta?.dimensions ?? []} />
+            <FilterBuilder
+              filters={conditions}
+              onChange={setConditions}
+              dimensions={range.meta?.dimensions ?? []}
+            />
           </Field>
         </div>
-        <div className="rounded-sm border border-border bg-surface p-3">
-          <div className="mb-2 text-xs font-medium text-fg">Preview · {range.from} → {range.to}</div>
+        <div className="border-border bg-surface rounded-sm border p-3">
+          <div className="text-fg mb-2 text-xs font-medium">
+            Preview · {range.from} → {range.to}
+          </div>
           {!conditions.length ? (
-            <p className="text-xs text-fg-subtle">Add a condition to preview.</p>
+            <p className="text-fg-subtle text-xs">Add a condition to preview.</p>
           ) : preview.isPending ? (
             <TableSkeleton rows={6} cols={2} />
           ) : preview.isError ? (
@@ -80,10 +97,14 @@ function SegmentEditor({
               </thead>
               <tbody>
                 {preview.data?.metrics.map((m) => (
-                  <tr key={m.key} className="border-t border-border">
-                    <td className="py-1 text-fg-muted">{m.label}</td>
-                    <td className="tabular py-1 text-right font-medium">{formatMetric(m.value, m.format as MetricFormat, true)}</td>
-                    <td className="tabular py-1 text-right text-fg-subtle">{formatMetric(m.baseline_value, m.format as MetricFormat, true)}</td>
+                  <tr key={m.key} className="border-border border-t">
+                    <td className="text-fg-muted py-1">{m.label}</td>
+                    <td className="tabular py-1 text-right font-medium">
+                      {formatMetric(m.value, m.format as MetricFormat, true)}
+                    </td>
+                    <td className="tabular text-fg-subtle py-1 text-right">
+                      {formatMetric(m.baseline_value, m.format as MetricFormat, true)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -109,11 +130,18 @@ function SegmentRow({ segment, onEdit }: { segment: SegmentOut; onEdit: () => vo
   const { remove } = useSegmentMutations();
   const preview = useSegmentPreview(
     range.ready
-      ? { conditions: segment.conditions, date_from: range.from, date_to: range.to, compare_from: range.compareFrom, compare_to: range.compareTo }
+      ? {
+          conditions: segment.conditions,
+          date_from: range.from,
+          date_to: range.to,
+          compare_from: range.compareFrom,
+          compare_to: range.compareTo,
+        }
       : null,
   );
   const dims = range.meta?.dimensions ?? [];
-  const canEdit = me.data && (me.data.id === segment.owner.id || me.data.role === "admin" || me.data.role === "pm");
+  const canEdit =
+    me.data && (me.data.id === segment.owner.id || me.data.role === "admin" || me.data.role === "pm");
   const shown = ["sessions", "conversion", "payment_success_rate", "return_rate"];
   const exploreHref = `/analytics?metric=conversion&f=${encodeURIComponent(JSON.stringify(segment.conditions))}`;
 
@@ -123,7 +151,10 @@ function SegmentRow({ segment, onEdit }: { segment: SegmentOut; onEdit: () => vo
         <div className="font-medium">{segment.name}</div>
         <div className="mt-0.5 flex flex-wrap gap-1">
           {segment.conditions.map((c, i) => (
-            <span key={i} className="rounded-sm border border-border bg-surface px-1 py-px font-mono text-2xs text-fg-muted">
+            <span
+              key={i}
+              className="border-border bg-surface text-2xs text-fg-muted rounded-sm border px-1 py-px font-mono"
+            >
               {describeFilter(c, dims)}
             </span>
           ))}
@@ -136,7 +167,13 @@ function SegmentRow({ segment, onEdit }: { segment: SegmentOut; onEdit: () => vo
             {m ? (
               <div>
                 <div className="font-medium">{formatMetric(m.value, m.format as MetricFormat, true)}</div>
-                <DeltaText current={m.value} previous={m.compare_value} format={m.format as MetricFormat} higherIsBetter={key !== "return_rate"} className="text-2xs" />
+                <DeltaText
+                  current={m.value}
+                  previous={m.compare_value}
+                  format={m.format as MetricFormat}
+                  higherIsBetter={key !== "return_rate"}
+                  className="text-2xs"
+                />
               </div>
             ) : (
               <span className="text-fg-faint">…</span>
@@ -147,13 +184,23 @@ function SegmentRow({ segment, onEdit }: { segment: SegmentOut; onEdit: () => vo
       <td className="text-fg-subtle">{segment.owner.name}</td>
       <td>
         <div className="flex justify-end gap-1">
-          <Link href={exploreHref as "/"} className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-fg-subtle hover:bg-surface-2 hover:text-fg" aria-label="Explore segment">
+          <Link
+            href={exploreHref as "/"}
+            className="text-fg-subtle hover:bg-surface-2 hover:text-fg inline-flex h-7 w-7 items-center justify-center rounded-sm"
+            aria-label="Explore segment"
+          >
             <ArrowUpRight className="size-3.5" />
           </Link>
           <Button variant="ghost" size="icon" aria-label="Edit segment" onClick={onEdit} disabled={!canEdit}>
             <Pencil className="size-3.5" />
           </Button>
-          <Button variant="ghost" size="icon" aria-label="Delete segment" onClick={() => remove.mutate(segment.id)} disabled={!canEdit}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Delete segment"
+            onClick={() => remove.mutate(segment.id)}
+            disabled={!canEdit}
+          >
             <Trash2 className="size-3.5" />
           </Button>
         </div>
@@ -204,12 +251,17 @@ function Segments() {
           </table>
         ) : (
           <PanelBody>
-            <EmptyState title="No segments yet" action={<Button onClick={() => setEditing("new")}>Create one</Button>} />
+            <EmptyState
+              title="No segments yet"
+              action={<Button onClick={() => setEditing("new")}>Create one</Button>}
+            />
           </PanelBody>
         )}
       </Panel>
       <Dialog open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        {editing !== null ? <SegmentEditor initial={editing === "new" ? null : editing} onClose={() => setEditing(null)} /> : null}
+        {editing !== null ? (
+          <SegmentEditor initial={editing === "new" ? null : editing} onClose={() => setEditing(null)} />
+        ) : null}
       </Dialog>
     </>
   );

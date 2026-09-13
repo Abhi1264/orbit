@@ -1,6 +1,17 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ReferenceLine, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ReferenceArea,
+  ReferenceLine,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import type { MetricQueryResult } from "@/lib/api/analytics";
 import { formatDate, formatMetric, type MetricFormat, niceDomain } from "@/lib/format";
@@ -32,6 +43,35 @@ export interface Marker {
   bucket: string;
   label: string;
   tone?: "neutral" | "danger" | "info";
+}
+
+/** A shaded window on the x-axis, e.g. the baseline and the anomalous period. */
+export interface Band {
+  from: string;
+  to: string;
+  label: string;
+  tone?: "neutral" | "danger" | "info";
+}
+
+const TONE_COLOR = {
+  neutral: "var(--color-fg-faint)",
+  danger: "var(--color-danger)",
+  info: "var(--color-info)",
+} as const;
+
+/** One line per bucket; several releases on a day share a label, strongest tone wins. */
+function mergeMarkers(markers: Marker[]): Marker[] {
+  const rank = { neutral: 0, info: 1, danger: 2 } as const;
+  const byBucket = new Map<string, Marker>();
+  for (const m of [...markers].sort((a, b) => a.bucket.localeCompare(b.bucket))) {
+    const cur = byBucket.get(m.bucket);
+    if (!cur) byBucket.set(m.bucket, { ...m });
+    else {
+      cur.label = `${cur.label} · ${m.label}`;
+      if (rank[m.tone ?? "neutral"] > rank[cur.tone ?? "neutral"]) cur.tone = m.tone;
+    }
+  }
+  return [...byBucket.values()];
 }
 
 function pivot(result: MetricQueryResult, granularity: string | null | undefined) {
@@ -75,6 +115,7 @@ export function TrendChart({
   granularity,
   height = 260,
   markers = [],
+  bands = [],
   showCompare = true,
   variant = "line",
 }: {
@@ -82,6 +123,7 @@ export function TrendChart({
   granularity: string | null | undefined;
   height?: number;
   markers?: Marker[];
+  bands?: Band[];
   showCompare?: boolean;
   variant?: "line" | "bar";
 }) {
@@ -91,7 +133,8 @@ export function TrendChart({
   const hasCompare = showCompare && !!primary?.compare_points?.length && result.series.length === 1;
   const Chart = variant === "bar" ? BarChart : LineChart;
   const plotted = result.series.filter((s) => !isLowVolume(s, result.series));
-  const tight = variant === "line" && (format === "percent" || result.metric.key === "aov" || format === "days");
+  const tight =
+    variant === "line" && (format === "percent" || result.metric.key === "aov" || format === "days");
   const axis = tight
     ? niceDomain(
         [
@@ -133,15 +176,15 @@ export function TrendChart({
         content={({ active, payload, label }) => {
           if (!active || !payload?.length) return null;
           return (
-            <div className="rounded-sm border border-border bg-bg px-2.5 py-2 text-xs shadow-sm">
-              <div className="mb-1 text-fg-subtle">{tick(String(label), granularity)}</div>
+            <div className="border-border bg-bg rounded-sm border px-2.5 py-2 text-xs shadow-sm">
+              <div className="text-fg-subtle mb-1">{tick(String(label), granularity)}</div>
               {payload.map((p) => {
                 const key = String(p.dataKey);
                 const isCompare = key.endsWith("__compare");
                 const series = result.series.find((s) => s.key === key.replace("__compare", ""));
                 return (
                   <div key={key} className="flex items-center justify-between gap-4">
-                    <span className="flex items-center gap-1.5 text-fg-muted">
+                    <span className="text-fg-muted flex items-center gap-1.5">
                       <span
                         className="inline-block h-0.5 w-3"
                         style={{
@@ -151,9 +194,9 @@ export function TrendChart({
                           height: isCompare ? 0 : undefined,
                         }}
                       />
-                      {isCompare ? "Previous period" : series?.label ?? key}
+                      {isCompare ? "Previous period" : (series?.label ?? key)}
                     </span>
-                    <span className="tabular font-medium text-fg">
+                    <span className="tabular text-fg font-medium">
                       {formatMetric(p.value as number | null, format)}
                     </span>
                   </div>
@@ -163,13 +206,37 @@ export function TrendChart({
           );
         }}
       />
-      {markers.map((m) => (
+      {bands.map((b) => (
+        <ReferenceArea
+          key={`${b.from}-${b.to}-${b.label}`}
+          x1={b.from}
+          x2={b.to}
+          fill={TONE_COLOR[b.tone ?? "neutral"]}
+          fillOpacity={0.07}
+          stroke="none"
+          label={{
+            value: b.label,
+            position: "insideBottomLeft",
+            fontSize: 10,
+            fill: "var(--color-fg-subtle)",
+            dy: -2,
+          }}
+        />
+      ))}
+      {mergeMarkers(markers).map((m, i) => (
         <ReferenceLine
-          key={`${m.bucket}-${m.label}`}
+          key={m.bucket}
           x={m.bucket}
-          stroke={m.tone === "danger" ? "var(--color-danger)" : m.tone === "info" ? "var(--color-info)" : "var(--color-fg-faint)"}
+          stroke={TONE_COLOR[m.tone ?? "neutral"]}
           strokeDasharray="3 3"
-          label={{ value: m.label, position: "insideTopLeft", fontSize: 10, fill: "var(--color-fg-subtle)" }}
+          label={{
+            value: m.label,
+            // Neighbouring release lines would otherwise print on top of each other.
+            position: "insideTopLeft",
+            dy: 12 * (i % 3),
+            fontSize: 10,
+            fill: "var(--color-fg-subtle)",
+          }}
         />
       ))}
       {hasCompare ? (

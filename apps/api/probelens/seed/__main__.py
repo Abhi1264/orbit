@@ -11,8 +11,9 @@ import random
 import sys
 import time
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 
+from probelens.analytics.anomalies import run_detection
 from probelens.core.logging import configure_logging, get_logger
 from probelens.db.clickhouse import get_readwrite_client
 from probelens.db.postgres import get_sessionmaker
@@ -20,9 +21,10 @@ from probelens.db.redis import invalidate_analytics_cache
 from probelens.seed.catalog import apply_stockout_risk, generate_products
 from probelens.seed.load_clickhouse import load_events, load_user_profiles, reset_tables
 from probelens.seed.population import generate_users
-from probelens.seed.postgres_seed import seed_postgres
+from probelens.seed.postgres_seed import link_anomalies_to_investigations, seed_postgres
 from probelens.seed.scenarios import Scenarios
 from probelens.seed.simulate import Simulator
+from probelens.services.projects import default_project_id
 
 log = get_logger("seed")
 
@@ -85,7 +87,9 @@ def main(argv: list[str] | None = None) -> int:
 
     rng = random.Random(args.seed)
     products = apply_stockout_risk(rng, generate_products(rng, n_products))
-    users = generate_users(rng, n_users, start, end)
+    users = generate_users(
+        rng, n_users, start, end, campaign_start=sc.day(sc.paid_social_campaign_start_days_before_end)
+    )
     sim = Simulator(rng, users, products, start, end, sc)
 
     total_events = 0
@@ -120,6 +124,21 @@ def main(argv: list[str] | None = None) -> int:
         log.info("seed_postgres_done", **{k: v for k, v in summary.items() if k != "users"})
 
     invalidate_analytics_cache()
+
+    if not args.skip_postgres and not args.skip_clickhouse:
+        # Run the anomaly sweep now so the inbox is populated the moment the app opens.
+        db = get_sessionmaker()()
+        try:
+            project_id = default_project_id(db)
+            detection = run_detection(db, project_id, end, datetime.now(UTC))
+            detection["linked"] = link_anomalies_to_investigations(db, project_id)
+            db.commit()
+        except Exception:
+            db.rollback()
+            raise
+        finally:
+            db.close()
+        log.info("seed_anomalies_done", **detection)
     log.info("seed_complete", seconds=round(time.perf_counter() - started, 1), events=total_events)
     return 0
 

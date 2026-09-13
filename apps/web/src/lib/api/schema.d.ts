@@ -263,6 +263,272 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/anomalies": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Anomalies */
+    get: operations["list_anomalies_api_anomalies_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/anomalies/{anomaly_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Anomaly */
+    get: operations["get_anomaly_api_anomalies__anomaly_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Update Anomaly */
+    patch: operations["update_anomaly_api_anomalies__anomaly_id__patch"];
+    trace?: never;
+  };
+  "/api/anomalies/detect": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Detect Now
+     * @description Run the detector against the dataset's last day. The worker does this on a
+     *     schedule; this endpoint exists so a demo never depends on the scheduler.
+     */
+    post: operations["detect_now_api_anomalies_detect_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/investigations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Investigations */
+    get: operations["list_investigations_api_investigations_get"];
+    put?: never;
+    /** Create Investigation */
+    post: operations["create_investigation_api_investigations_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Get Investigation */
+    get: operations["get_investigation_api_investigations__investigation_id__get"];
+    put?: never;
+    post?: never;
+    /** Delete Investigation */
+    delete: operations["delete_investigation_api_investigations__investigation_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Investigation */
+    patch: operations["update_investigation_api_investigations__investigation_id__patch"];
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}/findings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Add Finding */
+    post: operations["add_finding_api_investigations__investigation_id__findings_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}/findings/{finding_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Finding */
+    delete: operations["delete_finding_api_investigations__investigation_id__findings__finding_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Finding */
+    patch: operations["update_finding_api_investigations__investigation_id__findings__finding_id__patch"];
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}/actions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Add Action */
+    post: operations["add_action_api_investigations__investigation_id__actions_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}/actions/{action_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Action */
+    delete: operations["delete_action_api_investigations__investigation_id__actions__action_id__delete"];
+    options?: never;
+    head?: never;
+    /** Update Action */
+    patch: operations["update_action_api_investigations__investigation_id__actions__action_id__patch"];
+    trace?: never;
+  };
+  "/api/stakeholders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Stakeholders */
+    get: operations["list_stakeholders_api_stakeholders_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}/stakeholders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Set Stakeholders */
+    put: operations["set_stakeholders_api_investigations__investigation_id__stakeholders_put"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/root-cause": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Root Cause */
+    post: operations["root_cause_api_root_cause_post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/investigations/{investigation_id}/root-cause": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Investigation Root Cause */
+    get: operations["investigation_root_cause_api_investigations__investigation_id__root_cause_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/comments/{entity_type}/{entity_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Comments */
+    get: operations["list_comments_api_comments__entity_type___entity_id__get"];
+    put?: never;
+    /** Add Comment */
+    post: operations["add_comment_api_comments__entity_type___entity_id__post"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/comments/{comment_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Delete Comment */
+    delete: operations["delete_comment_api_comments__comment_id__delete"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/health": {
     parameters: {
       query?: never;
@@ -284,6 +550,46 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** ActionCreate */
+    ActionCreate: {
+      /** Title */
+      title: string;
+      /** Owner Id */
+      owner_id?: number | null;
+      /** Due Date */
+      due_date?: string | null;
+    };
+    /** ActionOut */
+    ActionOut: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      owner: components["schemas"]["UserSummary"] | null;
+      status: components["schemas"]["ActionStatus"];
+      /** Due Date */
+      due_date: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /**
+     * ActionStatus
+     * @enum {string}
+     */
+    ActionStatus: "todo" | "in_progress" | "done";
+    /** ActionUpdate */
+    ActionUpdate: {
+      /** Title */
+      title?: string | null;
+      /** Owner Id */
+      owner_id?: number | null;
+      status?: components["schemas"]["ActionStatus"] | null;
+      /** Due Date */
+      due_date?: string | null;
+    };
     /** AnalyticsMeta */
     AnalyticsMeta: {
       /** Data Start */
@@ -300,6 +606,120 @@ export interface components {
       funnel_events: {
         [key: string]: string;
       };
+    };
+    /** AnomalyOut */
+    AnomalyOut: {
+      /** Id */
+      id: number;
+      /** Metric Key */
+      metric_key: string;
+      /** Metric Label */
+      metric_label: string;
+      /** Metric Format */
+      metric_format: string;
+      /** Higher Is Better */
+      higher_is_better: boolean;
+      /** Filters */
+      filters: components["schemas"]["Filter"][];
+      /** Filter Labels */
+      filter_labels: string[];
+      /**
+       * Period Start
+       * Format: date
+       */
+      period_start: string;
+      /**
+       * Period End
+       * Format: date
+       */
+      period_end: string;
+      /** Ongoing */
+      ongoing: boolean;
+      /** Expected */
+      expected: number;
+      /** Actual */
+      actual: number;
+      /** Zscore */
+      zscore: number;
+      /** Direction */
+      direction: string;
+      /** Severity */
+      severity: string;
+      status: components["schemas"]["AnomalyStatus"];
+      /** Investigation Id */
+      investigation_id: number | null;
+      /**
+       * Detected At
+       * Format: date-time
+       */
+      detected_at: string;
+    };
+    /**
+     * AnomalyStatus
+     * @enum {string}
+     */
+    AnomalyStatus: "open" | "acknowledged" | "investigating" | "resolved";
+    /** AnomalyUpdate */
+    AnomalyUpdate: {
+      status: components["schemas"]["AnomalyStatus"];
+    };
+    /** Candidate */
+    Candidate: {
+      /** Rank */
+      rank: number;
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: "segment" | "release" | "experiment" | "mix_shift";
+      /** Title */
+      title: string;
+      /** Summary */
+      summary: string;
+      /**
+       * Confidence
+       * @enum {string}
+       */
+      confidence: "low" | "medium" | "high";
+      /** Dimension */
+      dimension?: string | null;
+      /** Key */
+      key?: string | null;
+      /** Explained */
+      explained?: number | null;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+      /** Drill */
+      drill?: components["schemas"]["Contribution"][];
+      /** Drill Dimension */
+      drill_dimension?: string | null;
+      /** Release Id */
+      release_id?: number | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+      /** Data */
+      data?: {
+        [key: string]: unknown;
+      };
+    };
+    /** Change */
+    Change: {
+      /** Baseline */
+      baseline: number | null;
+      /** Period */
+      period: number | null;
+      /** Abs Change */
+      abs_change: number | null;
+      /** Rel Change */
+      rel_change: number | null;
+      /** Baseline Numerator */
+      baseline_numerator: number;
+      /** Baseline Denominator */
+      baseline_denominator: number | null;
+      /** Period Numerator */
+      period_numerator: number;
+      /** Period Denominator */
+      period_denominator: number | null;
     };
     /** CohortFilter */
     CohortFilter: {
@@ -372,6 +792,91 @@ export interface components {
       /** Values */
       values: (number | null)[];
     };
+    /** CommentCreate */
+    CommentCreate: {
+      /** Body */
+      body: string;
+    };
+    /** CommentOut */
+    CommentOut: {
+      /** Id */
+      id: number;
+      /** Entity Type */
+      entity_type: string;
+      /** Entity Id */
+      entity_id: number;
+      author: components["schemas"]["UserSummary"];
+      /** Body */
+      body: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /**
+     * Confidence
+     * @enum {string}
+     */
+    Confidence: "low" | "medium" | "high";
+    /** Contribution */
+    Contribution: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Baseline */
+      baseline: number | null;
+      /** Period */
+      period: number | null;
+      /** Rel Change */
+      rel_change: number | null;
+      /** Share Baseline */
+      share_baseline: number;
+      /** Share Period */
+      share_period: number;
+      /** Explained */
+      explained: number | null;
+      /** Rate Effect */
+      rate_effect?: number | null;
+      /** Mix Effect */
+      mix_effect?: number | null;
+      /**
+       * Is New
+       * @default false
+       */
+      is_new: boolean;
+    };
+    /** DetectionSummary */
+    DetectionSummary: {
+      /**
+       * As Of
+       * Format: date
+       */
+      as_of: string;
+      /** Detected */
+      detected: number;
+      /** Created */
+      created: number;
+      /** Updated */
+      updated: number;
+    };
+    /** DimensionBreakdown */
+    DimensionBreakdown: {
+      /** Dimension */
+      dimension: string;
+      /** Label */
+      label: string;
+      /** Contributions */
+      contributions: components["schemas"]["Contribution"][];
+      /** Concentration */
+      concentration: number;
+      /**
+       * Additive
+       * @default true
+       */
+      additive: boolean;
+    };
     /** DimensionInfo */
     DimensionInfo: {
       /** Key */
@@ -381,6 +886,40 @@ export interface components {
       scope: components["schemas"]["Scope"];
       /** Values */
       values: string[];
+    };
+    /**
+     * EntityType
+     * @enum {string}
+     */
+    EntityType: "investigation" | "experiment" | "release" | "analysis" | "decision" | "sop" | "knowledge";
+    /** ExperimentRef */
+    ExperimentRef: {
+      /** Id */
+      id: number;
+      /** Key */
+      key: string;
+      /** Name */
+      name: string;
+      /** Status */
+      status: string;
+      /**
+       * Start Date
+       * Format: date
+       */
+      start_date: string;
+      /** End Date */
+      end_date: string | null;
+      /** Primary Metric */
+      primary_metric: string;
+      /** Guardrail Metrics */
+      guardrail_metrics: string[];
+      /**
+       * Relevance
+       * @enum {string}
+       */
+      relevance: "strong" | "possible" | "weak";
+      /** Reason */
+      reason: string;
     };
     /** Filter */
     Filter: {
@@ -396,6 +935,61 @@ export interface components {
       value?: string | number | null;
       /** Values */
       values?: (string | number)[] | null;
+    };
+    /** FindingCreate */
+    FindingCreate: {
+      kind: components["schemas"]["FindingKind"];
+      /** Title */
+      title: string;
+      /**
+       * Body
+       * @default
+       */
+      body: string;
+      confidence?: components["schemas"]["Confidence"] | null;
+      state?: components["schemas"]["HypothesisState"] | null;
+      /** Data */
+      data?: {
+        [key: string]: unknown;
+      } | null;
+    };
+    /**
+     * FindingKind
+     * @enum {string}
+     */
+    FindingKind: "observation" | "evidence" | "hypothesis" | "recommendation";
+    /** FindingOut */
+    FindingOut: {
+      /** Id */
+      id: number;
+      kind: components["schemas"]["FindingKind"];
+      /** Title */
+      title: string;
+      /** Body */
+      body: string;
+      confidence: components["schemas"]["Confidence"] | null;
+      state: components["schemas"]["HypothesisState"] | null;
+      /** Data */
+      data: {
+        [key: string]: unknown;
+      } | null;
+      /** Source */
+      source: string;
+      author: components["schemas"]["UserSummary"] | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** FindingUpdate */
+    FindingUpdate: {
+      /** Title */
+      title?: string | null;
+      /** Body */
+      body?: string | null;
+      confidence?: components["schemas"]["Confidence"] | null;
+      state?: components["schemas"]["HypothesisState"] | null;
     };
     /** FunnelQuery */
     FunnelQuery: {
@@ -479,6 +1073,11 @@ export interface components {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
+    /**
+     * HypothesisState
+     * @enum {string}
+     */
+    HypothesisState: "proposed" | "supported" | "refuted";
     /** InventoryRisk */
     InventoryRisk: {
       /** Product Id */
@@ -512,6 +1111,188 @@ export interface components {
       /** Items */
       items: components["schemas"]["InventoryRisk"][];
     };
+    /** InvestigationCreate */
+    InvestigationCreate: {
+      /** Title */
+      title: string;
+      /** Metric Key */
+      metric_key: string;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+      /**
+       * Period Start
+       * Format: date
+       */
+      period_start: string;
+      /**
+       * Period End
+       * Format: date
+       */
+      period_end: string;
+      /**
+       * Baseline Start
+       * Format: date
+       */
+      baseline_start: string;
+      /**
+       * Baseline End
+       * Format: date
+       */
+      baseline_end: string;
+      /**
+       * Observation
+       * @default
+       */
+      observation: string;
+      /** Anomaly Id */
+      anomaly_id?: number | null;
+      /** Release Id */
+      release_id?: number | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+    };
+    /** InvestigationOut */
+    InvestigationOut: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      status: components["schemas"]["InvestigationStatus"];
+      owner: components["schemas"]["UserSummary"];
+      /** Metric Key */
+      metric_key: string;
+      /** Metric Label */
+      metric_label: string;
+      /** Filters */
+      filters: components["schemas"]["Filter"][];
+      /** Filter Labels */
+      filter_labels: string[];
+      /**
+       * Period Start
+       * Format: date
+       */
+      period_start: string;
+      /**
+       * Period End
+       * Format: date
+       */
+      period_end: string;
+      /** Finding Counts */
+      finding_counts: {
+        [key: string]: number;
+      };
+      /** Open Actions */
+      open_actions: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /**
+       * Baseline Start
+       * Format: date
+       */
+      baseline_start: string;
+      /**
+       * Baseline End
+       * Format: date
+       */
+      baseline_end: string;
+      /** Observation */
+      observation: string;
+      /** Decision */
+      decision: string;
+      /** Resolved At */
+      resolved_at: string | null;
+      /** Findings */
+      findings: components["schemas"]["FindingOut"][];
+      /** Actions */
+      actions: components["schemas"]["ActionOut"][];
+      /** Stakeholders */
+      stakeholders: components["schemas"]["InvestigationStakeholderOut"][];
+      anomaly: components["schemas"]["AnomalyOut"] | null;
+      release: components["schemas"]["LinkedRelease"] | null;
+      experiment: components["schemas"]["LinkedExperiment"] | null;
+    };
+    /** InvestigationStakeholderOut */
+    InvestigationStakeholderOut: {
+      stakeholder: components["schemas"]["StakeholderOut"];
+      /** Role */
+      role: string;
+    };
+    /**
+     * InvestigationStatus
+     * @enum {string}
+     */
+    InvestigationStatus: "open" | "investigating" | "validating" | "resolved" | "closed";
+    /** InvestigationSummary */
+    InvestigationSummary: {
+      /** Id */
+      id: number;
+      /** Title */
+      title: string;
+      status: components["schemas"]["InvestigationStatus"];
+      owner: components["schemas"]["UserSummary"];
+      /** Metric Key */
+      metric_key: string;
+      /** Metric Label */
+      metric_label: string;
+      /** Filters */
+      filters: components["schemas"]["Filter"][];
+      /** Filter Labels */
+      filter_labels: string[];
+      /**
+       * Period Start
+       * Format: date
+       */
+      period_start: string;
+      /**
+       * Period End
+       * Format: date
+       */
+      period_end: string;
+      /** Finding Counts */
+      finding_counts: {
+        [key: string]: number;
+      };
+      /** Open Actions */
+      open_actions: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
+    /** InvestigationUpdate */
+    InvestigationUpdate: {
+      /** Title */
+      title?: string | null;
+      status?: components["schemas"]["InvestigationStatus"] | null;
+      /** Owner Id */
+      owner_id?: number | null;
+      /** Observation */
+      observation?: string | null;
+      /** Decision */
+      decision?: string | null;
+      /** Release Id */
+      release_id?: number | null;
+      /** Experiment Id */
+      experiment_id?: number | null;
+      /** Baseline Start */
+      baseline_start?: string | null;
+      /** Baseline End */
+      baseline_end?: string | null;
+    };
     /** Kpi */
     Kpi: {
       metric: components["schemas"]["MetricInfo"];
@@ -521,6 +1302,37 @@ export interface components {
       points: components["schemas"]["Point"][];
       /** Compare Points */
       compare_points: components["schemas"]["Point"][];
+    };
+    /** LinkedExperiment */
+    LinkedExperiment: {
+      /** Id */
+      id: number;
+      /** Key */
+      key: string;
+      /** Name */
+      name: string;
+      /** Status */
+      status: string;
+      /** Primary Metric */
+      primary_metric: string;
+    };
+    /** LinkedRelease */
+    LinkedRelease: {
+      /** Id */
+      id: number;
+      /** Version */
+      version: string;
+      /** Name */
+      name: string;
+      /** Platform */
+      platform: string;
+      /**
+       * Release Date
+       * Format: date
+       */
+      release_date: string;
+      /** Status */
+      status: string;
     };
     /** LoginRequest */
     LoginRequest: {
@@ -636,11 +1448,97 @@ export interface components {
       /** Denominator */
       denominator: number | null;
     };
+    /** ReleaseRef */
+    ReleaseRef: {
+      /** Id */
+      id: number;
+      /** Version */
+      version: string;
+      /** Name */
+      name: string;
+      /** Platform */
+      platform: string;
+      /**
+       * Release Date
+       * Format: date
+       */
+      release_date: string;
+      /** Status */
+      status: string;
+      /** Days Before Period */
+      days_before_period: number;
+      /** Affected Areas */
+      affected_areas: string[];
+      /**
+       * Relevance
+       * @enum {string}
+       */
+      relevance: "strong" | "possible" | "weak";
+      /** Reason */
+      reason: string;
+    };
     /**
      * Role
      * @enum {string}
      */
     Role: "admin" | "pm" | "analyst" | "viewer";
+    /** RootCauseAnalysis */
+    RootCauseAnalysis: {
+      /** Metric */
+      metric: {
+        [key: string]: unknown;
+      };
+      /** Filters */
+      filters: string[];
+      /** Period */
+      period: {
+        [key: string]: string;
+      };
+      /** Baseline */
+      baseline: {
+        [key: string]: string;
+      };
+      overall: components["schemas"]["Change"];
+      /** Candidates */
+      candidates: components["schemas"]["Candidate"][];
+      /** Dimensions */
+      dimensions: components["schemas"]["DimensionBreakdown"][];
+      /** Supporting */
+      supporting: components["schemas"]["SupportingBreakdown"][];
+      /** Releases */
+      releases: components["schemas"]["ReleaseRef"][];
+      /** Experiments */
+      experiments: components["schemas"]["ExperimentRef"][];
+      /** Notes */
+      notes: string[];
+    };
+    /** RootCauseRequest */
+    RootCauseRequest: {
+      /** Metric Key */
+      metric_key: string;
+      /** Filters */
+      filters?: components["schemas"]["Filter"][];
+      /**
+       * Period Start
+       * Format: date
+       */
+      period_start: string;
+      /**
+       * Period End
+       * Format: date
+       */
+      period_end: string;
+      /**
+       * Baseline Start
+       * Format: date
+       */
+      baseline_start: string;
+      /**
+       * Baseline End
+       * Format: date
+       */
+      baseline_end: string;
+    };
     /** SavedAnalysisCreate */
     SavedAnalysisCreate: {
       /** Name */
@@ -779,6 +1677,40 @@ export interface components {
       points?: components["schemas"]["Point"][];
       /** Compare Points */
       compare_points?: components["schemas"]["Point"][];
+    };
+    /** StakeholderAssignment */
+    StakeholderAssignment: {
+      /** Stakeholder Id */
+      stakeholder_id: number;
+      /**
+       * Role
+       * @default informed
+       */
+      role: string;
+    };
+    /** StakeholderOut */
+    StakeholderOut: {
+      /** Id */
+      id: number;
+      /** Name */
+      name: string;
+      /** Email */
+      email: string;
+      /** Team */
+      team: string;
+      /** Title */
+      title: string;
+    };
+    /** SupportingBreakdown */
+    SupportingBreakdown: {
+      /** Title */
+      title: string;
+      /** Dimension */
+      dimension: string;
+      /** Rows */
+      rows: {
+        [key: string]: unknown;
+      }[];
     };
     /** Total */
     Total: {
@@ -1360,6 +2292,702 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["SegmentPreview"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_anomalies_api_anomalies_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["AnomalyStatus"] | null;
+        metric?: string | null;
+        severity?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AnomalyOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_anomaly_api_anomalies__anomaly_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        anomaly_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AnomalyOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_anomaly_api_anomalies__anomaly_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        anomaly_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AnomalyUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AnomalyOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  detect_now_api_anomalies_detect_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DetectionSummary"];
+        };
+      };
+    };
+  };
+  list_investigations_api_investigations_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["InvestigationStatus"] | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InvestigationSummary"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  create_investigation_api_investigations_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InvestigationCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InvestigationOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_investigation_api_investigations__investigation_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InvestigationOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_investigation_api_investigations__investigation_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_investigation_api_investigations__investigation_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InvestigationUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InvestigationOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  add_finding_api_investigations__investigation_id__findings_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FindingCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FindingOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_finding_api_investigations__investigation_id__findings__finding_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+        finding_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_finding_api_investigations__investigation_id__findings__finding_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+        finding_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["FindingUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["FindingOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  add_action_api_investigations__investigation_id__actions_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ActionCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ActionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_action_api_investigations__investigation_id__actions__action_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+        action_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  update_action_api_investigations__investigation_id__actions__action_id__patch: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+        action_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ActionUpdate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ActionOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_stakeholders_api_stakeholders_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["StakeholderOut"][];
+        };
+      };
+    };
+  };
+  set_stakeholders_api_investigations__investigation_id__stakeholders_put: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StakeholderAssignment"][];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["InvestigationOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  root_cause_api_root_cause_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RootCauseRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RootCauseAnalysis"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  investigation_root_cause_api_investigations__investigation_id__root_cause_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        investigation_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RootCauseAnalysis"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_comments_api_comments__entity_type___entity_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        entity_type: components["schemas"]["EntityType"];
+        entity_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CommentOut"][];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  add_comment_api_comments__entity_type___entity_id__post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        entity_type: components["schemas"]["EntityType"];
+        entity_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CommentCreate"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CommentOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_comment_api_comments__comment_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        comment_id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {

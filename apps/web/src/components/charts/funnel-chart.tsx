@@ -19,13 +19,16 @@ export function FunnelChart({ result }: { result: FunnelResult }) {
 
   return (
     <div className="overflow-x-auto">
-      <div className="grid min-w-160 gap-x-3" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}>
+      <div
+        className="grid min-w-160 gap-x-3"
+        style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}
+      >
         {steps.map((_, i) => {
           const label = series[0].steps[i]?.label ?? steps[i];
           return (
             <div key={steps[i]} className="min-w-0">
-              <div className="mb-2 flex items-baseline justify-between gap-2 border-b border-border pb-1.5">
-                <span className="truncate text-xs font-medium text-fg">{label}</span>
+              <div className="border-border mb-2 flex items-baseline justify-between gap-2 border-b pb-1.5">
+                <span className="text-fg truncate text-xs font-medium">{label}</span>
                 <span className="text-2xs text-fg-subtle">step {i + 1}</span>
               </div>
               <div className="flex h-36 items-end gap-1.5">
@@ -34,10 +37,17 @@ export function FunnelChart({ result }: { result: FunnelResult }) {
                   const first = s.steps[0]?.sessions ?? 0;
                   const pct = first ? step.sessions / first : 0;
                   return (
-                    <div key={s.key} className="flex h-full flex-1 flex-col justify-end" title={`${s.label}: ${step.sessions} sessions`}>
+                    <div
+                      key={s.key}
+                      className="flex h-full flex-1 flex-col justify-end"
+                      title={`${s.label}: ${step.sessions} sessions`}
+                    >
                       <div
                         className="w-full rounded-t-sm"
-                        style={{ height: `${Math.max(1, pct * 100)}%`, background: SERIES_COLORS[si % SERIES_COLORS.length] }}
+                        style={{
+                          height: `${Math.max(1, pct * 100)}%`,
+                          background: SERIES_COLORS[si % SERIES_COLORS.length],
+                        }}
                       />
                     </div>
                   );
@@ -49,10 +59,22 @@ export function FunnelChart({ result }: { result: FunnelResult }) {
                   return (
                     <div key={s.key} className="flex items-baseline justify-between gap-2 text-xs">
                       <span className="flex min-w-0 items-center gap-1.5">
-                        <span className="inline-block size-1.5 shrink-0 rounded-full" style={{ background: SERIES_COLORS[si % SERIES_COLORS.length] }} />
+                        <span
+                          className="inline-block size-1.5 shrink-0 rounded-full"
+                          style={{ background: SERIES_COLORS[si % SERIES_COLORS.length] }}
+                        />
                         <span className="tabular font-medium">{formatCompactCount(step.sessions)}</span>
                       </span>
-                      <span className={cn("tabular text-fg-subtle", i > 0 && step.step_conversion !== null && step.step_conversion !== undefined && step.step_conversion < 0.5 && "text-warning")}>
+                      <span
+                        className={cn(
+                          "tabular text-fg-subtle",
+                          i > 0 &&
+                            step.step_conversion !== null &&
+                            step.step_conversion !== undefined &&
+                            step.step_conversion < 0.5 &&
+                            "text-warning",
+                        )}
+                      >
                         {i === 0 ? "" : formatMetric(step.step_conversion ?? null, "percent")}
                       </span>
                     </div>
@@ -99,8 +121,12 @@ export function FunnelTable({ result }: { result: FunnelResult }) {
               return (
                 <Fragment key={s.key}>
                   <td className="num">{formatMetric(step.sessions, "count")}</td>
-                  <td className="num">{i === 0 ? "—" : formatMetric(step.step_conversion ?? null, "percent")}</td>
-                  <td className="num text-fg-subtle">{formatMetric(step.overall_conversion ?? null, "percent")}</td>
+                  <td className="num">
+                    {i === 0 ? "—" : formatMetric(step.step_conversion ?? null, "percent")}
+                  </td>
+                  <td className="num text-fg-subtle">
+                    {formatMetric(step.overall_conversion ?? null, "percent")}
+                  </td>
                 </Fragment>
               );
             })}

@@ -83,7 +83,10 @@ export function titleCase(s: string) {
  * A tight, "nice" axis domain for rate metrics: lines fill the plot instead of
  * hugging a zero baseline, and ticks land on round percentages.
  */
-export function niceDomain(values: number[], isPercent: boolean): { domain: [number, number]; ticks: number[] } {
+export function niceDomain(
+  values: number[],
+  isPercent: boolean,
+): { domain: [number, number]; ticks: number[] } {
   const finite = values.filter((v) => Number.isFinite(v));
   if (!finite.length) return { domain: [0, 1], ticks: [0, 0.5, 1] };
   let min = Math.min(...finite);
