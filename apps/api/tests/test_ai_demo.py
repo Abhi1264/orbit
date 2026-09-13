@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from probelens.ai.demo import _merge_nearby_releases, run_demo
+from probelens.ai.demo import _anomaly_covers_scope, _merge_nearby_releases, run_demo
 from probelens.ai.schemas import AskContext
 from probelens.ai.tools import ToolContext
 from probelens.analytics.dimensions import Filter
@@ -31,6 +31,14 @@ def test_merge_nearby_releases_pins_payment_sdk() -> None:
     android = Filter(dimension="platform", operator="eq", value="android")
     out = _merge_nearby_releases(cands, releases, "payment_success_rate", [android])
     assert any("8.4.0" in c["title"] for c in out)
+
+
+def test_upi_anomaly_covers_android_question() -> None:
+    android = [Filter(dimension="platform", operator="eq", value="android")]
+    upi = {"scope": "Payment method = upi", "filters": [{"dimension": "payment_method", "value": "upi"}]}
+    ios = {"scope": "Platform = ios", "filters": [{"dimension": "platform", "value": "ios"}]}
+    assert _anomaly_covers_scope(upi, android)
+    assert not _anomaly_covers_scope(ios, android)
 
 
 @pytest.fixture(scope="module")

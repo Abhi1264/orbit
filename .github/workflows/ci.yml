@@ -40,7 +40,7 @@ jobs:
           version: 12.2.1
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           cache-dependency-path: apps/web/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
@@ -64,7 +64,7 @@ jobs:
           version: 12.2.1
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           cache-dependency-path: tests/e2e/pnpm-lock.yaml
       - run: cp .env.example .env

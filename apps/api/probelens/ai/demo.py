@@ -311,18 +311,17 @@ def _dedupe(filters: list[Filter]) -> list[Filter]:
 
 
 def _anomaly_covers_scope(anomaly: dict[str, Any], filters: list[Filter]) -> bool:
-    """True when the anomaly is store-wide, the same scope, or a narrower slice of it."""
+    """True unless an eq filter on the anomaly contradicts the question (UPI store-wide
+    still explains 'on android'; platform=ios does not)."""
     if anomaly.get("scope") in (_scope(filters), "store-wide"):
         return True
-    asked = {(f.dimension, str(f.value)) for f in filters if f.operator == "eq" and f.value is not None}
-    if not asked:
-        return False
+    asked = {f.dimension: str(f.value) for f in filters if f.operator == "eq" and f.value is not None}
     have = {
-        (str(f.get("dimension")), str(f.get("value")))
+        str(f.get("dimension")): str(f.get("value"))
         for f in (anomaly.get("filters") or [])
         if f.get("operator", "eq") == "eq" and f.get("value") is not None
     }
-    return asked <= have
+    return all(have[d] == asked[d] for d in have if d in asked)
 
 
 def _anchor_to_anomaly(
