@@ -13,6 +13,7 @@ from probelens.models import User
 
 DbSession = Annotated[Session, Depends(get_db)]
 
+
 def get_current_user(request: Request, db: DbSession) -> User:
     token = request.cookies.get(SESSION_COOKIE)
     if not token:
@@ -27,7 +28,9 @@ def get_current_user(request: Request, db: DbSession) -> User:
     structlog.contextvars.bind_contextvars(user_id=user.id)
     return user
 
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
 
 def require(permission: Permission) -> Callable[[User], User]:
     def dependency(user: CurrentUser) -> User:

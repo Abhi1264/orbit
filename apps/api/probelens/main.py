@@ -14,6 +14,7 @@ from probelens.db.postgres import get_engine
 log = get_logger("app")
 _DEFAULT_SECRET = "change-me-in-production-32-chars-min"
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     configure_logging()
@@ -22,6 +23,7 @@ async def lifespan(_: FastAPI):
         raise RuntimeError("SECRET_KEY must be set in production")
     log.info("startup", env=settings.app_env, llm_enabled=settings.llm_enabled, model=settings.llm_model)
     yield
+
 
 def create_app() -> FastAPI:
     settings = get_settings()
@@ -69,5 +71,6 @@ def create_app() -> FastAPI:
         return status
 
     return app
+
 
 app = create_app()

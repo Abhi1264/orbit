@@ -32,15 +32,18 @@ from probelens.experiments.analysis import analyze as experiment_analyze
 from probelens.experiments.assignment import VariantSpec
 from probelens.models import Anomaly, Decision, Experiment, Investigation, KnowledgeDocument, Release, Sop
 
+
 @dataclass
 class ToolContext:
     db: Session
     today: date  # latest day with data
     dimension_values: dict[str, list[str]]
 
+
 class ToolResult(BaseModel):
     summary: str
     data: dict[str, Any] = Field(default_factory=dict)
+
 
 @dataclass(frozen=True)
 class Tool:
@@ -57,13 +60,16 @@ class Tool:
             "function": {"name": self.name, "description": self.description, "parameters": schema},
         }
 
+
 def _pct(v: float | None) -> str:
     return "n/a" if v is None else f"{v * 100:+.1f}%"
+
 
 def _rel(cur: float | None, prev: float | None) -> float | None:
     if cur is None or prev is None or prev == 0:
         return None
     return (cur - prev) / prev
+
 
 def _window(args: Any, ctx: ToolContext, default_days: int = 14) -> tuple[date, date]:
     """Resolve optional date_from/date_to; defaults to the last `default_days` days of data."""
@@ -72,6 +78,7 @@ def _window(args: Any, ctx: ToolContext, default_days: int = 14) -> tuple[date, 
     if start > end:
         raise ValueError("date_from must be on or before date_to")
     return start, end
+
 
 class MetricSummaryArgs(BaseModel):
     metric: str = Field(description="Metric key, e.g. conversion, revenue, payment_success_rate")
@@ -83,6 +90,7 @@ class MetricSummaryArgs(BaseModel):
     )
     filters: list[Filter] = Field(default_factory=list, description="Scope, e.g. platform = android")
     compare_previous: bool = Field(default=True, description="Also compute the immediately preceding window")
+
 
 def _metric_summary(a: MetricSummaryArgs, ctx: ToolContext) -> ToolResult:
     m = get_metric(a.metric)
@@ -137,6 +145,7 @@ def _metric_summary(a: MetricSummaryArgs, ctx: ToolContext) -> ToolResult:
         },
     )
 
+
 class BreakdownArgs(BaseModel):
     metric: str
     dimension: str = Field(description="Dimension key, e.g. platform, traffic_source, payment_method")
@@ -145,6 +154,7 @@ class BreakdownArgs(BaseModel):
     filters: list[Filter] = Field(default_factory=list)
     compare_previous: bool = True
     limit: int = Field(default=8, ge=2, le=20)
+
 
 def _breakdown(a: BreakdownArgs, ctx: ToolContext) -> ToolResult:
     m = get_metric(a.metric)
@@ -213,6 +223,7 @@ def _breakdown(a: BreakdownArgs, ctx: ToolContext) -> ToolResult:
         },
     )
 
+
 class FunnelArgs(BaseModel):
     steps: list[str] = Field(
         default_factory=lambda: list(DEFAULT_FUNNEL),
@@ -224,6 +235,7 @@ class FunnelArgs(BaseModel):
     breakdown: str | None = Field(
         default=None, description="Session-level dimension to compare, e.g. platform"
     )
+
 
 def _funnel(a: FunnelArgs, ctx: ToolContext) -> ToolResult:
     start, end = _window(a, ctx)
@@ -286,8 +298,10 @@ def _funnel(a: FunnelArgs, ctx: ToolContext) -> ToolResult:
         },
     )
 
+
 def _fmt_pct(v: float | None) -> str:
     return "n/a" if v is None else f"{v * 100:.1f}%"
+
 
 class RootCauseArgs(BaseModel):
     metric: str
@@ -296,6 +310,7 @@ class RootCauseArgs(BaseModel):
     baseline_from: date | None = Field(default=None, description="Defaults to the 28 days before the period")
     baseline_to: date | None = None
     filters: list[Filter] = Field(default_factory=list)
+
 
 def _root_cause(a: RootCauseArgs, ctx: ToolContext) -> ToolResult:
     b_to = a.baseline_to or (a.period_from - timedelta(days=1))
@@ -351,10 +366,12 @@ def _root_cause(a: RootCauseArgs, ctx: ToolContext) -> ToolResult:
         },
     )
 
+
 class AnomaliesArgs(BaseModel):
     status: Literal["open", "acknowledged", "investigating", "resolved", "all"] = "open"
     metric: str | None = None
     limit: int = Field(default=10, ge=1, le=30)
+
 
 def _anomalies(a: AnomaliesArgs, ctx: ToolContext) -> ToolResult:
     stmt = select(Anomaly).order_by(Anomaly.period_end.desc(), Anomaly.zscore.desc())
@@ -396,10 +413,12 @@ def _anomalies(a: AnomaliesArgs, ctx: ToolContext) -> ToolResult:
     summary = f"{len(out)} {a.status} anomalies. " + " | ".join(o["text"] for o in out[:5])
     return ToolResult(summary=summary, data={"anomalies": out})
 
+
 class ReleasesArgs(BaseModel):
     date_from: date | None = None
     date_to: date | None = None
     platform: Literal["android", "ios", "web", "all"] | None = None
+
 
 def _releases(a: ReleasesArgs, ctx: ToolContext) -> ToolResult:
     end = a.date_to or ctx.today
@@ -434,9 +453,11 @@ def _releases(a: ReleasesArgs, ctx: ToolContext) -> ToolResult:
     )
     return ToolResult(summary=summary, data={"releases": out})
 
+
 class ExperimentsArgs(BaseModel):
     status: Literal["draft", "running", "completed", "stopped", "all"] = "all"
     query: str | None = Field(default=None, description="Substring of the key or name")
+
 
 def _experiments(a: ExperimentsArgs, ctx: ToolContext) -> ToolResult:
     stmt = select(Experiment).options(selectinload(Experiment.variants), selectinload(Experiment.owner))
@@ -469,8 +490,10 @@ def _experiments(a: ExperimentsArgs, ctx: ToolContext) -> ToolResult:
     )
     return ToolResult(summary=summary, data={"experiments": out})
 
+
 class ExperimentResultsArgs(BaseModel):
     experiment: str = Field(description="Experiment key or numeric id")
+
 
 def _experiment_results(a: ExperimentResultsArgs, ctx: ToolContext) -> ToolResult:
     stmt = select(Experiment).options(selectinload(Experiment.variants))
@@ -564,10 +587,12 @@ def _experiment_results(a: ExperimentResultsArgs, ctx: ToolContext) -> ToolResul
         },
     )
 
+
 class InvestigationsArgs(BaseModel):
     status: Literal["open", "investigating", "validating", "resolved", "closed", "active", "all"] = "active"
     metric: str | None = None
     limit: int = Field(default=8, ge=1, le=20)
+
 
 def _investigations(a: InvestigationsArgs, ctx: ToolContext) -> ToolResult:
     stmt = select(Investigation).options(
@@ -606,9 +631,11 @@ def _investigations(a: InvestigationsArgs, ctx: ToolContext) -> ToolResult:
     )
     return ToolResult(summary=summary, data={"investigations": out})
 
+
 class SearchArgs(BaseModel):
     query: str = Field(min_length=2, max_length=200)
     limit: int = Field(default=6, ge=1, le=15)
+
 
 def _search_knowledge(a: SearchArgs, ctx: ToolContext) -> ToolResult:
     """Full-text search over SOPs, knowledge documents and the decision log.
@@ -651,12 +678,15 @@ def _search_knowledge(a: SearchArgs, ctx: ToolContext) -> ToolResult:
     )
     return ToolResult(summary=summary, data={"results": out})
 
+
 def _or_terms(q: str) -> str:
     words = [w for w in re.findall(r"[a-z0-9]+", q.lower()) if len(w) > 2]
     return " | ".join(words) or "zzz"
 
+
 class PlanArgs(BaseModel):
     text: str = Field(description="Natural-language description of a metric question")
+
 
 def _plan(a: PlanArgs, ctx: ToolContext) -> ToolResult:
     p = planner.parse(a.text, ctx.today, ctx.dimension_values)
@@ -673,6 +703,7 @@ def _plan(a: PlanArgs, ctx: ToolContext) -> ToolResult:
             "unresolved": p.unresolved,
         },
     )
+
 
 TOOLS: dict[str, Tool] = {
     t.name: t
@@ -757,6 +788,7 @@ TOOLS: dict[str, Tool] = {
         ),
     ]
 }
+
 
 def run_tool(name: str, raw_args: dict[str, Any], ctx: ToolContext, call_id: str) -> ToolCallRecord:
     """Validate, execute and time one tool call. Never raises: errors become records."""

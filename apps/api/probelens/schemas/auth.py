@@ -5,9 +5,11 @@ from pydantic import BaseModel, Field
 from probelens.core.permissions import Permission
 from probelens.models.enums import Role
 
+
 class LoginRequest(BaseModel):
     email: str = Field(min_length=3, max_length=255)
     password: str = Field(min_length=1, max_length=200)
+
 
 class UserOut(BaseModel):
     id: int
@@ -18,6 +20,7 @@ class UserOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class UserSummary(BaseModel):
     id: int
     name: str
@@ -26,13 +29,16 @@ class UserSummary(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class PasswordChange(BaseModel):
     current_password: str = Field(min_length=1, max_length=200)
     new_password: str = Field(min_length=8, max_length=200)
 
+
 class RolePermissions(BaseModel):
     role: Role
     permissions: list[Permission]
+
 
 class UserAdminOut(BaseModel):
     id: int
@@ -44,11 +50,13 @@ class UserAdminOut(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class UserCreate(BaseModel):
     email: str = Field(min_length=3, max_length=255, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     name: str = Field(min_length=2, max_length=120)
     password: str = Field(min_length=8, max_length=200)
     role: Role = Role.viewer
+
 
 class UserUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=2, max_length=120)

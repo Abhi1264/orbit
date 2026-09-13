@@ -6,11 +6,13 @@ from pydantic import BaseModel, Field
 from probelens.analytics.dimensions import Filter
 from probelens.schemas.auth import UserSummary
 
+
 class SavedAnalysisCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     description: str = ""
     kind: Literal["analysis", "funnel", "cohort"]
     config: dict[str, Any]
+
 
 class SavedAnalysisOut(SavedAnalysisCreate):
     id: int
@@ -20,10 +22,12 @@ class SavedAnalysisOut(SavedAnalysisCreate):
 
     model_config = {"from_attributes": True}
 
+
 class SegmentCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     description: str = ""
     conditions: list[Filter] = Field(min_length=1, max_length=8)
+
 
 class SegmentOut(BaseModel):
     id: int
@@ -35,12 +39,14 @@ class SegmentOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class SegmentPreviewRequest(BaseModel):
     conditions: list[Filter] = Field(default_factory=list, max_length=8)
     date_from: date
     date_to: date
     compare_from: date | None = None
     compare_to: date | None = None
+
 
 class SegmentMetric(BaseModel):
     key: str
@@ -49,6 +55,7 @@ class SegmentMetric(BaseModel):
     value: float | None
     compare_value: float | None = None
     baseline_value: float | None = None  # same metric, all sessions, same period
+
 
 class SegmentPreview(BaseModel):
     conditions: list[str]

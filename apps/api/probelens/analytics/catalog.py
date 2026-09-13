@@ -11,6 +11,7 @@ _cache: dict[str, str] = {}
 _cache_at = 0.0
 _TTL = 600
 
+
 def product_labels() -> dict[str, str]:
     global _cache, _cache_at
     if _cache and time.monotonic() - _cache_at < _TTL:

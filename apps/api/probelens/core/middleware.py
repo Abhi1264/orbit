@@ -18,6 +18,7 @@ SECURITY_HEADERS = {
     "Cache-Control": "no-store",
 }
 
+
 class RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         request_id = request.headers.get(REQUEST_ID_HEADER) or uuid.uuid4().hex[:16]

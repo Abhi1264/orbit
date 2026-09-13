@@ -27,11 +27,13 @@ ENUMERABLE = [
     "search_query",
 ]
 
+
 class DimensionInfo(BaseModel):
     key: str
     label: str
     scope: Scope
     values: list[str]
+
 
 class AnalyticsMeta(BaseModel):
     data_start: date | None
@@ -41,12 +43,14 @@ class AnalyticsMeta(BaseModel):
     dimensions: list[DimensionInfo]
     funnel_events: dict[str, str]
 
+
 def _dimension_values() -> dict[str, list[str]]:
     selects = ", ".join(f"groupUniqArrayIf(toString({d}), {d} != '') AS {d}" for d in ENUMERABLE)
     rows = run_query(f"SELECT {selects} FROM events", label="meta:dimension_values")
     if not rows:
         return {d: [] for d in ENUMERABLE}
     return {d: sorted(rows[0][d])[:200] for d in ENUMERABLE}
+
 
 def get_meta() -> AnalyticsMeta:
     rows = run_query(
@@ -66,8 +70,10 @@ def get_meta() -> AnalyticsMeta:
         funnel_events=FUNNEL_EVENTS,
     )
 
+
 def _dim_info(d: Dimension, values: list[str]) -> DimensionInfo:
     return DimensionInfo(key=d.key, label=d.label, scope=d.scope, values=values)
+
 
 def _as_date(v) -> date | None:
     if v is None:

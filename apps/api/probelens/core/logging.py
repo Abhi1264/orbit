@@ -5,6 +5,7 @@ import structlog
 
 from probelens.config import get_settings
 
+
 def configure_logging() -> None:
     settings = get_settings()
     level = logging.getLevelName(settings.log_level.upper())
@@ -29,6 +30,7 @@ def configure_logging() -> None:
     logging.basicConfig(level=level, stream=sys.stderr, format="%(message)s")
     for noisy in ("uvicorn.access", "httpx", "clickhouse_connect"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
+
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:
     return structlog.get_logger(name)

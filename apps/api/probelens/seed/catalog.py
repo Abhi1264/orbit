@@ -113,6 +113,7 @@ SEARCH_QUERIES: dict[str, list[str]] = {
     ],
 }
 
+
 @dataclass(frozen=True)
 class ProductRow:
     id: int
@@ -124,6 +125,7 @@ class ProductRow:
     price: float
     stock_units: int
     popularity: float
+
 
 def generate_products(rng: random.Random, count: int) -> list[ProductRow]:
     products: list[ProductRow] = []
@@ -153,6 +155,7 @@ def generate_products(rng: random.Random, count: int) -> list[ProductRow]:
             )
             pid += 1
     return products
+
 
 def apply_stockout_risk(rng: random.Random, products: list[ProductRow], count: int = 18) -> list[ProductRow]:
     """Give the most popular products stock levels that will not cover recent velocity."""

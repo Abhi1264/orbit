@@ -43,6 +43,7 @@ RETURN_METRICS = {"return_rate", "returns"}
 LAG_UNSAFE_DIMS = {"app_version"}
 MIN_SEGMENT_SHARE = 0.02  # ignore slivers: they cannot explain a store-wide move
 
+
 class Change(BaseModel):
     baseline: float | None
     period: float | None
@@ -52,6 +53,7 @@ class Change(BaseModel):
     baseline_denominator: float | None
     period_numerator: float
     period_denominator: float | None
+
 
 class Contribution(BaseModel):
     key: str
@@ -69,6 +71,7 @@ class Contribution(BaseModel):
     # Segment had no volume in the baseline (a new app version, a new campaign).
     is_new: bool = False
 
+
 class DimensionBreakdown(BaseModel):
     dimension: str
     label: str
@@ -80,10 +83,12 @@ class DimensionBreakdown(BaseModel):
     # session metric): rates per segment are valid, but they do not sum to the total.
     additive: bool = True
 
+
 class SupportingBreakdown(BaseModel):
     title: str
     dimension: str
     rows: list[dict[str, Any]]
+
 
 class ReleaseRef(BaseModel):
     id: int
@@ -97,6 +102,7 @@ class ReleaseRef(BaseModel):
     relevance: Literal["strong", "possible", "weak"]
     reason: str
 
+
 class ExperimentRef(BaseModel):
     id: int
     key: str
@@ -108,6 +114,7 @@ class ExperimentRef(BaseModel):
     guardrail_metrics: list[str]
     relevance: Literal["strong", "possible", "weak"]
     reason: str
+
 
 class Candidate(BaseModel):
     rank: int
@@ -125,6 +132,7 @@ class Candidate(BaseModel):
     experiment_id: int | None = None
     data: dict[str, Any] = Field(default_factory=dict)
 
+
 class RootCauseAnalysis(BaseModel):
     metric: dict[str, Any]
     filters: list[str]
@@ -138,10 +146,12 @@ class RootCauseAnalysis(BaseModel):
     experiments: list[ExperimentRef]
     notes: list[str]
 
+
 def _rel(a: float | None, b: float | None) -> float | None:
     if a is None or b is None or a == 0:
         return None
     return (b - a) / a
+
 
 def _change(series: Series, m: Metric, period_days: int, baseline_days: int) -> Change:
     base = series.compare_total
@@ -162,6 +172,7 @@ def _change(series: Series, m: Metric, period_days: int, baseline_days: int) -> 
         period_numerator=per.numerator,
         period_denominator=per.denominator,
     )
+
 
 def _decompose(
     m: Metric, overall: Change, series: list[Series], period_days: int, baseline_days: int
@@ -224,6 +235,7 @@ def _decompose(
     out.sort(key=lambda c: -abs(c.explained or 0))
     return out
 
+
 def _describe_non_additive(m: Metric, overall: Change, series: list[Series]) -> list[Contribution]:
     """Per-segment rates without contributions, for overlapping segments."""
     is_ratio = m.denominator is not None
@@ -259,6 +271,7 @@ def _describe_non_additive(m: Metric, overall: Change, series: list[Series]) -> 
     out.sort(key=lambda c: -_excess(c, overall_rel))
     return out
 
+
 def _excess(c: Contribution, overall_rel: float) -> float:
     """How much more than the average a segment moved, in the same direction, weighted by size."""
     if c.rel_change is None or c.share_period < 0.05:
@@ -267,6 +280,7 @@ def _excess(c: Contribution, overall_rel: float) -> float:
     if not same_direction or abs(c.rel_change) <= abs(overall_rel):
         return 0.0
     return (abs(c.rel_change) - abs(overall_rel)) * c.share_period
+
 
 def _concentration(contribs: list[Contribution], additive: bool = True, overall_rel: float = 0.0) -> float:
     if not additive:
@@ -279,8 +293,10 @@ def _concentration(contribs: list[Contribution], additive: bool = True, overall_
         best = max(best, c.explained * (1 - c.share_period))
     return best
 
+
 UNIFORM_MIN_SHARE = 0.10  # segments smaller than this are too noisy to judge uniformity
 UNIFORM_TOLERANCE = 0.35  # a segment is "in line" if its relative move is within ±35% of overall
+
 
 def _uniform_dimensions(
     breakdowns: list[DimensionBreakdown], overall_rel: float
@@ -305,6 +321,7 @@ def _uniform_dimensions(
             uniform.append(b.dimension)
     return uniform, judgeable
 
+
 def _breakdown(
     m: Metric,
     filters: list[Filter],
@@ -328,6 +345,7 @@ def _breakdown(
     )
     return result.series
 
+
 def _applicable_dimensions(m: Metric, filters: list[Filter]) -> list[tuple[str, bool]]:
     """(dimension, additive) pairs worth decomposing for this metric and scope."""
     fixed = {f.dimension for f in filters if f.operator == "eq"}
@@ -347,6 +365,7 @@ def _applicable_dimensions(m: Metric, filters: list[Filter]) -> list[tuple[str, 
         # the total without meaning anything.
         dims = [(d, a) for d, a in dims if d != "app_version"]
     return [(d, a) for d, a in dims if d not in fixed]
+
 
 def _supporting(m: Metric, filters: list[Filter], period, baseline) -> list[SupportingBreakdown]:
     """Reason mixes: not a decomposition of the metric, but the fastest way to
@@ -376,12 +395,14 @@ def _supporting(m: Metric, filters: list[Filter], period, baseline) -> list[Supp
         out.append(SupportingBreakdown(title=title, dimension=dim, rows=rows))
     return out
 
+
 def _platform_of(filters: list[Filter], candidates: list[Candidate]) -> set[str]:
     platforms = {str(f.value) for f in filters if f.dimension == "platform" and f.operator == "eq"}
     for c in candidates:
         if c.dimension == "platform" and c.key:
             platforms.add(c.key)
     return platforms
+
 
 def _releases(
     db: Session, m: Metric, period: tuple[date, date], platforms: set[str], versions: set[str]
@@ -434,6 +455,7 @@ def _releases(
     out.sort(key=lambda r: (order[r.relevance], -r.days_before_period))
     return out
 
+
 def _areas_touch_metric(m: Metric, areas: list[str]) -> bool:
     touch = {
         "checkout": {"conversion", "checkout_conversion", "orders", "revenue", "aov"} | PAYMENT_METRICS,
@@ -457,12 +479,14 @@ def _areas_touch_metric(m: Metric, areas: list[str]) -> bool:
     }
     return any(m.key in touch.get(a, set()) for a in areas)
 
+
 def _days_phrase(days_before: int) -> str:
     if days_before > 0:
         return f"{days_before} day{'s' if days_before != 1 else ''} before the period started"
     if days_before == 0:
         return "on the first day of the period"
     return f"{-days_before} day{'s' if days_before != -1 else ''} into the period"
+
 
 def _experiments(db: Session, m: Metric, period: tuple[date, date]) -> list[ExperimentRef]:
     rows = db.scalars(
@@ -501,11 +525,14 @@ def _experiments(db: Session, m: Metric, period: tuple[date, date]) -> list[Expe
     out.sort(key=lambda r: order[r.relevance])
     return out
 
+
 def _fmt(m: Metric, v: float | None) -> str:
     return format_value(m.format, v)
 
+
 def _pct(v: float | None) -> str:
     return "n/a" if v is None else f"{v * 100:+.0f}%"
+
 
 def _segment_candidate(
     m: Metric,
@@ -566,6 +593,7 @@ def _segment_candidate(
         data={**c.model_dump(), "isolated": isolated, "informativeness": informativeness},
     )
 
+
 def _overlap_candidate(
     m: Metric, overall: Change, dim: str, c: Contribution, filters: list[Filter]
 ) -> Candidate:
@@ -594,6 +622,7 @@ def _overlap_candidate(
         data=c.model_dump(),
     )
 
+
 def _drill(
     m: Metric, filters: list[Filter], skip_dim: str, period, baseline
 ) -> tuple[str | None, list[Contribution]]:
@@ -614,6 +643,7 @@ def _drill(
             best_score, best_dim, best = score, dim, contribs[:5]
     return best_dim, best
 
+
 def _scope_total(m: Metric, filters: list[Filter], period, baseline) -> Change:
     series = run_metric_query(
         MetricQuery(
@@ -628,8 +658,10 @@ def _scope_total(m: Metric, filters: list[Filter], period, baseline) -> Change:
     ).series[0]
     return _change(series, m, _days(period), _days(baseline))
 
+
 def _days(window: tuple[date, date]) -> int:
     return (window[1] - window[0]).days + 1
+
 
 def _mix_shift_candidate(
     m: Metric, overall: Change, breakdowns: list[DimensionBreakdown]
@@ -660,6 +692,7 @@ def _mix_shift_candidate(
                 data=top.model_dump(),
             )
     return None
+
 
 def analyze(
     db: Session,

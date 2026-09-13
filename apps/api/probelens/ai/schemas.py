@@ -16,6 +16,7 @@ from probelens.analytics.dimensions import Filter
 Mode = Literal["llm", "demo"]
 Confidence = Literal["low", "medium", "high"]
 
+
 class AskContext(BaseModel):
     """Where the user is asking from; lets the analyst default sensibly."""
 
@@ -26,11 +27,13 @@ class AskContext(BaseModel):
     investigation_id: int | None = None
     experiment_id: int | None = None
 
+
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=1000)
     context: AskContext = Field(default_factory=AskContext)
     # Force demo mode even when an LLM is configured (used by tests and the acceptance run).
     mode: Mode | None = None
+
 
 class ToolCallRecord(BaseModel):
     id: str
@@ -41,18 +44,22 @@ class ToolCallRecord(BaseModel):
     error: str | None = None
     data: dict[str, Any] | None = None  # full result, for the evidence drawer
 
+
 class Fact(BaseModel):
     text: str
     source: str  # tool call id
+
 
 class Inference(BaseModel):
     text: str
     confidence: Confidence
     basis: list[str] = Field(default_factory=list)  # tool call ids
 
+
 class RecommendationItem(BaseModel):
     text: str
     priority: Literal["now", "next", "later"] = "next"
+
 
 class CandidateOut(BaseModel):
     title: str
@@ -61,9 +68,11 @@ class CandidateOut(BaseModel):
     kind: str = "segment"
     href: str | None = None
 
+
 class LinkOut(BaseModel):
     label: str
     href: str
+
 
 class AnalystAnswer(BaseModel):
     summary: str
@@ -75,6 +84,7 @@ class AnalystAnswer(BaseModel):
     links: list[LinkOut] = Field(default_factory=list)
     caveats: list[str] = Field(default_factory=list)
 
+
 class AskResponse(BaseModel):
     run_id: int
     mode: Mode
@@ -84,6 +94,7 @@ class AskResponse(BaseModel):
     tool_calls: list[ToolCallRecord]
     latency_ms: int
     created_at: datetime
+
 
 class AiRunSummary(BaseModel):
     id: int
@@ -96,9 +107,11 @@ class AiRunSummary(BaseModel):
     error: str
     created_at: datetime
 
+
 class PlanRequest(BaseModel):
     text: str = Field(min_length=2, max_length=500)
     context: AskContext = Field(default_factory=AskContext)
+
 
 class PlannedQuery(BaseModel):
     metric: str
@@ -110,12 +123,14 @@ class PlannedQuery(BaseModel):
     compare_from: date | None = None
     compare_to: date | None = None
 
+
 class PlanResponse(BaseModel):
     query: PlannedQuery
     explanation: str  # "Conversion rate, Android, 1–13 Sep, by traffic source, vs previous 13 days"
     confidence: Confidence
     unresolved: list[str] = Field(default_factory=list)  # words we could not map
     mode: Mode
+
 
 class Suggestion(BaseModel):
     text: str

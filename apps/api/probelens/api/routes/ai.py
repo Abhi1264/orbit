@@ -23,9 +23,11 @@ from probelens.models import AiRun
 
 router = APIRouter(prefix="/ai", tags=["ai"], dependencies=[Depends(require(Permission.use_analyst))])
 
+
 @router.post("/ask", response_model=AskResponse)
 def ask_analyst(body: AskRequest, user: CurrentUser, db: DbSession) -> AskResponse:
     return ask(db, user, body.question.strip(), body.context, body.mode)
+
 
 @router.post("/plan", response_model=PlanResponse)
 def plan_query(body: PlanRequest, _: CurrentUser, db: DbSession) -> PlanResponse:
@@ -59,6 +61,7 @@ def plan_query(body: PlanRequest, _: CurrentUser, db: DbSession) -> PlanResponse
         mode="demo",
     )
 
+
 @router.get("/runs", response_model=list[AiRunSummary])
 def list_runs(
     user: CurrentUser, db: DbSession, limit: int = Query(default=20, ge=1, le=100)
@@ -81,6 +84,7 @@ def list_runs(
         for r in db.scalars(stmt)
     ]
 
+
 @router.get("/runs/{run_id}", response_model=AskResponse)
 def get_run(run_id: int, user: CurrentUser, db: DbSession) -> AskResponse:
     r = db.get(AiRun, run_id)
@@ -97,6 +101,7 @@ def get_run(run_id: int, user: CurrentUser, db: DbSession) -> AskResponse:
         created_at=r.created_at,
     )
 
+
 @router.get("/status")
 def analyst_status(_: CurrentUser) -> dict[str, str | bool]:
     p = get_provider()
@@ -105,6 +110,7 @@ def analyst_status(_: CurrentUser) -> dict[str, str | bool]:
         "model": p.model if p else "playbook",
         "mode": "llm" if p else "demo",
     }
+
 
 @router.get("/suggestions", response_model=list[Suggestion])
 def suggestions(

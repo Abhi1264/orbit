@@ -51,6 +51,7 @@ AREA_METRICS = {
     "checkout": "payment_failure_rate",
 }
 
+
 def checklist_out(c: Checklist) -> ChecklistOut:
     items = list(c.items or [])
     return ChecklistOut(
@@ -66,6 +67,7 @@ def checklist_out(c: Checklist) -> ChecklistOut:
         updated_at=c.updated_at,
     )
 
+
 def _load(db: Session, release_id: int) -> Release:
     rel = db.get(
         Release,
@@ -78,6 +80,7 @@ def _load(db: Session, release_id: int) -> Release:
     if rel is None:
         raise NotFound("Release", release_id)
     return rel
+
 
 def _checklists_for(db: Session, release_ids: list[int]) -> dict[int, list[Checklist]]:
     if not release_ids:
@@ -93,6 +96,7 @@ def _checklists_for(db: Session, release_ids: list[int]) -> dict[int, list[Check
         out.setdefault(c.release_id, []).append(c)  # type: ignore[arg-type]
     return out
 
+
 def _open_investigations(db: Session, release_ids: list[int]) -> dict[int, int]:
     if not release_ids:
         return {}
@@ -105,6 +109,7 @@ def _open_investigations(db: Session, release_ids: list[int]) -> dict[int, int]:
         .group_by(Investigation.release_id)
     ).all()
     return {rid: n for rid, n in rows}
+
 
 def _summary(rel: Release, checklists: list[Checklist], open_inv: int) -> ReleaseSummary:
     progress = None
@@ -127,6 +132,7 @@ def _summary(rel: Release, checklists: list[Checklist], open_inv: int) -> Releas
         updated_at=rel.updated_at,
     )
 
+
 @router.get("", response_model=list[ReleaseSummary])
 def list_releases(
     _: CurrentUser,
@@ -144,6 +150,7 @@ def list_releases(
     cls = _checklists_for(db, ids)
     inv = _open_investigations(db, ids)
     return [_summary(r, cls.get(r.id, []), inv.get(r.id, 0)) for r in rels]
+
 
 def _to_out(db: Session, rel: Release) -> ReleaseOut:
     cls = _checklists_for(db, [rel.id]).get(rel.id, [])
@@ -174,12 +181,15 @@ def _to_out(db: Session, rel: Release) -> ReleaseOut:
         created_at=rel.created_at,
     )
 
+
 @router.get("/{release_id}", response_model=ReleaseOut)
 def get_release(release_id: int, _: CurrentUser, db: DbSession) -> ReleaseOut:
     return _to_out(db, _load(db, release_id))
 
+
 def _event(rel: Release, user: User, kind: str, note: str) -> None:
     rel.timeline.append(ReleaseEvent(occurred_at=datetime.now(UTC), kind=kind, note=note, actor_id=user.id))
+
 
 def _start_checklist(
     db: Session, rel: Release, sop_id: int, user: User, title: str | None = None
@@ -197,6 +207,7 @@ def _start_checklist(
     )
     db.add(checklist)
     return checklist
+
 
 @router.post("", response_model=ReleaseOut, status_code=201, dependencies=[_write])
 def create_release(payload: ReleaseCreate, user: CurrentUser, db: DbSession) -> ReleaseOut:
@@ -228,6 +239,7 @@ def create_release(payload: ReleaseCreate, user: CurrentUser, db: DbSession) -> 
         db.flush()
     return _to_out(db, _load(db, rel.id))
 
+
 _STATUS_LABEL = {
     ReleaseStatus.planned: "Planned",
     ReleaseStatus.in_progress: "In progress",
@@ -235,6 +247,7 @@ _STATUS_LABEL = {
     ReleaseStatus.completed: "Completed",
     ReleaseStatus.rolled_back: "Rolled back",
 }
+
 
 @router.patch("/{release_id}", response_model=ReleaseOut, dependencies=[_write])
 def update_release(release_id: int, payload: ReleaseUpdate, user: CurrentUser, db: DbSession) -> ReleaseOut:
@@ -266,6 +279,7 @@ def update_release(release_id: int, payload: ReleaseUpdate, user: CurrentUser, d
     db.flush()
     return _to_out(db, _load(db, rel.id))
 
+
 @router.post("/{release_id}/events", response_model=ReleaseOut, status_code=201, dependencies=[_write])
 def add_release_note(
     release_id: int, payload: ReleaseNoteCreate, user: CurrentUser, db: DbSession
@@ -274,6 +288,7 @@ def add_release_note(
     _event(rel, user, payload.kind, payload.note.strip())
     db.flush()
     return _to_out(db, _load(db, rel.id))
+
 
 @router.post("/{release_id}/checklists", response_model=ReleaseOut, status_code=201, dependencies=[_write])
 def run_sop_for_release(
@@ -285,6 +300,7 @@ def run_sop_for_release(
     db.flush()
     return _to_out(db, _load(db, rel.id))
 
+
 @router.delete("/{release_id}", status_code=204, dependencies=[_write])
 def delete_release(release_id: int, _: CurrentUser, db: DbSession) -> None:
     rel = _load(db, release_id)
@@ -294,6 +310,7 @@ def delete_release(release_id: int, _: CurrentUser, db: DbSession) -> None:
         )
     db.delete(rel)
 
+
 def _tone(m_key: str, rel_change: float | None) -> str:
     if rel_change is None:
         return "unknown"
@@ -301,6 +318,7 @@ def _tone(m_key: str, rel_change: float | None) -> str:
         return "neutral"
     good = (rel_change > 0) == METRICS[m_key].higher_is_better
     return "good" if good else "bad"
+
 
 def _fmt_change(fmt: MetricFormat, before: float | None, after: float | None) -> str:
     if before is None or after is None:
@@ -311,6 +329,7 @@ def _fmt_change(fmt: MetricFormat, before: float | None, after: float | None) ->
     if before == 0:
         return "—"
     return f"{(after - before) / before * 100:+.1f}%"
+
 
 @router.get("/{release_id}/impact", response_model=ReleaseImpact)
 def release_impact(release_id: int, _: CurrentUser, db: DbSession) -> ReleaseImpact:

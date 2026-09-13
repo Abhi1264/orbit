@@ -12,11 +12,13 @@ from typing import Any, Protocol
 
 from probelens.config import get_settings
 
+
 @dataclass
 class ToolCall:
     id: str
     name: str
     arguments: dict[str, Any]
+
 
 @dataclass
 class ChatTurn:
@@ -25,6 +27,7 @@ class ChatTurn:
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     raw_message: dict[str, Any] = field(default_factory=dict)  # appended verbatim to history
+
 
 class ChatProvider(Protocol):
     model: str
@@ -37,6 +40,7 @@ class ChatProvider(Protocol):
         json_response: bool = False,
         temperature: float = 0.1,
     ) -> ChatTurn: ...
+
 
 class OpenAICompatibleProvider:
     def __init__(self, api_key: str, base_url: str, model: str, timeout: float = 60.0) -> None:
@@ -79,6 +83,7 @@ class OpenAICompatibleProvider:
             completion_tokens=usage.completion_tokens if usage else None,
             raw_message=msg.model_dump(exclude_none=True),
         )
+
 
 def get_provider() -> ChatProvider | None:
     """None means demo mode: no key configured, so the deterministic analyst runs."""

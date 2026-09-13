@@ -51,6 +51,7 @@ router = APIRouter(tags=["investigations"], dependencies=[Depends(require(Permis
 
 _write = Depends(require(Permission.manage_investigations))
 
+
 def _load(db: Session, investigation_id: int) -> Investigation:
     inv = db.get(
         Investigation,
@@ -66,12 +67,14 @@ def _load(db: Session, investigation_id: int) -> Investigation:
         raise NotFound("Investigation", investigation_id)
     return inv
 
+
 def _can_edit(user: User, inv: Investigation) -> bool:
     if user.role in (Role.admin, Role.pm):
         return True
     return has_permission(user.role, Permission.manage_investigations) and (
         user.id == inv.owner_id or user.role == Role.analyst
     )
+
 
 def _summary_fields(inv: Investigation) -> dict:
     filters = [Filter.model_validate(f) for f in inv.filters or []]
@@ -95,6 +98,7 @@ def _summary_fields(inv: Investigation) -> dict:
         "created_at": inv.created_at,
     }
 
+
 def _to_out(db: Session, inv: Investigation) -> InvestigationOut:
     anomaly = db.scalar(select(Anomaly).where(Anomaly.investigation_id == inv.id).limit(1))
     release = db.get(Release, inv.release_id) if inv.release_id else None
@@ -114,6 +118,7 @@ def _to_out(db: Session, inv: Investigation) -> InvestigationOut:
         experiment=experiment,
     )
 
+
 @router.get("/investigations", response_model=list[InvestigationSummary])
 def list_investigations(
     _: CurrentUser, db: DbSession, status: InvestigationStatus | None = None
@@ -130,6 +135,7 @@ def list_investigations(
     if status:
         stmt = stmt.where(Investigation.status == status)
     return [InvestigationSummary(**_summary_fields(inv)) for inv in db.scalars(stmt)]
+
 
 @router.post("/investigations", response_model=InvestigationOut, status_code=201, dependencies=[_write])
 def create_investigation(payload: InvestigationCreate, user: CurrentUser, db: DbSession) -> InvestigationOut:
@@ -199,9 +205,11 @@ def create_investigation(payload: InvestigationCreate, user: CurrentUser, db: Db
 
     return _to_out(db, _load(db, inv.id))
 
+
 @router.get("/investigations/{investigation_id}", response_model=InvestigationOut)
 def get_investigation(investigation_id: int, _: CurrentUser, db: DbSession) -> InvestigationOut:
     return _to_out(db, _load(db, investigation_id))
+
 
 @router.patch("/investigations/{investigation_id}", response_model=InvestigationOut, dependencies=[_write])
 def update_investigation(
@@ -230,6 +238,7 @@ def update_investigation(
     db.expire(inv)
     return _to_out(db, _load(db, investigation_id))
 
+
 @router.delete("/investigations/{investigation_id}", status_code=204, dependencies=[_write])
 def delete_investigation(investigation_id: int, user: CurrentUser, db: DbSession) -> None:
     inv = _load(db, investigation_id)
@@ -240,6 +249,7 @@ def delete_investigation(investigation_id: int, user: CurrentUser, db: DbSession
         if anomaly.status == AnomalyStatus.investigating.value:
             anomaly.status = AnomalyStatus.open.value
     db.delete(inv)
+
 
 @router.post(
     "/investigations/{investigation_id}/findings",
@@ -273,6 +283,7 @@ def add_finding(
     db.refresh(finding)
     return finding
 
+
 @router.patch(
     "/investigations/{investigation_id}/findings/{finding_id}",
     response_model=FindingOut,
@@ -300,6 +311,7 @@ def update_finding(
     db.refresh(finding)
     return finding
 
+
 @router.delete(
     "/investigations/{investigation_id}/findings/{finding_id}", status_code=204, dependencies=[_write]
 )
@@ -311,6 +323,7 @@ def delete_finding(investigation_id: int, finding_id: int, user: CurrentUser, db
     if finding is None:
         raise NotFound("Finding", finding_id)
     db.delete(finding)
+
 
 @router.post(
     "/investigations/{investigation_id}/actions",
@@ -335,6 +348,7 @@ def add_action(
     db.refresh(action)
     return action
 
+
 @router.patch(
     "/investigations/{investigation_id}/actions/{action_id}",
     response_model=ActionOut,
@@ -355,6 +369,7 @@ def update_action(
     db.refresh(action)
     return action
 
+
 @router.delete(
     "/investigations/{investigation_id}/actions/{action_id}", status_code=204, dependencies=[_write]
 )
@@ -367,9 +382,11 @@ def delete_action(investigation_id: int, action_id: int, user: CurrentUser, db: 
         raise NotFound("Action", action_id)
     db.delete(action)
 
+
 @router.get("/stakeholders", response_model=list[StakeholderOut])
 def list_stakeholders(_: CurrentUser, db: DbSession) -> list[Stakeholder]:
     return list(db.scalars(select(Stakeholder).order_by(Stakeholder.name)))
+
 
 @router.put(
     "/investigations/{investigation_id}/stakeholders",
@@ -395,6 +412,7 @@ def set_stakeholders(
     db.expire(inv)
     return _to_out(db, _load(db, investigation_id))
 
+
 class RootCauseRequest(BaseModel):
     metric_key: str
     filters: list[Filter] = Field(default_factory=list, max_length=8)
@@ -402,6 +420,7 @@ class RootCauseRequest(BaseModel):
     period_end: date
     baseline_start: date
     baseline_end: date
+
 
 @router.post(
     "/root-cause",
@@ -422,6 +441,7 @@ def root_cause(payload: RootCauseRequest, _: CurrentUser, db: DbSession) -> Root
         baseline_start=payload.baseline_start,
         baseline_end=payload.baseline_end,
     )
+
 
 @router.get("/investigations/{investigation_id}/root-cause", response_model=RootCauseAnalysis)
 def investigation_root_cause(investigation_id: int, _: CurrentUser, db: DbSession) -> RootCauseAnalysis:

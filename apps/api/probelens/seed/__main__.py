@@ -28,17 +28,20 @@ from probelens.services.projects import default_project_id
 
 log = get_logger("seed")
 
+
 @dataclass(frozen=True)
 class Profile:
     users: int
     products: int
     days: int
 
+
 PROFILES = {
     "dev": Profile(users=4_000, products=1_000, days=56),
     "demo": Profile(users=30_000, products=3_000, days=84),
     "full": Profile(users=50_000, products=5_000, days=140),
 }
+
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -58,6 +61,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--skip-postgres", action="store_true")
     parser.add_argument("--skip-clickhouse", action="store_true")
     return parser.parse_args(argv)
+
 
 def main(argv: list[str] | None = None) -> int:
     configure_logging()
@@ -137,6 +141,7 @@ def main(argv: list[str] | None = None) -> int:
         log.info("seed_anomalies_done", **detection)
     log.info("seed_complete", seconds=round(time.perf_counter() - started, 1), events=total_events)
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

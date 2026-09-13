@@ -17,6 +17,7 @@ from probelens.schemas.auth import UserSummary
 
 Platform = Literal["android", "ios", "web", "all"]
 
+
 class EntityRef(BaseModel):
     """Enough to render a link to another object without a second request."""
 
@@ -24,6 +25,7 @@ class EntityRef(BaseModel):
     id: int
     title: str
     status: str | None = None
+
 
 class ReleaseEventOut(BaseModel):
     id: int
@@ -34,6 +36,7 @@ class ReleaseEventOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class ChecklistItem(BaseModel):
     key: str
     label: str
@@ -41,6 +44,7 @@ class ChecklistItem(BaseModel):
     done: bool = False
     owner_id: int | None = None
     done_at: datetime | None = None
+
 
 class ChecklistOut(BaseModel):
     id: int
@@ -56,9 +60,11 @@ class ChecklistOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class ChecklistProgress(BaseModel):
     done: int
     total: int
+
 
 class ReleaseSummary(BaseModel):
     id: int
@@ -77,6 +83,7 @@ class ReleaseSummary(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class ImpactMetric(BaseModel):
     metric_key: str
     label: str
@@ -91,6 +98,7 @@ class ImpactMetric(BaseModel):
     formatted_change: str
     tone: Literal["good", "bad", "neutral", "unknown"]
 
+
 class ReleaseImpact(BaseModel):
     before_start: date
     before_end: date
@@ -100,6 +108,7 @@ class ReleaseImpact(BaseModel):
     metrics: list[ImpactMetric]
     note: str
 
+
 class ReleaseOut(ReleaseSummary):
     description: str
     timeline: list[ReleaseEventOut]
@@ -108,6 +117,7 @@ class ReleaseOut(ReleaseSummary):
     decisions: list[EntityRef]
     experiment: EntityRef | None
     created_at: datetime
+
 
 class ReleaseCreate(BaseModel):
     version: str = Field(min_length=1, max_length=40)
@@ -119,6 +129,7 @@ class ReleaseCreate(BaseModel):
     experiment_id: int | None = None
     sop_id: int | None = Field(default=None, description="Run this SOP as the launch checklist")
 
+
 class ReleaseUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=3, max_length=200)
     description: str | None = None
@@ -129,14 +140,17 @@ class ReleaseUpdate(BaseModel):
     experiment_id: int | None = None
     note: str | None = Field(default=None, description="Timeline note explaining the change")
 
+
 class ReleaseNoteCreate(BaseModel):
     note: str = Field(min_length=1, max_length=2000)
     kind: Literal["note", "link"] = "note"
+
 
 class SopItem(BaseModel):
     key: str
     label: str
     owner_role: str | None = None
+
 
 class SopOut(BaseModel):
     id: int
@@ -150,11 +164,13 @@ class SopOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class SopCreate(BaseModel):
     title: str = Field(min_length=3, max_length=200)
     description: str = ""
     category: str = Field(min_length=2, max_length=60)
     items: list[SopItem] = Field(min_length=1)
+
 
 class SopUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=3, max_length=200)
@@ -162,13 +178,16 @@ class SopUpdate(BaseModel):
     category: str | None = Field(default=None, min_length=2, max_length=60)
     items: list[SopItem] | None = None
 
+
 class ChecklistCreate(BaseModel):
     sop_id: int
     release_id: int | None = None
     title: str | None = None
 
+
 class ChecklistItemToggle(BaseModel):
     done: bool
+
 
 class KnowledgeSummary(BaseModel):
     id: int
@@ -177,6 +196,7 @@ class KnowledgeSummary(BaseModel):
     author: UserSummary
     excerpt: str
     updated_at: datetime
+
 
 class KnowledgeOut(BaseModel):
     id: int
@@ -189,15 +209,18 @@ class KnowledgeOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
 class KnowledgeCreate(BaseModel):
     title: str = Field(min_length=3, max_length=200)
     body: str = Field(min_length=1)
     tags: list[str] = Field(default_factory=list)
 
+
 class KnowledgeUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=3, max_length=200)
     body: str | None = Field(default=None, min_length=1)
     tags: list[str] | None = None
+
 
 class StakeholderRef(BaseModel):
     id: int
@@ -206,6 +229,7 @@ class StakeholderRef(BaseModel):
     title: str
 
     model_config = {"from_attributes": True}
+
 
 class FeedbackOut(BaseModel):
     id: int
@@ -221,6 +245,7 @@ class FeedbackOut(BaseModel):
     linked: EntityRef | None
     created_at: datetime
 
+
 class FeedbackCreate(BaseModel):
     source: FeedbackSource
     theme: str = Field(min_length=2, max_length=60)
@@ -232,6 +257,7 @@ class FeedbackCreate(BaseModel):
     linked_entity_type: str | None = None
     linked_entity_id: int | None = None
 
+
 class FeedbackUpdate(BaseModel):
     status: FeedbackStatus | None = None
     theme: str | None = Field(default=None, min_length=2, max_length=60)
@@ -240,12 +266,14 @@ class FeedbackUpdate(BaseModel):
     linked_entity_id: int | None = None
     unlink: bool | None = None
 
+
 class ThemeSummary(BaseModel):
     theme: str
     total: int
     open: int
     negative: int
     last_received: date
+
 
 class DecisionSummary(BaseModel):
     id: int
@@ -259,6 +287,7 @@ class DecisionSummary(BaseModel):
     decision: str
     updated_at: datetime
 
+
 class DecisionOut(DecisionSummary):
     context: str
     evidence: str
@@ -268,6 +297,7 @@ class DecisionOut(DecisionSummary):
     experiment_id: int | None
     release_id: int | None
     created_at: datetime
+
 
 class DecisionCreate(BaseModel):
     title: str = Field(min_length=3, max_length=200)
@@ -283,6 +313,7 @@ class DecisionCreate(BaseModel):
     experiment_id: int | None = None
     release_id: int | None = None
 
+
 class DecisionUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=3, max_length=200)
     context: str | None = None
@@ -297,6 +328,7 @@ class DecisionUpdate(BaseModel):
     experiment_id: int | None = None
     release_id: int | None = None
 
+
 class SearchHit(BaseModel):
     type: str
     id: int
@@ -306,6 +338,7 @@ class SearchHit(BaseModel):
     rank: float
     updated_at: datetime | None = None
     extra: dict[str, Any] = Field(default_factory=dict)
+
 
 class SearchResponse(BaseModel):
     query: str

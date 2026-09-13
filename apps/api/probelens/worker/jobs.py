@@ -19,6 +19,7 @@ log = get_logger("worker")
 HEARTBEAT_KEY = "orbit:worker:heartbeat"
 LAST_RUN_KEY = "orbit:worker:last_run:{job}"
 
+
 def mark_run(job: str, ok: bool, **fields: object) -> None:
     """Record the outcome of a job so /api/system/status can show it without touching the worker."""
     redis = get_redis()
@@ -27,13 +28,16 @@ def mark_run(job: str, ok: bool, **fields: object) -> None:
     payload = {"at": datetime.now(UTC).isoformat(), "ok": ok, **{k: str(v) for k, v in fields.items()}}
     redis.hset(LAST_RUN_KEY.format(job=job), mapping=payload)
 
+
 def heartbeat() -> None:
     redis = get_redis()
     if redis is not None:
         redis.set(HEARTBEAT_KEY, datetime.now(UTC).isoformat(), ex=180)
 
+
 broker = RedisBroker(url=get_settings().redis_url)
 dramatiq.set_broker(broker)
+
 
 @dramatiq.actor(max_retries=2, time_limit=5 * 60 * 1000)
 def detect_anomalies(as_of_iso: str | None = None) -> None:
@@ -55,6 +59,7 @@ def detect_anomalies(as_of_iso: str | None = None) -> None:
         raise
     finally:
         db.close()
+
 
 @dramatiq.actor(max_retries=0)
 def refresh_analytics_cache() -> None:

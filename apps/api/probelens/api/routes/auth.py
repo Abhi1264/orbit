@@ -29,6 +29,7 @@ LOGIN_LIMIT = 10  # attempts
 LOGIN_WINDOW = 15 * 60  # seconds
 _admin = Depends(require(Permission.manage_users))
 
+
 def _user_out(user: User) -> UserOut:
     return UserOut(
         id=user.id,
@@ -37,6 +38,7 @@ def _user_out(user: User) -> UserOut:
         role=user.role,
         permissions=sorted(ROLE_PERMISSIONS[user.role]),
     )
+
 
 def _admin_out(user: User) -> UserAdminOut:
     return UserAdminOut(
@@ -50,9 +52,11 @@ def _admin_out(user: User) -> UserAdminOut:
         updated_at=user.updated_at,
     )
 
+
 def _client_ip(request: Request) -> str:
     fwd = request.headers.get("x-forwarded-for", "")
     return (fwd.split(",")[0].strip() if fwd else request.client.host if request.client else "unknown")[:64]
+
 
 @router.post("/login", response_model=UserOut)
 def login(payload: LoginRequest, request: Request, response: Response, db: DbSession) -> UserOut:
@@ -84,13 +88,16 @@ def login(payload: LoginRequest, request: Request, response: Response, db: DbSes
     log.info("login_ok", user_id=user.id, role=user.role.value)
     return _user_out(user)
 
+
 @router.post("/logout", status_code=204)
 def logout(response: Response) -> None:
     response.delete_cookie(SESSION_COOKIE, path="/")
 
+
 @router.get("/me", response_model=UserOut)
 def me(user: CurrentUser) -> UserOut:
     return _user_out(user)
+
 
 @router.post("/password", status_code=204)
 def change_password(payload: PasswordChange, user: CurrentUser, db: DbSession) -> None:
@@ -100,13 +107,16 @@ def change_password(payload: PasswordChange, user: CurrentUser, db: DbSession) -
     db.flush()
     log.info("password_changed", user_id=user.id)
 
+
 @router.get("/roles", response_model=list[RolePermissions])
 def roles(_: CurrentUser) -> list[RolePermissions]:
     return [RolePermissions(role=r, permissions=sorted(p)) for r, p in ROLE_PERMISSIONS.items()]
 
+
 @router.get("/users", response_model=list[UserSummary])
 def list_users(_: CurrentUser, db: DbSession) -> list[User]:
     return list(db.scalars(select(User).where(User.is_active).order_by(User.name)))
+
 
 @router.get("/admin/users", response_model=list[UserAdminOut], dependencies=[_admin])
 def admin_list_users(
@@ -116,6 +126,7 @@ def admin_list_users(
     if not include_inactive:
         stmt = stmt.where(User.is_active)
     return [_admin_out(u) for u in db.scalars(stmt).all()]
+
 
 @router.post("/admin/users", response_model=UserAdminOut, status_code=201, dependencies=[_admin])
 def admin_create_user(payload: UserCreate, actor: CurrentUser, db: DbSession) -> UserAdminOut:
@@ -135,6 +146,7 @@ def admin_create_user(payload: UserCreate, actor: CurrentUser, db: DbSession) ->
     db.refresh(user)
     log.info("user_created", user_id=user.id, role=user.role.value, by=actor.id)
     return _admin_out(user)
+
 
 @router.patch("/admin/users/{user_id}", response_model=UserAdminOut, dependencies=[_admin])
 def admin_update_user(user_id: int, payload: UserUpdate, actor: CurrentUser, db: DbSession) -> UserAdminOut:
@@ -161,6 +173,7 @@ def admin_update_user(user_id: int, payload: UserUpdate, actor: CurrentUser, db:
     db.refresh(user)
     log.info("user_updated", user_id=user.id, fields=sorted(data), by=actor.id)
     return _admin_out(user)
+
 
 @router.delete("/admin/users/{user_id}", status_code=204, dependencies=[_admin])
 def admin_delete_user(user_id: int, actor: CurrentUser, db: DbSession) -> None:

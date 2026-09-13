@@ -29,6 +29,7 @@ from probelens.schemas.ops import SearchHit, SearchResponse
 
 router = APIRouter(tags=["search"], dependencies=[Depends(require(Permission.view))])
 
+
 @dataclass(frozen=True)
 class _Source:
     type: str
@@ -37,6 +38,7 @@ class _Source:
     subtitle: Any
     status: Any = None
     extra: tuple[str, ...] = ()
+
 
 _SOURCES = [
     _Source(
@@ -51,9 +53,11 @@ _SOURCES = [
     _Source("saved", SavedAnalysis, SavedAnalysis.name, SavedAnalysis.description, None, ("kind",)),
 ]
 
+
 def _or_terms(q: str) -> str:
     words = [w for w in "".join(ch if ch.isalnum() else " " for ch in q).split() if len(w) > 1]
     return " | ".join(words)
+
 
 def _search_table(db: Session, src: _Source, q: str, limit: int) -> list[SearchHit]:
     m = src.model
@@ -99,6 +103,7 @@ def _search_table(db: Session, src: _Source, q: str, limit: int) -> list[SearchH
         )
     return hits
 
+
 def _search_catalog(q: str) -> list[SearchHit]:
     """Metrics and dimensions are code, not rows; match on label/key/description."""
     needle = q.lower()
@@ -131,6 +136,7 @@ def _search_catalog(q: str) -> list[SearchHit]:
             )
     hits.sort(key=lambda h: -h.rank)
     return hits[:6]
+
 
 @router.get("/search", response_model=SearchResponse)
 def search(

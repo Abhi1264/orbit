@@ -10,11 +10,13 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
+
 class Scope(StrEnum):
     # Constant across a session (set on every event of the session).
     session = "session"
     # Set only on the events it applies to (product, payment, search attributes).
     event = "event"
+
 
 @dataclass(frozen=True)
 class Dimension:
@@ -27,6 +29,7 @@ class Dimension:
     @property
     def col(self) -> str:
         return self.column or self.key
+
 
 DIMENSIONS: dict[str, Dimension] = {
     d.key: d
@@ -51,6 +54,7 @@ DIMENSIONS: dict[str, Dimension] = {
 }
 
 Operator = Literal["eq", "neq", "in", "not_in"]
+
 
 class Filter(BaseModel):
     dimension: str
@@ -81,9 +85,11 @@ class Filter(BaseModel):
         joined = ", ".join(str(v) for v in self.values or [])
         return f"{label} {'in' if self.operator == 'in' else 'not in'} ({joined})"
 
+
 class CompiledWhere(BaseModel):
     sql: str
     params: dict[str, Any] = Field(default_factory=dict)
+
 
 def compile_filters(filters: list[Filter], prefix: str = "f") -> CompiledWhere:
     """Compile filters to a WHERE fragment with bound parameters. Callers decide
@@ -103,10 +109,12 @@ def compile_filters(filters: list[Filter], prefix: str = "f") -> CompiledWhere:
             clauses.append(f"{dim.col} {op} {{{name}:Array({dim.ch_type})}}")
     return CompiledWhere(sql=" AND ".join(clauses) if clauses else "1", params=params)
 
+
 def split_by_scope(filters: list[Filter]) -> tuple[list[Filter], list[Filter]]:
     session = [f for f in filters if f.dim.scope == Scope.session]
     event = [f for f in filters if f.dim.scope == Scope.event]
     return session, event
+
 
 def _coerce(dim: Dimension, value: Any) -> Any:
     if dim.ch_type == "UInt32":

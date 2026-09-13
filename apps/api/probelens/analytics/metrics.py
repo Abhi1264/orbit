@@ -10,6 +10,7 @@ from enum import StrEnum
 
 from probelens.analytics.dimensions import Scope
 
+
 class MetricFormat(StrEnum):
     count = "count"
     currency = "currency"
@@ -17,6 +18,7 @@ class MetricFormat(StrEnum):
     ratio = "ratio"
     number = "number"
     days = "days"
+
 
 @dataclass(frozen=True)
 class Metric:
@@ -36,6 +38,7 @@ class Metric:
         if self.denominator is None:
             return self.numerator
         return f"if({self.denominator} = 0, NULL, {self.numerator} / {self.denominator})"
+
 
 # Rollup columns available to session-scoped metrics (see query.SESSION_ROLLUP).
 _S = Scope.session
@@ -219,11 +222,13 @@ METRICS: dict[str, Metric] = {
 
 OVERVIEW_METRICS = ["revenue", "orders", "conversion", "aov", "return_rate", "users"]
 
+
 def get_metric(key: str) -> Metric:
     try:
         return METRICS[key]
     except KeyError as exc:
         raise ValueError(f"Unknown metric '{key}'") from exc
+
 
 def format_value(fmt: MetricFormat | str, v: float | None) -> str:
     """Human-readable metric value for generated prose (findings, memos, AI answers)."""

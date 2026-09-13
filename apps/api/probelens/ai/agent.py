@@ -67,6 +67,7 @@ Links: /analytics?metric=<key>&from=YYYY-MM-DD&to=YYYY-MM-DD[&breakdown=<dim>] ;
 /investigations/<id> ; /funnels.
 """
 
+
 def _vocabulary(tctx: ToolContext) -> str:
     metrics = "; ".join(f"{k}: {m.label} ({m.format.value})" for k, m in METRICS.items())
     dims = "; ".join(
@@ -79,6 +80,7 @@ def _vocabulary(tctx: ToolContext) -> str:
         f"Metric keys: {metrics}\n"
         f"Dimension keys and example values: {dims}"
     )
+
 
 def _context_note(ctx: AskContext) -> str:
     parts = []
@@ -98,9 +100,11 @@ def _context_note(ctx: AskContext) -> str:
         else ""
     )
 
+
 def build_tool_context(db: Session) -> ToolContext:
     meta = get_meta()
     return ToolContext(db=db, today=meta.data_end or date.today(), dimension_values=_dimension_values())
+
 
 def _parse_answer(text: str) -> AnalystAnswer:
     body = text.strip()
@@ -111,6 +115,7 @@ def _parse_answer(text: str) -> AnalystAnswer:
     if start < 0 or end < 0:
         raise ValueError("no JSON object in reply")
     return AnalystAnswer.model_validate_json(body[start : end + 1])
+
 
 def run_llm(
     provider: ChatProvider, question: str, ctx: AskContext, tctx: ToolContext
@@ -174,8 +179,10 @@ def run_llm(
     turn = provider.chat(messages, None, json_response=True)
     return _parse_answer(turn.content or ""), calls, usage
 
+
 def _answer_summary_for_audit(answer: AnalystAnswer) -> dict:
     return answer.model_dump(mode="json")
+
 
 def ask(db: Session, user: User, question: str, ctx: AskContext, mode: Mode | None = None) -> AskResponse:
     t0 = time.perf_counter()

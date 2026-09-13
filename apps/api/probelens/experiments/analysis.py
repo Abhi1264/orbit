@@ -33,6 +33,7 @@ SEGMENT_DIMENSIONS = ("platform", "user_type")
 Role = Literal["primary", "guardrail"]
 Direction = Literal["better", "worse", "flat"]
 
+
 @dataclass(frozen=True)
 class ExperimentSpec:
     """What the analysis needs to know about an experiment, decoupled from the ORM."""
@@ -51,6 +52,7 @@ class ExperimentSpec:
     min_relative_effect: float
     min_duration_days: int
 
+
 class VariantStat(BaseModel):
     key: str
     users: int
@@ -59,6 +61,7 @@ class VariantStat(BaseModel):
     denominator: float
     ci_low: float | None
     ci_high: float | None
+
 
 class VariantComparison(BaseModel):
     variant: str
@@ -72,6 +75,7 @@ class VariantComparison(BaseModel):
     significant: bool
     direction: Direction
 
+
 class MetricReadout(BaseModel):
     metric_key: str
     label: str
@@ -81,11 +85,13 @@ class MetricReadout(BaseModel):
     variants: list[VariantStat]
     comparisons: list[VariantComparison]
 
+
 class Srm(BaseModel):
     chi2: float
     p_value: float
     mismatch: bool
     expected: dict[str, float]
+
 
 class Exposure(BaseModel):
     total_users: int
@@ -96,10 +102,12 @@ class Exposure(BaseModel):
     contaminated_users: int
     srm: Srm | None
 
+
 class TimelinePoint(BaseModel):
     day: date
     cumulative: dict[str, float | None]  # variant -> cumulative metric value
     users: dict[str, int]  # variant -> cumulative exposed users
+
 
 class SegmentRow(BaseModel):
     segment: str
@@ -110,10 +118,12 @@ class SegmentRow(BaseModel):
     p_value: float | None
     significant: bool
 
+
 class SegmentReadout(BaseModel):
     dimension: str
     label: str
     rows: list[SegmentRow]
+
 
 class Power(BaseModel):
     baseline: float | None
@@ -123,10 +133,12 @@ class Power(BaseModel):
     users_per_day: float | None
     projected_days_to_power: int | None
 
+
 class Check(BaseModel):
     name: str
     passed: bool
     detail: str
+
 
 class Recommendation(BaseModel):
     decision: Literal["ship", "iterate", "stop", "continue"]
@@ -135,6 +147,7 @@ class Recommendation(BaseModel):
     reasons: list[str]
     risks: list[str]
     checks: list[Check]
+
 
 class ExperimentResults(BaseModel):
     experiment_key: str
@@ -150,11 +163,13 @@ class ExperimentResults(BaseModel):
     recommendation: Recommendation
     notes: list[str]
 
+
 # A user's segment is whatever they were at first exposure, so each user lands in
 # exactly one segment and the unit of analysis stays the user.
 _SEGMENT_COLS = ",\n           ".join(
     f"argMin({DIMENSIONS[d].col}, timestamp) AS x_{DIMENSIONS[d].col}" for d in SEGMENT_DIMENSIONS
 )
+
 
 def _exposed_cte(spec: ExperimentSpec, params: dict[str, Any]) -> str:
     params["key"] = spec.key
@@ -187,6 +202,7 @@ exposed AS (
     HAVING variant != ''
 )"""
 
+
 def _per_user_sql(m: Metric, spec: ExperimentSpec, params: dict[str, Any], segment: str | None = None) -> str:
     """Rows of (variant, user_id[, segment], num, den): one per exposed user."""
     cte = _exposed_cte(spec, params)
@@ -216,6 +232,7 @@ SELECT e.variant AS variant, {user_col} AS uid{seg_select},
 FROM {source}
 GROUP BY variant, uid{seg_group}"""
 
+
 def _moments_sql(m: Metric, spec: ExperimentSpec, params: dict[str, Any], segment: str | None = None) -> str:
     inner = _per_user_sql(m, spec, params, segment)
     seg = ", segment" if segment else ""
@@ -226,6 +243,7 @@ FROM ({inner})
 GROUP BY variant{seg}
 ORDER BY variant{seg}"""
 
+
 def _exposure_sql(spec: ExperimentSpec, params: dict[str, Any]) -> str:
     cte = _exposed_cte(spec, params)
     return f"""
@@ -235,6 +253,7 @@ SELECT variant, count() AS users, min(toDate(first_exposure)) AS first_day,
 FROM exposed
 GROUP BY variant
 ORDER BY variant"""
+
 
 def _timeline_sql(m: Metric, spec: ExperimentSpec, params: dict[str, Any]) -> str:
     """Daily (variant, day, num, den, new users) for the primary metric."""
@@ -261,6 +280,7 @@ FROM {source}
 GROUP BY variant, day
 ORDER BY day, variant"""
 
+
 def _new_users_sql(spec: ExperimentSpec, params: dict[str, Any]) -> str:
     cte = _exposed_cte(spec, params)
     return f"""
@@ -269,6 +289,7 @@ SELECT variant, toDate(first_exposure) AS day, count() AS users
 FROM exposed
 GROUP BY variant, day
 ORDER BY day, variant"""
+
 
 def _moments(row: dict[str, Any]) -> stats.VariantMoments:
     return stats.VariantMoments(
@@ -280,11 +301,13 @@ def _moments(row: dict[str, Any]) -> stats.VariantMoments:
         cov=float(row["cov"] or 0),
     )
 
+
 def _direction(m: Metric, c: stats.Comparison) -> Direction:
     if not c.significant:
         return "flat"
     good = c.abs_diff > 0 if m.higher_is_better else c.abs_diff < 0
     return "better" if good else "worse"
+
 
 def _readout(m: Metric, role: Role, rows: list[dict[str, Any]], control_key: str) -> MetricReadout:
     moments = {r["variant"]: _moments(r) for r in rows}
@@ -336,9 +359,11 @@ def _readout(m: Metric, role: Role, rows: list[dict[str, Any]], control_key: str
         comparisons=comparisons,
     )
 
+
 def _base_params(spec: ExperimentSpec, as_of: date) -> dict[str, Any]:
     end = min(spec.end or as_of, as_of)
     return {"x_from": spec.start, "x_to": end, "d_from": spec.start, "d_to": as_of}
+
 
 def _exposure(spec: ExperimentSpec, as_of: date) -> Exposure:
     params = _base_params(spec, as_of)
@@ -364,10 +389,12 @@ def _exposure(spec: ExperimentSpec, as_of: date) -> Exposure:
         srm=srm,
     )
 
+
 def _as_date(v: Any) -> date:
     if isinstance(v, date):
         return v
     return date.fromisoformat(str(v)[:10])
+
 
 def _timeline(m: Metric, spec: ExperimentSpec, as_of: date) -> list[TimelinePoint]:
     params = _base_params(spec, as_of)
@@ -403,6 +430,7 @@ def _timeline(m: Metric, spec: ExperimentSpec, as_of: date) -> list[TimelinePoin
         )
     return out
 
+
 def _segments(m: Metric, spec: ExperimentSpec, as_of: date, treatment_key: str) -> list[SegmentReadout]:
     out: list[SegmentReadout] = []
     for dim in SEGMENT_DIMENSIONS:
@@ -431,6 +459,7 @@ def _segments(m: Metric, spec: ExperimentSpec, as_of: date, treatment_key: str) 
             )
         out.append(SegmentReadout(dimension=dim, label=DIMENSIONS[dim].label, rows=seg_rows))
     return out
+
 
 def _power(
     primary: MetricReadout,
@@ -466,6 +495,7 @@ def _power(
         users_per_day=per_day,
         projected_days_to_power=projected,
     )
+
 
 def analyze(spec: ExperimentSpec, as_of: date) -> ExperimentResults:
     from probelens.experiments.decision import recommend  # local import: decision depends on these models

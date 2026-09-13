@@ -15,6 +15,7 @@ from probelens.db.redis import get_redis
 _local: dict[str, tuple[int, float]] = {}
 _lock = threading.Lock()
 
+
 def hit(key: str, limit: int, window_seconds: int) -> tuple[bool, int]:
     """Record one attempt; return (allowed, seconds until the window resets)."""
     redis = get_redis()
@@ -41,6 +42,7 @@ def hit(key: str, limit: int, window_seconds: int) -> tuple[bool, int]:
             for k in [k for k, (_, r) in _local.items() if r < now][:5_000]:
                 _local.pop(k, None)
     return count <= limit, int(reset_at - now) + 1
+
 
 def reset(key: str) -> None:
     redis = get_redis()

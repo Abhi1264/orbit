@@ -12,6 +12,7 @@ POST_PURCHASE_EVENTS = ("delivery_completed", "return_initiated", "return_comple
 
 NOT_POST_PURCHASE = f"event_name NOT IN {POST_PURCHASE_EVENTS}"
 
+
 def session_where(filters: list[Filter], params: dict[str, Any]) -> str:
     """WHERE clause for a per-session rollup. Session-scoped filters apply to
     every row; event-scoped filters select whole sessions that contain a

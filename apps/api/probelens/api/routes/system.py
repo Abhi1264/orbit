@@ -29,11 +29,13 @@ from probelens.models import (
 
 router = APIRouter(prefix="/system", tags=["system"], dependencies=[Depends(require(Permission.view))])
 
+
 class Dependency(BaseModel):
     name: str
     ok: bool
     latency_ms: float | None
     detail: str
+
 
 class JobRun(BaseModel):
     job: str
@@ -41,12 +43,14 @@ class JobRun(BaseModel):
     ok: bool | None
     detail: dict[str, str]
 
+
 class DataStatus(BaseModel):
     data_start: date | None
     data_end: date | None
     events: int
     users: int
     cache_keys: int
+
 
 class SystemStatus(BaseModel):
     env: str
@@ -64,6 +68,7 @@ class SystemStatus(BaseModel):
     ai_errors_24h: int
     generated_at: datetime
 
+
 def _probe(name: str, fn) -> Dependency:
     started = time.perf_counter()
     try:
@@ -73,6 +78,7 @@ def _probe(name: str, fn) -> Dependency:
         )
     except Exception as exc:
         return Dependency(name=name, ok=False, latency_ms=None, detail=str(exc)[:200])
+
 
 @router.get("/status", response_model=SystemStatus)
 def system_status(_: CurrentUser, db: DbSession) -> SystemStatus:

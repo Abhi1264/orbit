@@ -17,6 +17,7 @@ from math import erfc, exp, isfinite, lgamma, log, pi, sqrt
 Z_95 = 1.959963984540054
 Z_80_POWER = 0.8416212335729143
 
+
 @dataclass(frozen=True)
 class VariantMoments:
     """Per-variant sufficient statistics over users."""
@@ -42,6 +43,7 @@ class VariantMoments:
         v = (self.var_num - 2 * r * self.cov + r * r * self.var_den) / (mean_den**2)
         return max(v, 0.0) / self.n
 
+
 @dataclass(frozen=True)
 class Comparison:
     control: float
@@ -60,12 +62,15 @@ class Comparison:
     def ci_excludes_zero(self) -> bool:
         return self.ci_low > 0 or self.ci_high < 0
 
+
 def normal_sf(z: float) -> float:
     """P(Z > z) for a standard normal."""
     return 0.5 * erfc(z / sqrt(2))
 
+
 def two_sided_p(z: float) -> float:
     return min(1.0, 2 * normal_sf(abs(z)))
+
 
 def compare(control: VariantMoments, treatment: VariantMoments, alpha: float = 0.05) -> Comparison | None:
     """Difference in the ratio-of-sums between two variants with a normal approximation.
@@ -99,12 +104,14 @@ def compare(control: VariantMoments, treatment: VariantMoments, alpha: float = 0
         significant=p < alpha,
     )
 
+
 def z_for_alpha(alpha: float) -> float:
     """Two-sided critical value. Only common alphas are needed; others fall back to bisection."""
     table = {0.10: 1.6448536269514722, 0.05: Z_95, 0.01: 2.5758293035489004}
     if alpha in table:
         return table[alpha]
     return _normal_quantile(1 - alpha / 2)
+
 
 def _normal_quantile(p: float) -> float:
     lo, hi = -10.0, 10.0
@@ -115,6 +122,7 @@ def _normal_quantile(p: float) -> float:
         else:
             hi = mid
     return (lo + hi) / 2
+
 
 def chi2_sf(x: float, df: int) -> float:
     """Survival function of a chi-square with integer df, via the regularised upper
@@ -154,6 +162,7 @@ def chi2_sf(x: float, df: int) -> float:
     q = exp(-z + a * log(z) - lgamma(a)) * h
     return max(0.0, min(1.0, q))
 
+
 @dataclass(frozen=True)
 class SrmResult:
     observed: dict[str, int]
@@ -161,6 +170,7 @@ class SrmResult:
     chi2: float
     p_value: float
     mismatch: bool  # p below the (deliberately strict) alarm threshold
+
 
 def sample_ratio_mismatch(
     observed: dict[str, int], weights: dict[str, int], alarm_p: float = 0.001
@@ -179,6 +189,7 @@ def sample_ratio_mismatch(
     p = chi2_sf(chi2, df)
     return SrmResult(observed=observed, expected=expected, chi2=chi2, p_value=p, mismatch=p < alarm_p)
 
+
 def required_n_per_variant(
     baseline: float,
     per_user_variance: float,
@@ -196,6 +207,7 @@ def required_n_per_variant(
     n = 2 * ((z_for_alpha(alpha) + z_beta) ** 2) * per_user_variance / (delta**2)
     return int(n) + 1
 
+
 def detectable_effect(
     baseline: float, per_user_variance: float, n_per_variant: int, alpha: float = 0.05, power: float = 0.8
 ) -> float | None:
@@ -205,6 +217,7 @@ def detectable_effect(
     z_beta = _normal_quantile(power) if power != 0.8 else Z_80_POWER
     delta = (z_for_alpha(alpha) + z_beta) * sqrt(2 * per_user_variance / n_per_variant)
     return delta / baseline
+
 
 def normal_pdf(x: float) -> float:
     return exp(-0.5 * x * x) / sqrt(2 * pi)

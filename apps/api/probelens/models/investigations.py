@@ -14,6 +14,7 @@ from probelens.models.enums import (
     InvestigationStatus,
 )
 
+
 class Investigation(Base, TimestampMixin):
     __tablename__ = "investigations"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -51,6 +52,7 @@ class Investigation(Base, TimestampMixin):
 
     __table_args__ = (Index("ix_investigations_search", "search_vector", postgresql_using="gin"),)
 
+
 class InvestigationFinding(Base, TimestampMixin):
     """A single entry in the evidence trail. `kind` keeps observed facts,
     hypotheses and recommendations visibly separate; `data` snapshots the query
@@ -71,6 +73,7 @@ class InvestigationFinding(Base, TimestampMixin):
     investigation: Mapped[Investigation] = relationship(back_populates="findings")
     author: Mapped[User | None] = relationship()
 
+
 class InvestigationAction(Base, TimestampMixin):
     __tablename__ = "investigation_actions"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -82,6 +85,7 @@ class InvestigationAction(Base, TimestampMixin):
 
     investigation: Mapped[Investigation] = relationship(back_populates="actions")
     owner: Mapped[User | None] = relationship()
+
 
 class InvestigationStakeholder(Base):
     __tablename__ = "investigation_stakeholders"

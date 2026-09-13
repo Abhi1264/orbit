@@ -28,6 +28,7 @@ SESSION_ROLLUP_FIELDS = """
     max(event_name = 'order_completed') AS has_order
 """.format(session_dims=",\n    ".join(f"any({c}) AS s_{c}" for c in SESSION_DIM_COLS))
 
+
 class MetricQuery(BaseModel):
     metric: str
     date_from: date
@@ -68,16 +69,19 @@ class MetricQuery(BaseModel):
             "compare_to": self.compare_to.isoformat() if self.compare_to else None,
         }
 
+
 class Point(BaseModel):
     bucket: str
     value: float | None
     numerator: float
     denominator: float | None
 
+
 class Total(BaseModel):
     value: float | None
     numerator: float
     denominator: float | None
+
 
 class Series(BaseModel):
     key: str
@@ -87,6 +91,7 @@ class Series(BaseModel):
     points: list[Point] = Field(default_factory=list)
     compare_points: list[Point] = Field(default_factory=list)
 
+
 class MetricInfo(BaseModel):
     key: str
     label: str
@@ -95,10 +100,12 @@ class MetricInfo(BaseModel):
     higher_is_better: bool
     is_proportion: bool
 
+
 class MetricQueryResult(BaseModel):
     metric: MetricInfo
     interpretation: dict[str, Any]
     series: list[Series]
+
 
 def metric_info(m: Metric) -> MetricInfo:
     return MetricInfo(
@@ -110,6 +117,7 @@ def metric_info(m: Metric) -> MetricInfo:
         is_proportion=m.is_proportion,
     )
 
+
 def bucket_expr(granularity: Granularity, ts_col: str) -> str:
     if granularity == "hour":
         return f"toStartOfHour({ts_col})"
@@ -117,9 +125,11 @@ def bucket_expr(granularity: Granularity, ts_col: str) -> str:
         return f"toStartOfWeek(toDate({ts_col}), 1)"
     return f"toDate({ts_col})"
 
+
 class _Compiled(BaseModel):
     sql: str
     params: dict[str, Any]
+
 
 def _session_source(q: MetricQuery, params: dict[str, Any], breakdown_event_dim: str | None) -> str:
     """Per-session rollup subquery honouring filters of both scopes."""
@@ -130,6 +140,7 @@ def _session_source(q: MetricQuery, params: dict[str, Any], breakdown_event_dim:
         empty = "0" if DIMENSIONS[breakdown_event_dim].ch_type == "UInt32" else "''"
         fields += f",\n    groupUniqArrayIf({col}, {col} != {empty}) AS dims"
     return f"(SELECT {fields} FROM events WHERE {where} GROUP BY session_id)"
+
 
 def compile_metric_query(
     q: MetricQuery,
@@ -181,10 +192,12 @@ GROUP BY bucket, dim
 """
     return _Compiled(sql=sql, params=params)
 
+
 def _to_total(row: dict[str, Any] | None) -> Total:
     if row is None:
         return Total(value=None, numerator=0, denominator=None)
     return Total(value=_f(row["value"]), numerator=_f(row["num"]) or 0, denominator=_f(row["den"]))
+
 
 def _to_point(row: dict[str, Any]) -> Point:
     b = row["bucket"]
@@ -196,6 +209,7 @@ def _to_point(row: dict[str, Any]) -> Point:
         denominator=_f(row["den"]),
     )
 
+
 def _f(v: Any) -> float | None:
     if v is None:
         return None
@@ -203,6 +217,7 @@ def _f(v: Any) -> float | None:
         return float(v)
     except (TypeError, ValueError):
         return None
+
 
 def run_metric_query(q: MetricQuery) -> MetricQueryResult:
     m = get_metric(q.metric)
@@ -257,10 +272,12 @@ def run_metric_query(q: MetricQuery) -> MetricQueryResult:
 
     return MetricQueryResult(metric=metric_info(m), interpretation=q.describe(), series=list(series.values()))
 
+
 def _typed_dims(breakdown: str | None, keys: list[str]) -> list[Any]:
     if breakdown and DIMENSIONS[breakdown].ch_type == "UInt32":
         return [int(k) for k in keys]
     return keys
+
 
 def _labeler(breakdown: str | None):
     if breakdown == "product_id":

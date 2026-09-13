@@ -19,18 +19,22 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from probelens.models.base import Base, TimestampMixin
 from probelens.models.enums import Role
 
+
 def enum_col(enum_cls, **kw):
     return Enum(enum_cls, native_enum=False, length=32, values_callable=lambda e: [m.value for m in e], **kw)
+
 
 def search_vector(*columns: str):
     """Persisted tsvector over the given text columns; every searchable table shares this shape."""
     expr = " || ' ' || ".join(f"coalesce({c}, '')" for c in columns)
     return mapped_column(TSVECTOR, Computed(f"to_tsvector('english', {expr})", persisted=True))
 
+
 class Team(Base):
     __tablename__ = "teams"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True)
+
 
 class Project(Base):
     __tablename__ = "projects"
@@ -38,6 +42,7 @@ class Project(Base):
     key: Mapped[str] = mapped_column(String(40), unique=True)
     name: Mapped[str] = mapped_column(String(120))
     description: Mapped[str] = mapped_column(Text, default="")
+
 
 class User(Base, TimestampMixin):
     __tablename__ = "users"
@@ -50,6 +55,7 @@ class User(Base, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     team: Mapped[Team | None] = relationship()
+
 
 class Product(Base):
     """Catalog dimension. Stock and velocity feed the inventory-risk view."""
@@ -65,6 +71,7 @@ class Product(Base):
     stock_units: Mapped[int] = mapped_column(Integer)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
+
 class Stakeholder(Base):
     __tablename__ = "stakeholders"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -72,6 +79,7 @@ class Stakeholder(Base):
     email: Mapped[str] = mapped_column(String(255))
     team: Mapped[str] = mapped_column(String(80))
     title: Mapped[str] = mapped_column(String(120))
+
 
 class Comment(Base, TimestampMixin):
     __tablename__ = "comments"
@@ -84,6 +92,7 @@ class Comment(Base, TimestampMixin):
     author: Mapped[User] = relationship()
 
     __table_args__ = (Index("ix_comments_entity", "entity_type", "entity_id"),)
+
 
 class SavedAnalysis(Base, TimestampMixin):
     __tablename__ = "saved_analyses"
@@ -100,6 +109,7 @@ class SavedAnalysis(Base, TimestampMixin):
 
     __table_args__ = (Index("ix_saved_analyses_search", "search_vector", postgresql_using="gin"),)
 
+
 class Segment(Base, TimestampMixin):
     __tablename__ = "segments"
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -109,6 +119,7 @@ class Segment(Base, TimestampMixin):
     conditions: Mapped[list] = mapped_column(JSONB)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     owner: Mapped[User] = relationship()
+
 
 class Anomaly(Base, TimestampMixin):
     __tablename__ = "anomalies"

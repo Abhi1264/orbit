@@ -20,6 +20,7 @@ from probelens.worker import jobs
 
 log = get_logger("worker")
 
+
 def main() -> int:
     configure_logging()
     worker = Worker(jobs.broker, worker_threads=2)
@@ -48,6 +49,7 @@ def main() -> int:
     scheduler.shutdown(wait=False)
     worker.stop()
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

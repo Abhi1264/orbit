@@ -10,8 +10,10 @@ from __future__ import annotations
 from probelens.analytics.metrics import format_value, get_metric
 from probelens.experiments.analysis import ExperimentResults, MetricReadout
 
+
 def _pct(x: float | None) -> str:
     return "n/a" if x is None else f"{x * 100:+.1f}%"
+
 
 def _metric_table(m: MetricReadout, control: str) -> list[str]:
     fmt = get_metric(m.metric_key).format
@@ -40,6 +42,7 @@ def _metric_table(m: MetricReadout, control: str) -> list[str]:
             lines.append(f"| {v.key} | {v.users:,} | {format_value(fmt, v.value)} | {ci} | – | – |")
     lines.append("")
     return lines
+
 
 def build_memo(
     *,

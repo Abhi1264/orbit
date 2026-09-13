@@ -38,14 +38,17 @@ _LOAD = [
     selectinload(Experiment.decided_by),
 ]
 
+
 def _load(db: Session, experiment_id: int) -> Experiment:
     exp = db.get(Experiment, experiment_id, options=_LOAD)
     if exp is None:
         raise NotFound("Experiment", experiment_id)
     return exp
 
+
 def _can_edit(user, exp: Experiment) -> bool:
     return user.role in (Role.admin, Role.pm) or user.id == exp.owner_id
+
 
 def _summary(exp: Experiment) -> dict:
     return {
@@ -68,6 +71,7 @@ def _summary(exp: Experiment) -> dict:
         "updated_at": exp.updated_at,
     }
 
+
 def _to_out(exp: Experiment) -> ExperimentOut:
     filters = [Filter.model_validate(f) for f in exp.audience_filters or []]
     return ExperimentOut(
@@ -85,6 +89,7 @@ def _to_out(exp: Experiment) -> ExperimentOut:
         decided_by=exp.decided_by,
         created_at=exp.created_at,
     )
+
 
 def _spec(exp: Experiment) -> ExperimentSpec:
     control = next((v.key for v in exp.variants if v.is_control), exp.variants[0].key)
@@ -104,14 +109,17 @@ def _spec(exp: Experiment) -> ExperimentSpec:
         min_duration_days=exp.min_duration_days,
     )
 
+
 def _check_metrics(primary: str, guardrails: list[str]) -> None:
     for key in [primary, *guardrails]:
         if key not in METRICS:
             raise BadRequest(f"Unknown metric '{key}'")
 
+
 def _slug(name: str) -> str:
     s = re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
     return s[:60] or "experiment"
+
 
 def _apply_variants(exp: Experiment, variants: list[VariantIn]) -> None:
     exp.variants = [
@@ -121,8 +129,10 @@ def _apply_variants(exp: Experiment, variants: list[VariantIn]) -> None:
         for v in variants
     ]
 
+
 def _as_of(db_as_of: date | None) -> date:
     return db_as_of or get_meta().data_end or date.today()
+
 
 @router.get("/experiments", response_model=list[ExperimentSummary])
 def list_experiments(db: DbSession, status: ExperimentStatus | None = None) -> list[ExperimentSummary]:
@@ -130,6 +140,7 @@ def list_experiments(db: DbSession, status: ExperimentStatus | None = None) -> l
     if status is not None:
         stmt = stmt.where(Experiment.status == status)
     return [ExperimentSummary(**_summary(e)) for e in db.scalars(stmt)]
+
 
 @router.post("/experiments", response_model=ExperimentOut, status_code=201, dependencies=[_manage])
 def create_experiment(payload: ExperimentCreate, user: CurrentUser, db: DbSession) -> ExperimentOut:
@@ -161,9 +172,11 @@ def create_experiment(payload: ExperimentCreate, user: CurrentUser, db: DbSessio
     db.flush()
     return _to_out(_load(db, exp.id))
 
+
 @router.get("/experiments/{experiment_id}", response_model=ExperimentOut)
 def get_experiment(experiment_id: int, db: DbSession) -> ExperimentOut:
     return _to_out(_load(db, experiment_id))
+
 
 _TRANSITIONS: dict[ExperimentStatus, set[ExperimentStatus]] = {
     ExperimentStatus.draft: {ExperimentStatus.running},
@@ -181,6 +194,7 @@ _DESIGN_FIELDS = {
     "variants",
     "start_date",
 }
+
 
 @router.patch("/experiments/{experiment_id}", response_model=ExperimentOut, dependencies=[_manage])
 def update_experiment(
@@ -227,6 +241,7 @@ def update_experiment(
     db.expire(exp)
     return _to_out(_load(db, experiment_id))
 
+
 @router.delete("/experiments/{experiment_id}", status_code=204, dependencies=[_manage])
 def delete_experiment(experiment_id: int, user: CurrentUser, db: DbSession) -> None:
     exp = _load(db, experiment_id)
@@ -237,12 +252,14 @@ def delete_experiment(experiment_id: int, user: CurrentUser, db: DbSession) -> N
     db.delete(exp)
     db.flush()
 
+
 @router.get("/experiments/{experiment_id}/results", response_model=ExperimentResults)
 def experiment_results(
     experiment_id: int, db: DbSession, as_of: date | None = Query(default=None)
 ) -> ExperimentResults:
     exp = _load(db, experiment_id)
     return analyze(_spec(exp), _as_of(as_of))
+
 
 @router.get("/experiments/{experiment_id}/memo", response_model=MemoOut)
 def experiment_memo(experiment_id: int, db: DbSession, as_of: date | None = Query(default=None)) -> MemoOut:
@@ -259,6 +276,7 @@ def experiment_memo(experiment_id: int, db: DbSession, as_of: date | None = Quer
         recorded_reason=exp.decision_reason,
     )
     return MemoOut(markdown=markdown, as_of=day)
+
 
 @router.post("/experiments/{experiment_id}/decision", response_model=ExperimentOut, dependencies=[_decide])
 def record_decision(

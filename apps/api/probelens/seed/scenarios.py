@@ -9,6 +9,7 @@ experiments; docs/data-model.md describes them for humans.
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
+
 @dataclass(frozen=True)
 class ReleaseSpec:
     version: str
@@ -20,6 +21,7 @@ class ReleaseSpec:
     # (day offset from release, rollout percent) pairs; last entry holds thereafter.
     rollout: tuple[tuple[int, int], ...] = ((0, 100),)
     status: str = "completed"
+
 
 @dataclass(frozen=True)
 class ExperimentSpec:
@@ -38,6 +40,7 @@ class ExperimentSpec:
     effects: dict[str, float] = field(default_factory=dict)
     exposure_event: str = "product_view"
     audience_filters: tuple[dict, ...] = ()
+
 
 @dataclass(frozen=True)
 class Scenarios:

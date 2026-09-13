@@ -101,6 +101,7 @@ _GATEWAYS = {
     "netbanking": "razorpay",
 }
 
+
 class Simulator:
     def __init__(
         self,

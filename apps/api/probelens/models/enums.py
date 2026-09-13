@@ -1,10 +1,12 @@
 from enum import StrEnum
 
+
 class Role(StrEnum):
     admin = "admin"
     pm = "pm"
     analyst = "analyst"
     viewer = "viewer"
+
 
 class ExperimentStatus(StrEnum):
     draft = "draft"
@@ -12,11 +14,13 @@ class ExperimentStatus(StrEnum):
     completed = "completed"
     stopped = "stopped"
 
+
 class ExperimentDecision(StrEnum):
     ship = "ship"
     iterate = "iterate"
     stop = "stop"
     continue_ = "continue"
+
 
 class InvestigationStatus(StrEnum):
     open = "open"
@@ -25,26 +29,31 @@ class InvestigationStatus(StrEnum):
     resolved = "resolved"
     closed = "closed"
 
+
 class FindingKind(StrEnum):
     observation = "observation"
     evidence = "evidence"
     hypothesis = "hypothesis"
     recommendation = "recommendation"
 
+
 class HypothesisState(StrEnum):
     proposed = "proposed"
     supported = "supported"
     refuted = "refuted"
+
 
 class Confidence(StrEnum):
     low = "low"
     medium = "medium"
     high = "high"
 
+
 class ActionStatus(StrEnum):
     todo = "todo"
     in_progress = "in_progress"
     done = "done"
+
 
 class AnomalyStatus(StrEnum):
     open = "open"
@@ -52,12 +61,14 @@ class AnomalyStatus(StrEnum):
     investigating = "investigating"
     resolved = "resolved"
 
+
 class ReleaseStatus(StrEnum):
     planned = "planned"
     in_progress = "in_progress"
     rolling_out = "rolling_out"
     completed = "completed"
     rolled_back = "rolled_back"
+
 
 class EntityType(StrEnum):
     investigation = "investigation"
@@ -69,15 +80,18 @@ class EntityType(StrEnum):
     knowledge = "knowledge"
     feedback = "feedback"
 
+
 class DecisionStatus(StrEnum):
     proposed = "proposed"
     decided = "decided"
     superseded = "superseded"
 
+
 class ChecklistStatus(StrEnum):
     not_started = "not_started"
     in_progress = "in_progress"
     complete = "complete"
+
 
 class FeedbackSource(StrEnum):
     support = "support"
@@ -87,10 +101,12 @@ class FeedbackSource(StrEnum):
     app_review = "app_review"
     internal = "internal"
 
+
 class FeedbackSentiment(StrEnum):
     negative = "negative"
     neutral = "neutral"
     positive = "positive"
+
 
 class FeedbackStatus(StrEnum):
     new = "new"

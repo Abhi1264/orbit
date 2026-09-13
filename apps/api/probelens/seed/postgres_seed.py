@@ -75,8 +75,10 @@ STAKEHOLDERS = [
     ("Sameer Joshi", "sameer.joshi@threadline.test", "Search Engineering", "Tech Lead"),
 ]
 
+
 def _at(day, hour=10, minute=0) -> datetime:
     return datetime.combine(day, time(hour, minute), tzinfo=UTC)
+
 
 def reset(db: Session) -> None:
     for model in (
@@ -106,6 +108,7 @@ def reset(db: Session) -> None:
     ):
         db.execute(delete(model))
     db.flush()
+
 
 def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dict:
     reset(db)
@@ -809,6 +812,7 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
         "android_release_id": android.id,
         "investigations": {"paid_social": inv_paid.id, "footwear": inv_old.id},
     }
+
 
 def link_anomalies_to_investigations(db: Session, project_id: int) -> int:
     """Attach detected anomalies to the seeded investigations that are about them.
