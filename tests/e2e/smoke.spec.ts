@@ -45,11 +45,11 @@ test("every page loads and the worker is alive", async ({ page }) => {
   await expect(page.getByText("Alive", { exact: false })).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole("link", { name: "Experiments", exact: true }).click();
-  await page.locator("table a").first().click();
+  await page.locator('a[href^="/experiments/"]').first().click();
   await expect(page).toHaveURL(/\/experiments\/\d+/);
   await expect(page.getByRole("heading", { name: "Design" })).toBeVisible();
 
   await page.getByRole("link", { name: "Investigations", exact: true }).click();
-  await page.locator("table a").first().click();
+  await page.locator('a[href^="/investigations/"]').first().click();
   await expect(page).toHaveURL(/\/investigations\/\d+/);
 });
