@@ -16,8 +16,8 @@ export class ApiError extends Error {
 const unauthorizedRedirect: Middleware = {
   async onResponse({ response }) {
     if (response.status === 401 && typeof window !== "undefined") {
-      const next = window.location.pathname;
-      if (next !== "/login") {
+      const next = window.location.pathname + window.location.search;
+      if (window.location.pathname !== "/login") {
         // A hard navigation on session expiry intentionally drops all client cache.
         // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.assign(`/login?next=${encodeURIComponent(next)}`);

@@ -8,7 +8,10 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === "/login") {
-    return hasSession ? NextResponse.redirect(new URL("/", request.url)) : NextResponse.next();
+    // `next` means the app bounced here after a 401: the cookie exists but is no longer
+    // valid, so let the user log in again instead of looping back to the app.
+    const bounced = request.nextUrl.searchParams.has("next");
+    return hasSession && !bounced ? NextResponse.redirect(new URL("/", request.url)) : NextResponse.next();
   }
   if (!hasSession) {
     const login = new URL("/login", request.url);
