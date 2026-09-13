@@ -1,0 +1,11 @@
+<clickhouse>
+    <!-- The demo runs alongside Postgres, Redis, the API and Next.js on a laptop.
+         Cap server memory so a heavy query degrades gracefully instead of OOM-killing
+         the container. -->
+    <max_server_memory_usage>2500000000</max_server_memory_usage>
+    <mark_cache_size>268435456</mark_cache_size>
+    <uncompressed_cache_size>268435456</uncompressed_cache_size>
+    <logger>
+        <level>warning</level>
+    </logger>
+</clickhouse>

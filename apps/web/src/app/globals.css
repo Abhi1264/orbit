@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Neutral scale: every surface, border and text colour comes from here. */
+  --color-bg: #ffffff;
+  --color-surface: #fafafa;
+  --color-surface-2: #f4f4f5;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-fg: #18181b;
+  --color-fg-muted: #52525b;
+  --color-fg-subtle: #71717a;
+  --color-fg-faint: #a1a1aa;
+
+  /* Single interactive accent. */
+  --color-accent: #2f5fd6;
+  --color-accent-hover: #2650b8;
+  --color-accent-soft: #eef2fc;
+
+  /* Colour carries meaning only. */
+  --color-success: #15803d;
+  --color-success-soft: #ecfdf3;
+  --color-warning: #b45309;
+  --color-warning-soft: #fffbeb;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fef2f2;
+  --color-info: #1d4ed8;
+  --color-info-soft: #eff6ff;
+
+  /* Chart series: distinguishable, low saturation, colour-blind aware order. */
+  --color-series-1: #2f5fd6;
+  --color-series-2: #d97706;
+  --color-series-3: #0f766e;
+  --color-series-4: #7c3aed;
+  --color-series-5: #be123c;
+  --color-series-6: #4d7c0f;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  html {
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-bg text-fg text-[13px] leading-5;
+  }
+  :focus-visible {
+    @apply outline-accent outline-2 outline-offset-1;
+  }
+  ::selection {
+    background: var(--color-accent-soft);
+  }
+}
+
+@layer components {
+  .data-table {
+    @apply w-full border-collapse text-[13px];
+  }
+  .data-table th {
+    @apply border-border bg-surface text-2xs text-fg-subtle border-b px-3 py-1.5 text-left font-medium tracking-wide uppercase;
+  }
+  .data-table td {
+    @apply border-border border-b px-3 py-1.5 align-middle;
+  }
+  .data-table tbody tr:hover {
+    @apply bg-surface;
+  }
+  .data-table .num {
+    @apply tabular text-right;
+  }
+}
+
+.select-chevron {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+}
+
+.recharts-cartesian-axis-tick text {
+  fill: var(--color-fg-subtle);
+  font-size: 11px;
+}
+.recharts-cartesian-grid line {
+  stroke: var(--color-border);
+}
+.recharts-tooltip-cursor {
+  stroke: var(--color-border-strong);
+}

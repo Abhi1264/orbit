@@ -1,0 +1,17 @@
+<clickhouse>
+    <profiles>
+        <default>
+            <max_memory_usage>1500000000</max_memory_usage>
+            <max_execution_time>30</max_execution_time>
+        </default>
+        <!-- Profile bound to the API's read-only identity. readonly=2 permits
+             SELECT plus per-query settings but blocks DDL and writes. -->
+        <readonly_analytics>
+            <readonly>2</readonly>
+            <max_memory_usage>1500000000</max_memory_usage>
+            <max_execution_time>20</max_execution_time>
+            <max_result_rows>200000</max_result_rows>
+            <result_overflow_mode>break</result_overflow_mode>
+        </readonly_analytics>
+    </profiles>
+</clickhouse>
