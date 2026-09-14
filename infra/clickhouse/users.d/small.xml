@@ -1,0 +1,11 @@
+<clickhouse>
+    <profiles>
+        <default>
+            <max_threads>2</max_threads>
+        </default>
+        <readonly_analytics>
+            <max_threads>2</max_threads>
+            <max_memory_usage>1000000000</max_memory_usage>
+        </readonly_analytics>
+    </profiles>
+</clickhouse>

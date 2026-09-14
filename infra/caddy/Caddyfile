@@ -1,0 +1,8 @@
+{
+	email {$ACME_EMAIL:admin@localhost}
+}
+
+{$SITE_ADDRESS:http://:80} {
+	encode gzip
+	reverse_proxy web:3000
+}

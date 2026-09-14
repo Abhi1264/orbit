@@ -51,6 +51,30 @@ Leave `LLM_API_KEY` empty for deterministic demo answers. Set it (and optionally
 
 In production set `APP_ENV=production` and a real `SECRET_KEY`. Swagger is then disabled.
 
+## Deploy (OCI Ampere, one VM)
+
+Always Free shape: **VM.Standard.A1.Flex, 2 OCPU, 12 GB**, Ubuntu aarch64. Demo seed only — `make seed-full` will OOM.
+
+1. Open ingress **22, 80, 443**. Nothing else.
+2. Install Docker, add a 2 GB swap file (`fallocate` / `mkswap` / `swapon`).
+3. Clone this repo on the VM (build there; images are multi-arch).
+
+```bash
+cp .env.example .env
+# Always set SECRET_KEY=$(openssl rand -hex 32). The VM is public.
+# With a DNS name: APP_ENV=production, SITE_ADDRESS=orbit.example.com, ACME_EMAIL=you@domain
+# Public IP only: leave SITE_ADDRESS empty and APP_ENV=development (Secure cookies need HTTPS)
+make prod
+make prod-seed    # ~30k users; takes a while on 2 OCPU
+```
+
+Caddy listens on 80/443 and reverse-proxies the UI. Postgres, ClickHouse, Redis, and the API stay on the Docker network.
+
+```bash
+make prod-logs
+make prod-down
+```
+
 ## Tests
 
 ```bash

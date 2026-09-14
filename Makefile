@@ -1,9 +1,13 @@
-.PHONY: help up down logs seed seed-full migrate api web worker test test-api test-web e2e lint typecheck format openapi clean
+COMPOSE_PROD := docker compose -f docker-compose.yml -f docker-compose.prod.yml
+
+.PHONY: help up down logs seed seed-full migrate api web worker test test-api test-web e2e lint typecheck format openapi clean prod prod-seed prod-down prod-logs
 
 help:
 	@echo "make up          start postgres, clickhouse, redis, api, worker, web"
 	@echo "make seed        load the demo dataset (fast, deterministic)"
 	@echo "make seed-full   load the full dataset (50k users, ~5M events)"
+	@echo "make prod        start the OCI / small-VM stack (Caddy on :80/:443)"
+	@echo "make prod-seed   load demo data into the prod stack (not seed-full)"
 	@echo "make dev-infra   start only databases (for running api/web locally)"
 	@echo "make api         run FastAPI locally with reload"
 	@echo "make worker      run the background worker locally"
@@ -17,11 +21,23 @@ help:
 up:
 	docker compose up -d --build
 
+prod:
+	$(COMPOSE_PROD) up -d --build
+
+prod-seed:
+	$(COMPOSE_PROD) run --rm seed
+
+prod-down:
+	$(COMPOSE_PROD) down
+
+prod-logs:
+	$(COMPOSE_PROD) logs -f api worker web caddy
+
 down:
-	docker compose down
+	$(COMPOSE_PROD) down
 
 clean:
-	docker compose down -v
+	$(COMPOSE_PROD) down -v
 
 logs:
 	docker compose logs -f api worker web

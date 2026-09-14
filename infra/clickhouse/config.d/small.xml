@@ -1,0 +1,8 @@
+<clickhouse>
+    <!-- ponytail: sized for a 2 OCPU / 12 GB box. Raise caches if you add cores. -->
+    <max_server_memory_usage>3000000000</max_server_memory_usage>
+    <max_concurrent_queries>6</max_concurrent_queries>
+    <mark_cache_size>134217728</mark_cache_size>
+    <uncompressed_cache_size>134217728</uncompressed_cache_size>
+    <background_pool_size>4</background_pool_size>
+</clickhouse>

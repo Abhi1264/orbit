@@ -1,0 +1,121 @@
+# Overlay for a single small VM (OCI Ampere A1: 2 OCPU / 12 GB).
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Memory budget ~9 GB of 12, rest for kernel + page cache:
+#   ClickHouse 4g, Postgres 512m, Redis 192m, API 512m, worker 512m, web 384m, Caddy 64m.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    restart: unless-stopped
+    ports: !reset []
+    logging: *default-logging
+    mem_limit: 512m
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - effective_cache_size=512MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - max_connections=40
+      - -c
+      - wal_buffers=4MB
+
+  clickhouse:
+    restart: unless-stopped
+    ports: !reset []
+    logging: *default-logging
+    mem_limit: 4g
+    volumes:
+      - ./infra/clickhouse/config.d/small.xml:/etc/clickhouse-server/config.d/small.xml:ro
+      - ./infra/clickhouse/users.d/small.xml:/etc/clickhouse-server/users.d/small.xml:ro
+
+  redis:
+    restart: unless-stopped
+    ports: !reset []
+    logging: *default-logging
+    mem_limit: 192m
+    # volatile-lru: analytics keys have TTL; Dramatiq keys do not, so they survive pressure.
+    command:
+      - redis-server
+      - --maxmemory
+      - 128mb
+      - --maxmemory-policy
+      - volatile-lru
+      - --save
+      - ""
+      - --loglevel
+      - warning
+
+  api:
+    restart: unless-stopped
+    ports: !reset []
+    logging: *default-logging
+    mem_limit: 512m
+    environment:
+      ANALYTICS_CACHE_TTL_SECONDS: ${ANALYTICS_CACHE_TTL_SECONDS:-900}
+      MALLOC_ARENA_MAX: "2"
+    command:
+      - uvicorn
+      - probelens.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "1"
+      - --proxy-headers
+      - --forwarded-allow-ips
+      - "*"
+
+  worker:
+    restart: unless-stopped
+    logging: *default-logging
+    mem_limit: 512m
+    environment:
+      ANALYTICS_CACHE_TTL_SECONDS: ${ANALYTICS_CACHE_TTL_SECONDS:-900}
+      MALLOC_ARENA_MAX: "2"
+
+  seed:
+    mem_limit: 2g
+
+  web:
+    restart: unless-stopped
+    ports: !reset []
+    logging: *default-logging
+    mem_limit: 384m
+    environment:
+      NODE_OPTIONS: --max-old-space-size=256
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    mem_limit: 64m
+    logging: *default-logging
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-http://:80}
+      ACME_EMAIL: ${ACME_EMAIL:-admin@localhost}
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:
