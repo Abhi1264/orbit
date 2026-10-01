@@ -2,7 +2,7 @@
 
 Internal product analytics and experimentation for **Threadline**, a multi-platform fashion storefront. One place for KPIs, funnels, cohorts, A/B readouts, anomaly RCA, releases, launch SOPs, and a GenAI analyst.
 
-## Stack
+## Tech Stack
 
 - **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui
 - **API:** Python 3.12, FastAPI

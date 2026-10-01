@@ -153,8 +153,8 @@ def _rolling(days: list[_Day], window: int, is_ratio: bool) -> list[_Day]:
     return out
 
 
-def _mad(values: list[float], center: float) -> float:
-    return median(abs(v - center) for v in values)
+# def _mad(values: list[float], center: float) -> float:
+#     return median(abs(v - center) for v in values)
 
 
 def _score_days(
