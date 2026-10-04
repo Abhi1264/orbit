@@ -55,14 +55,10 @@ function minIso(a: string, b: string) {
   return a < b ? a : b;
 }
 
-// --------------------------------------------------------------------------- metric panel
-
 function MetricPanel({ inv }: { inv: InvestigationOut }) {
   const meta = useAnalyticsMeta();
   const rc = useRootCause(inv.id);
   const dataEnd = meta.data?.data_end ?? inv.period_end;
-  // Show a bit of run-up before the baseline and a week after the period (when the data has it),
-  // so the anomaly reads in context rather than filling the whole frame.
   const from = shiftIso(inv.baseline_start, -7);
   const to = minIso(shiftIso(inv.period_end, 7), dataEnd);
   const q = useMetricQuery(
@@ -147,8 +143,6 @@ function MetricPanel({ inv }: { inv: InvestigationOut }) {
     </Panel>
   );
 }
-
-// --------------------------------------------------------------------------- decision
 
 function DecisionPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit: boolean }) {
   const { update } = useInvestigationMutations(inv.id);
@@ -293,8 +287,6 @@ function DecisionPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit: boole
   );
 }
 
-// --------------------------------------------------------------------------- details
-
 function DetailsPanel({ inv, canManage }: { inv: InvestigationOut; canManage: boolean }) {
   const releases = useReleases();
   const { update } = useInvestigationMutations(inv.id);
@@ -334,7 +326,6 @@ function DetailsPanel({ inv, canManage }: { inv: InvestigationOut; canManage: bo
       ),
     });
   }
-  // Releases are candidate causes; linking one records the call so the release page shows it.
   const nearby = (releases.data ?? []).filter(
     (r) => r.release_date <= inv.period_end && r.release_date >= shiftIso(inv.baseline_start, -14),
   );
@@ -393,8 +384,6 @@ function DetailsPanel({ inv, canManage }: { inv: InvestigationOut; canManage: bo
     </Panel>
   );
 }
-
-// --------------------------------------------------------------------------- page
 
 function InvestigationDetail({ id }: { id: number }) {
   const router = useRouter();

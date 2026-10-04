@@ -1,10 +1,3 @@
-"""Rule-based ship / iterate / stop / continue recommendation.
-
-The rules are deliberately boring and fully explained: every recommendation
-lists the checks it ran and the ones that failed. It is input to a human's
-decision memo, not a replacement for it.
-"""
-
 from __future__ import annotations
 
 from datetime import date
@@ -20,13 +13,11 @@ from probelens.experiments.analysis import (
     VariantComparison,
 )
 
-# A guardrail whose interval still allows this much relative degradation has not
-# ruled out a material regression, whatever its p-value says.
+# A guardrail whose interval allows this much relative degradation hasn't ruled out a regression.
 GUARDRAIL_TOLERANCE = 0.10
 
 
 def _pick_treatment(primary: MetricReadout) -> VariantComparison | None:
-    """The variant to judge: the significant one with the best lift, else the best point estimate."""
     if not primary.comparisons:
         return None
     sign = 1 if primary.higher_is_better else -1
@@ -53,7 +44,6 @@ def recommend(
     risks: list[str] = []
     ended = spec.end is not None and as_of > spec.end
 
-    # 1. Trust: is the split what we configured?
     if exposure.srm is None:
         checks.append(
             Check(name="Sample ratio", passed=False, detail="Fewer than two variants have exposures.")
@@ -78,15 +68,14 @@ def recommend(
             confidence="high",
             headline="Do not read these results: the sample ratio does not match the configured split",
             reasons=[
-                "A sample ratio mismatch means assignment or "
-                "exposure logging is broken, which biases every metric.",
+                "A sample ratio mismatch means assignment or exposure logging is "
+                "broken, which biases every metric.",
                 "Fix the assignment/logging path, then restart the experiment.",
             ],
             risks=[],
             checks=checks,
         )
 
-    # 2. Sample size and duration.
     sample_ok = power.smallest_variant_n >= spec.min_sample_per_variant
     checks.append(
         Check(
@@ -124,7 +113,6 @@ def recommend(
         )
     )
 
-    # 3. Primary metric.
     t = _pick_treatment(primary)
     if t is None:
         checks.append(Check(name="Primary metric", passed=False, detail="No treatment variant to compare."))
@@ -146,7 +134,6 @@ def recommend(
     )
     checks.append(Check(name="Primary metric", passed=t.direction == "better", detail=primary_detail))
 
-    # 4. Guardrails.
     hurt: list[tuple[MetricReadout, VariantComparison]] = []
     inconclusive: list[tuple[MetricReadout, VariantComparison, float]] = []
     for g in guardrails:
@@ -160,8 +147,7 @@ def recommend(
         if worse:
             hurt.append((g, c))
         else:
-            # "Not significant" is not "safe": if the point estimate leans the wrong way and the
-            # interval still allows a material regression, the guardrail has not done its job.
+            # Not significant isn't safe: the estimate leans bad and the interval allows a real regression.
             bad_point = (c.rel_diff or 0) < 0 if g.higher_is_better else (c.rel_diff or 0) > 0
             bad_bound = -(c.rel_ci_low or 0) if g.higher_is_better else (c.rel_ci_high or 0)
             if bad_point and bad_bound > GUARDRAIL_TOLERANCE:
@@ -182,7 +168,6 @@ def recommend(
             f"allows up to {bound * 100:.0f}% worse. The experiment is underpowered on this guardrail."
         )
 
-    # 5. Decide.
     if t.direction == "better" and not hurt:
         if sample_ok and duration_ok:
             conf: str = "high" if powered else "medium"
@@ -190,9 +175,8 @@ def recommend(
             reasons.append("No guardrail metric is significantly worse.")
             if not powered:
                 risks.append(
-                    "The experiment is not powered for the target "
-                    "effect; the lift is significant but its size "
-                    "is uncertain, so expect some regression to the mean after shipping."
+                    "The experiment is not powered for the target effect; the lift is significant but its "
+                    "size is uncertain, so expect some regression to the mean after shipping."
                 )
             headline = f"Ship {t.variant}: {primary.label} improved {_pct(t.rel_diff)} with guardrails intact"
             if inconclusive:
@@ -259,7 +243,6 @@ def recommend(
             checks=checks,
         )
 
-    # Flat.
     reasons.append(primary_detail)
     if hurt:
         names = ", ".join(f"{g.label} ({_pct(c.rel_diff)})" for g, c in hurt)
@@ -283,8 +266,8 @@ def recommend(
             headline=f"Stop: no detectable effect on {primary.label} at the target lift",
             reasons=reasons,
             risks=[
-                "A smaller-than-target effect may still exist; "
-                "decide whether it would be worth the complexity."
+                "A smaller-than-target effect may still exist; decide whether "
+                "it would be worth the complexity."
             ],
             checks=checks,
         )

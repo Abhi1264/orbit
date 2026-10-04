@@ -12,8 +12,6 @@ import { type InvestigationOut, useInvestigationMutations, useStakeholders } fro
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-// --------------------------------------------------------------------------- actions
-
 export function ActionsPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit: boolean }) {
   const { addAction, updateAction, deleteAction } = useInvestigationMutations(inv.id);
   const users = useUsers();
@@ -141,8 +139,6 @@ export function ActionsPanel({ inv, canEdit }: { inv: InvestigationOut; canEdit:
     </Panel>
   );
 }
-
-// --------------------------------------------------------------------------- stakeholders
 
 const ROLES = ["informed", "consulted", "owner", "approver"];
 

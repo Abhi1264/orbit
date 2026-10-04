@@ -1,5 +1,3 @@
-"""Product labels for breakdowns, read from Postgres and cached in-process."""
-
 import time
 
 from sqlalchemy import select

@@ -137,7 +137,9 @@ function InvestigationsList() {
   );
 }
 
-function InvestigationsPage() {
+// No Suspense here: the layout's boundary covers `useSearchParams`, and a nested one hydrates after
+// `useMe` resolves, so permission-gated buttons would mismatch the server HTML.
+export default function InvestigationsPage() {
   const canManage = usePermission("manage_investigations");
   const [creating, setCreating] = useState(false);
 
@@ -162,12 +164,4 @@ function InvestigationsPage() {
       <NewInvestigationDialog open={creating} onClose={() => setCreating(false)} />
     </>
   );
-}
-
-// No page-level Suspense on purpose: the layout already provides the boundary
-// `useSearchParams` needs, and a nested one hydrates later than the shell, by
-// which point `useMe` has resolved and permission-gated buttons mismatch the
-// server HTML.
-export default function Page() {
-  return <InvestigationsPage />;
 }

@@ -54,10 +54,6 @@ class Investigation(Base, TimestampMixin):
 
 
 class InvestigationFinding(Base, TimestampMixin):
-    """A single entry in the evidence trail. `kind` keeps observed facts,
-    hypotheses and recommendations visibly separate; `data` snapshots the query
-    and numbers that back an evidence entry so the trail stays reproducible."""
-
     __tablename__ = "investigation_findings"
     id: Mapped[int] = mapped_column(primary_key=True)
     investigation_id: Mapped[int] = mapped_column(ForeignKey("investigations.id", ondelete="CASCADE"))

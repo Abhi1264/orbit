@@ -10,11 +10,6 @@ import type { Filter } from "@/lib/api/analytics";
 import { usePermission } from "@/lib/api/hooks";
 import { analystHref } from "@/lib/links";
 
-/**
- * "Describe the query" input above the explorer controls. The planner is deterministic
- * (no LLM call), so this is instant and works in demo mode. The explanation shows the
- * user exactly how their words were read before the view changes.
- */
 export function NlQueryBar({
   context,
   onApply,

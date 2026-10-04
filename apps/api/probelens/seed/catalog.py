@@ -158,7 +158,6 @@ def generate_products(rng: random.Random, count: int) -> list[ProductRow]:
 
 
 def apply_stockout_risk(rng: random.Random, products: list[ProductRow], count: int = 18) -> list[ProductRow]:
-    """Give the most popular products stock levels that will not cover recent velocity."""
     by_pop = sorted(products, key=lambda p: p.popularity, reverse=True)
     risky = {p.id for p in by_pop[2:45] if rng.random() < 0.5}
     out = []

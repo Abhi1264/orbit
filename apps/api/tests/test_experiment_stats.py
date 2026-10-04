@@ -1,5 +1,3 @@
-"""Experiment statistics: delta-method variance, z-tests, SRM, power."""
-
 import random
 from math import sqrt
 
@@ -34,7 +32,6 @@ def test_delta_method_reduces_to_binomial_for_one_trial_per_user() -> None:
 
 
 def test_users_with_many_sessions_widen_the_interval() -> None:
-    """Session-level rate with per-user clustering: the naive binomial on sessions is too tight."""
     rng = random.Random(2)
     nums: list[float] = []
     dens: list[float] = []
@@ -107,9 +104,6 @@ def test_normal_quantile_roundtrip() -> None:
     assert stats.z_for_alpha(0.05) == pytest.approx(1.95996, abs=1e-4)
     assert stats.two_sided_p(1.95996) == pytest.approx(0.05, abs=1e-4)
     assert stats.two_sided_p(0.0) == 1.0
-
-
-# --------------------------------------------------------------------------- assignment
 
 
 def test_assignment_split_matches_weights() -> None:

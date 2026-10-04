@@ -11,9 +11,9 @@ from probelens.analytics.metrics import METRICS
 from probelens.api.deps import CurrentUser, DbSession, require
 from probelens.core.errors import BadRequest, Forbidden, NotFound
 from probelens.core.permissions import Permission
-from probelens.experiments.analysis import ExperimentResults, ExperimentSpec, analyze
-from probelens.experiments.assignment import VariantSpec
+from probelens.experiments.analysis import ExperimentResults, analyze
 from probelens.experiments.memo import build_memo
+from probelens.experiments.spec import spec_from_model
 from probelens.models import Decision, Experiment, ExperimentVariant
 from probelens.models.enums import DecisionStatus, ExperimentDecision, ExperimentStatus, Role
 from probelens.schemas.experiments import (
@@ -88,25 +88,6 @@ def _to_out(exp: Experiment) -> ExperimentOut:
         decided_at=exp.decided_at,
         decided_by=exp.decided_by,
         created_at=exp.created_at,
-    )
-
-
-def _spec(exp: Experiment) -> ExperimentSpec:
-    control = next((v.key for v in exp.variants if v.is_control), exp.variants[0].key)
-    return ExperimentSpec(
-        key=exp.key,
-        variants=[VariantSpec(v.key, v.weight) for v in exp.variants],
-        control_key=control,
-        start=exp.start_date,
-        end=exp.end_date,
-        primary_metric=exp.primary_metric,
-        guardrail_metrics=list(exp.guardrail_metrics or []),
-        audience_filters=[Filter.model_validate(f) for f in exp.audience_filters or []],
-        traffic_percent=exp.traffic_percent,
-        has_exposure_events=exp.has_exposure_events,
-        min_sample_per_variant=exp.min_sample_per_variant,
-        min_relative_effect=exp.min_relative_effect,
-        min_duration_days=exp.min_duration_days,
     )
 
 
@@ -258,14 +239,14 @@ def experiment_results(
     experiment_id: int, db: DbSession, as_of: date | None = Query(default=None)
 ) -> ExperimentResults:
     exp = _load(db, experiment_id)
-    return analyze(_spec(exp), _as_of(as_of))
+    return analyze(spec_from_model(exp), _as_of(as_of))
 
 
 @router.get("/experiments/{experiment_id}/memo", response_model=MemoOut)
 def experiment_memo(experiment_id: int, db: DbSession, as_of: date | None = Query(default=None)) -> MemoOut:
     exp = _load(db, experiment_id)
     day = _as_of(as_of)
-    results = analyze(_spec(exp), day)
+    results = analyze(spec_from_model(exp), day)
     markdown = build_memo(
         name=exp.name,
         hypothesis=exp.hypothesis,
@@ -299,7 +280,7 @@ def record_decision(
         )
         exp.end_date = exp.end_date or today
     if payload.log:
-        results = analyze(_spec(exp), today)
+        results = analyze(spec_from_model(exp), today)
         primary = results.metrics[0]
         cmp = primary.comparisons[0] if primary.comparisons else None
         evidence = results.recommendation.headline

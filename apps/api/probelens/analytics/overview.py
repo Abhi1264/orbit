@@ -78,8 +78,6 @@ class InventoryRiskResult(BaseModel):
 def inventory_risk(
     db: Session, as_of: date, threshold_days: float = 7.0, limit: int = 25
 ) -> InventoryRiskResult:
-    """Products whose current stock covers fewer than `threshold_days` of trailing
-    14-day sales velocity. Velocity comes from ClickHouse, stock from Postgres."""
     rows = run_query(
         """
 SELECT product_id, count() AS units, sum(order_value) AS revenue

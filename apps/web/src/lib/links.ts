@@ -1,6 +1,5 @@
 import type { Filter } from "@/lib/api/analytics";
 
-/** Deep link into the Analytics explorer with a metric, scope and window preselected. */
 export function exploreHref(opts: {
   metric: string;
   filters?: Filter[];
@@ -26,7 +25,6 @@ export function experimentHref(id: number): `/experiments/${number}` {
   return `/experiments/${id}`;
 }
 
-/** Open the analyst with the current page as context; `q` is asked immediately. */
 export function analystHref(opts: {
   q?: string;
   metric?: string | null;
@@ -62,7 +60,6 @@ export function opsHref(tab: "sops" | "knowledge" | "feedback", opts: { doc?: nu
   return `/ops?${sp.toString()}` as `/ops?${string}`;
 }
 
-/** Route to any object the API references by (type, id). */
 export function entityHref(type: string, id: number, extra: Record<string, string> = {}) {
   switch (type) {
     case "investigation":

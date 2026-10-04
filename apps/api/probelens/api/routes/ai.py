@@ -31,7 +31,6 @@ def ask_analyst(body: AskRequest, user: CurrentUser, db: DbSession) -> AskRespon
 
 @router.post("/plan", response_model=PlanResponse)
 def plan_query(body: PlanRequest, _: CurrentUser, db: DbSession) -> PlanResponse:
-    """Natural language → explorer query. Deterministic; the LLM is not needed for this."""
     tctx = build_tool_context(db)
     plan = planner.parse(body.text, tctx.today, tctx.dimension_values)
     metric = plan.metric or body.context.metric or "conversion"
@@ -39,7 +38,6 @@ def plan_query(body: PlanRequest, _: CurrentUser, db: DbSession) -> PlanResponse
     d = plan.dates
     if not d.explicit and body.context.date_from and body.context.date_to:
         d.date_from, d.date_to = body.context.date_from, body.context.date_to
-    # The explorer always shows a comparison; keep it aligned to the window.
     cmp_from, cmp_to = planner.previous_window(d.date_from, d.date_to)
     confidence = "high" if plan.metric and not plan.unresolved else "medium" if plan.metric else "low"
     return PlanResponse(

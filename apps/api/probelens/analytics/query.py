@@ -1,5 +1,3 @@
-"""Metric query engine: compiles a MetricQuery into ClickHouse SQL and shapes results."""
-
 from datetime import date, datetime
 from typing import Any, Literal
 
@@ -14,19 +12,27 @@ Granularity = Literal["hour", "day", "week"]
 
 SESSION_DIM_COLS = [d.key for d in DIMENSIONS.values() if d.scope == Scope.session]
 
+# Rollup flag -> the event that sets it. Also drives the BI session view.
+SESSION_FLAGS = {
+    "has_search": "search",
+    "has_pv": "product_view",
+    "has_atc": "add_to_cart",
+    "has_checkout": "checkout_started",
+    "has_payment": "payment_started",
+    "has_order": "order_completed",
+}
+
 SESSION_ROLLUP_FIELDS = """
     session_id,
     min(timestamp) AS session_ts,
     any(user_id) AS user_id,
     {session_dims},
     count() AS event_count,
-    max(event_name = 'search') AS has_search,
-    max(event_name = 'product_view') AS has_pv,
-    max(event_name = 'add_to_cart') AS has_atc,
-    max(event_name = 'checkout_started') AS has_checkout,
-    max(event_name = 'payment_started') AS has_payment,
-    max(event_name = 'order_completed') AS has_order
-""".format(session_dims=",\n    ".join(f"any({c}) AS s_{c}" for c in SESSION_DIM_COLS))
+    {session_flags}
+""".format(
+    session_dims=",\n    ".join(f"any({c}) AS s_{c}" for c in SESSION_DIM_COLS),
+    session_flags=",\n    ".join(f"max(event_name = '{e}') AS {k}" for k, e in SESSION_FLAGS.items()),
+)
 
 
 class MetricQuery(BaseModel):
@@ -132,7 +138,6 @@ class _Compiled(BaseModel):
 
 
 def _session_source(q: MetricQuery, params: dict[str, Any], breakdown_event_dim: str | None) -> str:
-    """Per-session rollup subquery honouring filters of both scopes."""
     where = session_where(q.filters, params)
     fields = SESSION_ROLLUP_FIELDS
     if breakdown_event_dim:

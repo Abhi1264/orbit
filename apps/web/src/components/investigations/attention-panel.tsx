@@ -14,7 +14,6 @@ import { investigationHref } from "@/lib/links";
 
 const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 } as const;
 
-/** Compact "what's wrong right now" list for the Overview: open + investigating anomalies. */
 export function AttentionPanel({ limit = 6 }: { limit?: number }) {
   const anomalies = useAnomalies("all");
   const rows = (anomalies.data ?? [])

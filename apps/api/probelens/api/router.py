@@ -8,6 +8,7 @@ from probelens.api.routes import (
     comments,
     decisions,
     experiments,
+    integrations,
     investigations,
     ops,
     releases,
@@ -29,4 +30,5 @@ api_router.include_router(ops.router)
 api_router.include_router(decisions.router)
 api_router.include_router(search.router)
 api_router.include_router(system.router)
+api_router.include_router(integrations.router)
 api_router.include_router(ai.router)

@@ -1,5 +1,3 @@
-"""Anomaly detector on synthetic daily series. No database involved."""
-
 from __future__ import annotations
 
 import random
@@ -51,8 +49,7 @@ def test_step_change_is_flagged_and_baseline_stays_anchored() -> None:
     flagged = [d for d in days if d.flagged]
     assert flagged, "a 40% drop on 2,000/day must be detected"
     assert flagged[0].day <= START + timedelta(days=51)
-    # 30 days into the regression the expected value still reflects the pre-shift level:
-    # flagged days are excluded from the baseline, so it cannot drift down to 3%.
+    # Flagged days stay out of the baseline, so the expectation can't drift down to 3%.
     last = days[-1]
     assert last.expected is not None and last.expected > 0.045
     assert last.flagged

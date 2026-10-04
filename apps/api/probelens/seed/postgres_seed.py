@@ -1,6 +1,3 @@
-"""Application-state seed: accounts, catalog, and the product-ops records that
-match the scenarios baked into the event stream."""
-
 from datetime import UTC, date, datetime, time, timedelta
 
 from sqlalchemy import delete, select
@@ -815,12 +812,6 @@ def seed_postgres(db: Session, products: list[ProductRow], sc: Scenarios) -> dic
 
 
 def link_anomalies_to_investigations(db: Session, project_id: int) -> int:
-    """Attach detected anomalies to the seeded investigations that are about them.
-
-    Matching is on metric + scope + overlapping window, the same rule a PM would
-    apply by hand. Runs after detection so the demo opens with the paid-social
-    investigation already tied to its inbox entry.
-    """
     linked = 0
     investigations = db.scalars(select(Investigation).where(Investigation.project_id == project_id)).all()
     anomalies = db.scalars(

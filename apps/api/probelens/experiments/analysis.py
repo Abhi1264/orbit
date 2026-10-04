@@ -1,18 +1,3 @@
-"""Experiment readout: exposures, per-variant metrics, guardrails, timeline, segments.
-
-Two kinds of experiment are analysed the same way:
-
-* Experiments whose exposures were logged in the event stream (the seeded ones):
-  a user's variant is whatever the `experiments` map says on their first exposure.
-* Experiments created in the app after the fact: users are assigned by the same
-  MD5 bucketing the SDK would use (`assignment.variant_case_sql`), applied to the
-  audience active in the window. With no real treatment these read as A/A tests,
-  which is exactly what they should do.
-
-Outcomes are measured from each user's first exposure through `as_of`, so lagged
-metrics (returns, deliveries) get their tail even after the experiment ends.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,14 +15,13 @@ from probelens.experiments import stats
 from probelens.experiments.assignment import VariantSpec, variant_case_sql
 
 SEGMENT_DIMENSIONS = ("platform", "user_type")
-Role = Literal["primary", "guardrail"]
+# "reference" readouts sit outside the experiment's design and never feed the recommendation.
+Role = Literal["primary", "guardrail", "reference"]
 Direction = Literal["better", "worse", "flat"]
 
 
 @dataclass(frozen=True)
 class ExperimentSpec:
-    """What the analysis needs to know about an experiment, decoupled from the ORM."""
-
     key: str
     variants: list[VariantSpec]
     control_key: str
@@ -164,8 +148,7 @@ class ExperimentResults(BaseModel):
     notes: list[str]
 
 
-# A user's segment is whatever they were at first exposure, so each user lands in
-# exactly one segment and the unit of analysis stays the user.
+# A user's segment is their value at first exposure, so each user lands in exactly one segment.
 _SEGMENT_COLS = ",\n           ".join(
     f"argMin({DIMENSIONS[d].col}, timestamp) AS x_{DIMENSIONS[d].col}" for d in SEGMENT_DIMENSIONS
 )
@@ -204,13 +187,11 @@ exposed AS (
 
 
 def _per_user_sql(m: Metric, spec: ExperimentSpec, params: dict[str, Any], segment: str | None = None) -> str:
-    """Rows of (variant, user_id[, segment], num, den): one per exposed user."""
     cte = _exposed_cte(spec, params)
     seg_select = f", e.x_{DIMENSIONS[segment].col} AS segment" if segment else ""
     seg_group = ", segment" if segment else ""
     if m.scope == Scope.session:
-        # Sessions that overlap or follow the user's first exposure; the exposure
-        # session itself counts even when exposure happened mid-session.
+        # The exposure session counts even when exposure happened mid-session.
         source = f"""
 (SELECT {SESSION_ROLLUP_FIELDS}, max(timestamp) AS session_end
  FROM events
@@ -256,7 +237,6 @@ ORDER BY variant"""
 
 
 def _timeline_sql(m: Metric, spec: ExperimentSpec, params: dict[str, Any]) -> str:
-    """Daily (variant, day, num, den, new users) for the primary metric."""
     cte = _exposed_cte(spec, params)
     if m.scope == Scope.session:
         source = f"""
@@ -497,6 +477,16 @@ def _power(
     )
 
 
+def reference_readouts(spec: ExperimentSpec, as_of: date, metric_keys: list[str]) -> list[MetricReadout]:
+    readouts = []
+    for key in metric_keys:
+        m = get_metric(key)
+        params = _base_params(spec, as_of)
+        rows = run_query(_moments_sql(m, spec, params), params, label=f"exp:{spec.key}:{m.key}")
+        readouts.append(_readout(m, "reference", rows, spec.control_key))
+    return readouts
+
+
 def analyze(spec: ExperimentSpec, as_of: date) -> ExperimentResults:
     from probelens.experiments.decision import recommend  # local import: decision depends on these models
 
@@ -528,9 +518,8 @@ def analyze(spec: ExperimentSpec, as_of: date) -> ExperimentResults:
         )
     if spec.end and as_of > spec.end:
         notes.append(
-            "Exposures counted through "
-            f"{spec.end.isoformat()}; outcomes measured through {as_of.isoformat()} "
-            "so lagged metrics (returns, deliveries) include their tail."
+            f"Exposures counted through {spec.end.isoformat()}; outcomes measured through "
+            f"{as_of.isoformat()} so lagged metrics (returns, deliveries) include their tail."
         )
     if exposure.contaminated_users:
         notes.append(

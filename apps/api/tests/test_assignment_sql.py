@@ -1,7 +1,3 @@
-"""The ClickHouse bucketing expression must agree with the Python implementation,
-otherwise retroactive analysis of app-created experiments would be silently wrong.
-Needs a reachable ClickHouse; skipped otherwise."""
-
 from probelens.experiments.assignment import VariantSpec, assign, bucket, bucket_sql, variant_case_sql
 from tests.util import require_db
 

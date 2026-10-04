@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, differenceInCalendarDays, format, parseISO, subDays } from "date-fns";
+import { differenceInCalendarDays, format, parseISO, subDays } from "date-fns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 
@@ -10,7 +10,6 @@ export interface DateRange {
   from: string;
   to: string;
   comparison: Comparison;
-  /** Comparison window derived from the primary window. */
   compareFrom: string | null;
   compareTo: string | null;
   days: number;
@@ -31,11 +30,6 @@ export function computeComparison(from: string, to: string, comparison: Comparis
   return { compareFrom: isoDate(subDays(f, shift)), compareTo: isoDate(subDays(t, shift)) };
 }
 
-/**
- * Global date range lives in the URL so any view is shareable. When no range is
- * set, callers pass the dataset's last available day so defaults follow the data
- * rather than the wall clock.
- */
 export function useDateRange(dataEnd?: string): DateRange & {
   set: (next: Partial<Pick<DateRange, "from" | "to" | "comparison">>) => void;
 } {
@@ -70,11 +64,4 @@ export function useDateRange(dataEnd?: string): DateRange & {
       set,
     };
   }, [from, to, comparison, set]);
-}
-
-export function shiftRange(range: { from: string; to: string }, days: number) {
-  return {
-    from: isoDate(addDays(parseISO(range.from), days)),
-    to: isoDate(addDays(parseISO(range.to), days)),
-  };
 }

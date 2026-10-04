@@ -1,6 +1,3 @@
-"""Background jobs. Dramatiq actors run on the worker; APScheduler enqueues the
-periodic ones. Everything here is idempotent so a retry never double-writes."""
-
 from datetime import UTC, date, datetime
 
 import dramatiq
@@ -11,7 +8,8 @@ from probelens.analytics.meta import get_meta
 from probelens.config import get_settings
 from probelens.core.logging import get_logger
 from probelens.db.postgres import get_sessionmaker
-from probelens.db.redis import get_redis, invalidate_analytics_cache
+from probelens.db.redis import get_redis
+from probelens.experiments import snapshots
 from probelens.services.projects import default_project_id
 
 log = get_logger("worker")
@@ -21,7 +19,6 @@ LAST_RUN_KEY = "orbit:worker:last_run:{job}"
 
 
 def mark_run(job: str, ok: bool, **fields: object) -> None:
-    """Record the outcome of a job so /api/system/status can show it without touching the worker."""
     redis = get_redis()
     if redis is None:
         return
@@ -45,11 +42,6 @@ dramatiq.set_broker(broker)
 
 @dramatiq.actor(max_retries=2, time_limit=5 * 60 * 1000)
 def detect_anomalies(as_of_iso: str | None = None) -> None:
-    """Sweep every monitored series and upsert anomaly windows.
-
-    Anchored to the dataset's last day rather than the wall clock so the demo
-    dataset keeps producing the same anomalies however long it sits.
-    """
     db = get_sessionmaker()()
     try:
         as_of = date.fromisoformat(as_of_iso) if as_of_iso else (get_meta().data_end or date.today())
@@ -65,9 +57,18 @@ def detect_anomalies(as_of_iso: str | None = None) -> None:
         db.close()
 
 
-@dramatiq.actor(max_retries=0)
-def refresh_analytics_cache() -> None:
-    """Drop cached ClickHouse results so dashboards pick up newly loaded data."""
-    deleted = invalidate_analytics_cache()
-    log.info("job_cache_invalidated", keys=deleted)
-    mark_run("refresh_analytics_cache", True, keys=deleted)
+@dramatiq.actor(max_retries=2, time_limit=5 * 60 * 1000)
+def snapshot_experiments(as_of_iso: str | None = None) -> None:
+    db = get_sessionmaker()()
+    try:
+        as_of = date.fromisoformat(as_of_iso) if as_of_iso else (get_meta().data_end or date.today())
+        count = snapshots.snapshot_experiments(db, as_of)
+        db.commit()
+        log.info("job_snapshot_experiments_done", as_of=str(as_of), experiments=count)
+        mark_run("snapshot_experiments", True, as_of=as_of, experiments=count)
+    except Exception as exc:
+        db.rollback()
+        mark_run("snapshot_experiments", False, error=str(exc)[:200])
+        raise
+    finally:
+        db.close()

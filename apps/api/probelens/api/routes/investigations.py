@@ -170,8 +170,6 @@ def create_investigation(payload: InvestigationCreate, user: CurrentUser, db: Db
         anomaly.status = AnomalyStatus.investigating.value
         m = get_metric(anomaly.metric_key)
         inv.status = InvestigationStatus.investigating
-        # The detector's numbers become the first, system-authored observation so
-        # the trail starts from what was actually measured.
         db.add(
             InvestigationFinding(
                 investigation_id=inv.id,

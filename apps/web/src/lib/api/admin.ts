@@ -11,6 +11,8 @@ export type UserUpdate = components["schemas"]["UserUpdate"];
 export type RolePermissions = components["schemas"]["RolePermissions"];
 export type SystemStatus = components["schemas"]["SystemStatus"];
 export type Role = components["schemas"]["Role"];
+export type IntegrationsStatus = components["schemas"]["IntegrationsStatus"];
+export type DebugEvent = components["schemas"]["DebugEvent"];
 
 export function useRoles() {
   return useQuery({
@@ -65,5 +67,32 @@ export function useSystemStatus() {
     queryKey: ["system", "status"],
     queryFn: async () => unwrap(await api.GET("/api/system/status")),
     refetchInterval: 30_000,
+  });
+}
+
+export function useIntegrations() {
+  return useQuery({
+    queryKey: ["integrations"],
+    queryFn: async () => unwrap(await api.GET("/api/integrations")),
+    refetchInterval: 60_000,
+  });
+}
+
+export function useRecheckIntegrations() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () =>
+      unwrap(await api.GET("/api/integrations", { params: { query: { refresh: true } } })),
+    onSuccess: (data) => qc.setQueryData(["integrations"], data),
+  });
+}
+
+export function useAnalyticsDebugEvents(enabled: boolean) {
+  return useQuery({
+    queryKey: ["integrations", "debug-events"],
+    queryFn: async () =>
+      unwrap(await api.GET("/api/integrations/debug/events", { params: { query: { limit: 25 } } })),
+    enabled,
+    refetchInterval: 15_000,
   });
 }

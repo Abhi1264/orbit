@@ -1,13 +1,3 @@
-"""Natural language → structured analytics query, deterministically.
-
-A small grammar rather than a model: metric synonyms, dimension values pulled
-from the data itself, relative-date phrases, "by <dimension>" breakdowns and
-"vs previous" comparisons. It is fast, testable, works offline, and its
-failures are visible (`unresolved` lists the words it could not place) instead
-of silently guessing. When an LLM is configured the agent can still call this
-as a tool, which keeps the model from inventing filter values.
-"""
-
 from __future__ import annotations
 
 import re
@@ -102,7 +92,6 @@ DIMENSION_SYNONYMS: dict[str, str] = {
     "query": "search_query",
 }
 
-# Dimension values that people say differently from how they are stored.
 VALUE_ALIASES: dict[str, tuple[str, str]] = {
     "android": ("platform", "android"),
     "ios": ("platform", "ios"),
@@ -338,7 +327,6 @@ def _norm(text: str) -> str:
 
 
 def parse_dates(text: str, today: date, default_days: int = 14) -> ParsedDates:
-    """Relative and absolute date phrases → window. Defaults to the last `default_days`."""
     t = _norm(text)
     compare = bool(
         re.search(
@@ -366,7 +354,6 @@ def parse_dates(text: str, today: date, default_days: int = 14) -> ParsedDates:
     if re.search(r"\btoday\b", t):
         return ParsedDates(today, today, True, compare, "hour", "today")
     if re.search(r"\blast week\b", t):
-        # Calendar week, Monday–Sunday, immediately before the current one.
         this_monday = today - timedelta(days=today.weekday())
         return ParsedDates(
             this_monday - timedelta(days=7),
@@ -432,7 +419,6 @@ def parse_dates(text: str, today: date, default_days: int = 14) -> ParsedDates:
 
 
 def parse_metric(text: str) -> tuple[str | None, str | None]:
-    """(metric_key, matched phrase)."""
     t = _norm(text)
     for phrase, key in METRIC_SYNONYMS:
         if re.search(rf"\b{re.escape(phrase)}\b", t):
@@ -458,8 +444,6 @@ def parse_breakdown(text: str) -> tuple[str | None, str | None]:
 
 
 def parse_filters(text: str, values: dict[str, list[str]] | None = None) -> tuple[list[Filter], list[str]]:
-    """Dimension values mentioned anywhere in the text. Same-dimension mentions
-    collapse to an `in` filter ("android and ios")."""
     t = _norm(text)
     hits: dict[str, list[str]] = {}
     matched: list[str] = []
@@ -470,7 +454,6 @@ def parse_filters(text: str, values: dict[str, list[str]] | None = None) -> tupl
                 hits[dim].append(val)
             matched.append(phrase)
             t = re.sub(rf"\b{re.escape(phrase)}\b", " ", t)
-    # Raw values from the data (cities, subcategories, versions, failure reasons…).
     for dim, vals in (values or {}).items():
         if dim in ("platform", "device_type", "country", "search_query"):
             continue

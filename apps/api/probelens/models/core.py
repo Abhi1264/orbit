@@ -25,7 +25,6 @@ def enum_col(enum_cls, **kw):
 
 
 def search_vector(*columns: str):
-    """Persisted tsvector over the given text columns; every searchable table shares this shape."""
     expr = " || ' ' || ".join(f"coalesce({c}, '')" for c in columns)
     return mapped_column(TSVECTOR, Computed(f"to_tsvector('english', {expr})", persisted=True))
 
@@ -58,8 +57,6 @@ class User(Base, TimestampMixin):
 
 
 class Product(Base):
-    """Catalog dimension. Stock and velocity feed the inventory-risk view."""
-
     __tablename__ = "products"
     id: Mapped[int] = mapped_column(primary_key=True)
     sku: Mapped[str] = mapped_column(String(40), unique=True)

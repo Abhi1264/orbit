@@ -39,10 +39,7 @@ function pValue(p: number) {
   return p.toFixed(3);
 }
 
-/**
- * A 95% interval on the relative lift drawn against a shared zero line. Colour
- * follows business direction, not sign, so a falling return rate reads green.
- */
+// Colour follows business direction, not sign, so a falling return rate reads green.
 function IntervalBar({
   c,
   higherIsBetter,
@@ -242,8 +239,6 @@ export function ReadoutPanel({
   );
 }
 
-// --------------------------------------------------------------------------- recommendation
-
 function CheckRow({ c }: { c: Check }) {
   return (
     <li className="flex gap-2 text-xs">
@@ -339,8 +334,6 @@ export function RecommendationPanel({
     </Panel>
   );
 }
-
-// --------------------------------------------------------------------------- exposure & power
 
 export function ExposurePanel({ exp, results }: { exp: ExperimentOut; results: ExperimentResults }) {
   const ex = results.exposure;
@@ -460,8 +453,6 @@ export function ExposurePanel({ exp, results }: { exp: ExperimentOut; results: E
   );
 }
 
-// --------------------------------------------------------------------------- timeline
-
 export function TimelinePanel({ exp, results }: { exp: ExperimentOut; results: ExperimentResults }) {
   const primary = results.metrics[0];
   const fmt = primary.format as MetricFormat;
@@ -569,8 +560,6 @@ export function TimelinePanel({ exp, results }: { exp: ExperimentOut; results: E
     </Panel>
   );
 }
-
-// --------------------------------------------------------------------------- segments
 
 export function SegmentsPanel({ segments, primary }: { segments: SegmentReadout[]; primary: MetricReadout }) {
   const fmt = primary.format as MetricFormat;

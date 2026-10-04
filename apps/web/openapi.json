@@ -308,7 +308,6 @@
           "auth"
         ],
         "summary": "Admin Delete User",
-        "description": "Hard delete for accounts that never touched anything; otherwise deactivate to keep the audit trail.",
         "operationId": "admin_delete_user_api_auth_admin_users__user_id__delete",
         "parameters": [
           {
@@ -1137,7 +1136,6 @@
           "anomalies"
         ],
         "summary": "Detect Now",
-        "description": "Run the detector against the dataset's last day. The worker does this on a\nschedule; this endpoint exists so a demo never depends on the scheduler.",
         "operationId": "detect_now_api_anomalies_detect_post",
         "responses": {
           "200": {
@@ -2720,7 +2718,6 @@
           "releases"
         ],
         "summary": "Release Impact",
-        "description": "Seven days after the release versus the seven days before, on the release's platform.\n\nThis is a read, not a causal estimate: anything else that happened in the same\nweek is mixed in. The experiment platform is the tool for causal answers; this view\nexists so a release owner sees the shape of the week immediately.",
         "operationId": "release_impact_api_releases__release_id__impact_get",
         "parameters": [
           {
@@ -2917,7 +2914,6 @@
           "ops"
         ],
         "summary": "Delete Sop",
-        "description": "Checklists already run from the SOP keep their items; they just lose the back-reference.",
         "operationId": "delete_sop_api_ops_sops__sop_id__delete",
         "parameters": [
           {
@@ -4007,6 +4003,94 @@
         }
       }
     },
+    "/api/integrations": {
+      "get": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Integrations Status",
+        "operationId": "integrations_status_api_integrations_get",
+        "parameters": [
+          {
+            "name": "refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Refresh"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrationsStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/debug/events": {
+      "get": {
+        "tags": [
+          "integrations"
+        ],
+        "summary": "Debug Events",
+        "operationId": "debug_events_api_integrations_debug_events_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebugEvents"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ai/ask": {
       "post": {
         "tags": [
@@ -4054,7 +4138,6 @@
           "ai"
         ],
         "summary": "Plan Query",
-        "description": "Natural language \u2192 explorer query. Deterministic; the LLM is not needed for this.",
         "operationId": "plan_query_api_ai_plan_post",
         "requestBody": {
           "content": {
@@ -4533,6 +4616,124 @@
         ],
         "title": "AiRunSummary"
       },
+      "AmplitudeExport": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Finished At"
+          },
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "rows": {
+            "type": "integer",
+            "title": "Rows"
+          },
+          "sent": {
+            "type": "integer",
+            "title": "Sent"
+          },
+          "delivered": {
+            "type": "integer",
+            "title": "Delivered"
+          },
+          "failed": {
+            "type": "integer",
+            "title": "Failed"
+          },
+          "unconfirmed": {
+            "type": "integer",
+            "title": "Unconfirmed"
+          },
+          "deferred": {
+            "type": "integer",
+            "title": "Deferred"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "finished_at",
+          "ok",
+          "rows",
+          "sent",
+          "delivered",
+          "failed",
+          "unconfirmed",
+          "deferred",
+          "detail"
+        ],
+        "title": "AmplitudeExport"
+      },
+      "AmplitudeStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "not_configured",
+              "invalid_key",
+              "unreachable"
+            ],
+            "title": "Status"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "server_zone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Server Zone"
+          },
+          "event_types": {
+            "type": "integer",
+            "title": "Event Types"
+          },
+          "last_export": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AmplitudeExport"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "detail",
+          "server_zone",
+          "event_types",
+          "last_export"
+        ],
+        "title": "AmplitudeStatus"
+      },
       "AnalystAnswer": {
         "properties": {
           "summary": {
@@ -4861,8 +5062,7 @@
           }
         },
         "type": "object",
-        "title": "AskContext",
-        "description": "Where the user is asking from; lets the analyst default sensibly."
+        "title": "AskContext"
       },
       "AskRequest": {
         "properties": {
@@ -5813,6 +6013,144 @@
         ],
         "title": "DataStatus"
       },
+      "DebugEvent": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "orbit_event": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Orbit Event"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "insert_id": {
+            "type": "string",
+            "title": "Insert Id"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          },
+          "platform": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Platform"
+          },
+          "event_properties": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Event Properties"
+          },
+          "user_properties": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "User Properties"
+          },
+          "revenue": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revenue"
+          },
+          "clickhouse": {
+            "type": "string",
+            "const": "stored",
+            "title": "Clickhouse"
+          },
+          "amplitude": {
+            "type": "string",
+            "enum": [
+              "delivered",
+              "failed",
+              "pending",
+              "not_configured",
+              "unknown"
+            ],
+            "title": "Amplitude"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_type",
+          "orbit_event",
+          "user_id",
+          "time",
+          "insert_id",
+          "session_id",
+          "platform",
+          "event_properties",
+          "user_properties",
+          "revenue",
+          "clickhouse",
+          "amplitude"
+        ],
+        "title": "DebugEvent"
+      },
+      "DebugEvents": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "last_export",
+              "clickhouse_preview",
+              "empty"
+            ],
+            "title": "Source"
+          },
+          "amplitude_configured": {
+            "type": "boolean",
+            "title": "Amplitude Configured"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DebugEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "amplitude_configured",
+          "events"
+        ],
+        "title": "DebugEvents"
+      },
       "DecisionCreate": {
         "properties": {
           "title": {
@@ -6451,8 +6789,7 @@
           "id",
           "title"
         ],
-        "title": "EntityRef",
-        "description": "Enough to render a link to another object without a second request."
+        "title": "EntityRef"
       },
       "EntityType": {
         "type": "string",
@@ -8210,6 +8547,33 @@
         ],
         "title": "Inference"
       },
+      "IntegrationsStatus": {
+        "properties": {
+          "amplitude": {
+            "$ref": "#/components/schemas/AmplitudeStatus"
+          },
+          "metabase": {
+            "$ref": "#/components/schemas/MetabaseStatus"
+          },
+          "debugger": {
+            "type": "boolean",
+            "title": "Debugger"
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checked At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amplitude",
+          "metabase",
+          "debugger",
+          "checked_at"
+        ],
+        "title": "IntegrationsStatus"
+      },
       "InventoryRisk": {
         "properties": {
           "product_id": {
@@ -9174,6 +9538,105 @@
         ],
         "title": "MemoOut"
       },
+      "MetabaseDashboard": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "cards": {
+            "type": "integer",
+            "title": "Cards"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "url",
+          "cards"
+        ],
+        "title": "MetabaseDashboard"
+      },
+      "MetabaseStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "connected",
+              "not_configured",
+              "needs_setup",
+              "unreachable"
+            ],
+            "title": "Status"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "provisioned_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provisioned At"
+          },
+          "dashboards": {
+            "items": {
+              "$ref": "#/components/schemas/MetabaseDashboard"
+            },
+            "type": "array",
+            "title": "Dashboards"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "detail",
+          "version",
+          "url",
+          "provisioned_at",
+          "dashboards"
+        ],
+        "title": "MetabaseStatus"
+      },
       "MetricFormat": {
         "type": "string",
         "enum": [
@@ -9362,7 +9825,8 @@
             "type": "string",
             "enum": [
               "primary",
-              "guardrail"
+              "guardrail",
+              "reference"
             ],
             "title": "Role"
           },
@@ -11444,8 +11908,7 @@
           },
           "rows": {
             "items": {
-              "additionalProperties": true,
-              "type": "object"
+              "$ref": "#/components/schemas/SupportingRow"
             },
             "type": "array",
             "title": "Rows"
@@ -11458,6 +11921,44 @@
           "rows"
         ],
         "title": "SupportingBreakdown"
+      },
+      "SupportingRow": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "baseline_count": {
+            "type": "number",
+            "title": "Baseline Count"
+          },
+          "period_count": {
+            "type": "number",
+            "title": "Period Count"
+          },
+          "baseline_share": {
+            "type": "number",
+            "title": "Baseline Share"
+          },
+          "period_share": {
+            "type": "number",
+            "title": "Period Share"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "baseline_count",
+          "period_count",
+          "baseline_share",
+          "period_share"
+        ],
+        "title": "SupportingRow"
       },
       "SystemStatus": {
         "properties": {

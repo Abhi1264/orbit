@@ -10,7 +10,7 @@ from probelens.models.core import (
     Team,
     User,
 )
-from probelens.models.experiments import Experiment, ExperimentVariant
+from probelens.models.experiments import Experiment, ExperimentSnapshot, ExperimentVariant
 from probelens.models.investigations import (
     Investigation,
     InvestigationAction,
@@ -36,6 +36,7 @@ __all__ = [
     "Comment",
     "Decision",
     "Experiment",
+    "ExperimentSnapshot",
     "ExperimentVariant",
     "Feedback",
     "Investigation",

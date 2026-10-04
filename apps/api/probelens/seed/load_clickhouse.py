@@ -1,4 +1,3 @@
-from collections.abc import Iterable
 from datetime import date
 
 from clickhouse_connect.driver.client import Client
@@ -6,6 +5,7 @@ from clickhouse_connect.driver.client import Client
 from probelens.core.logging import get_logger
 from probelens.seed.population import SimUser
 from probelens.seed.simulate import EVENT_COLUMNS
+from probelens.tracking.pipeline import SinkReport
 
 log = get_logger("seed.clickhouse")
 
@@ -28,20 +28,31 @@ def reset_tables(client: Client) -> None:
     client.command("TRUNCATE TABLE user_profiles")
 
 
-def load_events(client: Client, batches: Iterable[list[tuple]]) -> int:
-    """Insert rows in ~100k-row batches (per ClickHouse insert-batch guidance)."""
-    buffer: list[tuple] = []
-    total = 0
-    for rows in batches:
-        buffer.extend(rows)
-        if len(buffer) >= INSERT_BATCH:
-            client.insert("events", buffer, column_names=EVENT_COLUMNS)
-            total += len(buffer)
-            buffer = []
-    if buffer:
-        client.insert("events", buffer, column_names=EVENT_COLUMNS)
-        total += len(buffer)
-    return total
+class ClickHouseSink:
+    name = "clickhouse"
+
+    def __init__(self, client: Client, batch_rows: int = INSERT_BATCH) -> None:
+        self.client = client
+        self.batch_rows = batch_rows
+        self.inserted = 0
+        self._pending: list[list[tuple]] = []
+        self._pending_rows = 0
+
+    def write(self, rows: list[tuple]) -> list[list[tuple]]:
+        self._pending.append(rows)
+        self._pending_rows += len(rows)
+        return self.flush() if self._pending_rows >= self.batch_rows else []
+
+    def flush(self) -> list[list[tuple]]:
+        batches, self._pending, self._pending_rows = self._pending, [], 0
+        rows = [row for batch in batches for row in batch]
+        if rows:
+            self.client.insert("events", rows, column_names=EVENT_COLUMNS)
+            self.inserted += len(rows)
+        return batches
+
+    def report(self) -> SinkReport:
+        return SinkReport(self.name, ok=True, rows=self.inserted, sent=self.inserted, delivered=self.inserted)
 
 
 def load_user_profiles(client: Client, users: list[SimUser]) -> None:

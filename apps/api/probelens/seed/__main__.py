@@ -1,11 +1,3 @@
-"""Deterministic synthetic dataset generator.
-
-    python -m probelens.seed --profile demo --seed 42
-    python -m probelens.seed --profile full --seed 42 --end-date 2026-09-13
-
-Profiles trade volume for load time; both contain every scenario.
-"""
-
 import argparse
 import random
 import sys
@@ -14,17 +6,23 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 
 from probelens.analytics.anomalies import run_detection
+from probelens.config import get_settings
 from probelens.core.logging import configure_logging, get_logger
 from probelens.db.clickhouse import get_readwrite_client
 from probelens.db.postgres import get_sessionmaker
 from probelens.db.redis import invalidate_analytics_cache
-from probelens.seed.catalog import apply_stockout_risk, generate_products
-from probelens.seed.load_clickhouse import load_events, load_user_profiles, reset_tables
-from probelens.seed.population import generate_users
+from probelens.experiments.snapshots import snapshot_experiments
+from probelens.seed.catalog import ProductRow, apply_stockout_risk, generate_products
+from probelens.seed.load_clickhouse import ClickHouseSink, load_user_profiles, reset_tables
+from probelens.seed.population import SimUser, generate_users
 from probelens.seed.postgres_seed import link_anomalies_to_investigations, seed_postgres
 from probelens.seed.scenarios import Scenarios
 from probelens.seed.simulate import Simulator
 from probelens.services.projects import default_project_id
+from probelens.tracking import status as tracking_status
+from probelens.tracking.amplitude import AmplitudeSink
+from probelens.tracking.mapping import AmplitudeMapper, UserTraits
+from probelens.tracking.pipeline import EventPipeline
 
 log = get_logger("seed")
 
@@ -44,9 +42,7 @@ PROFILES = {
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+    parser = argparse.ArgumentParser(description="Simulate the storefront and load Postgres and ClickHouse.")
     parser.add_argument("--profile", choices=PROFILES, default="demo")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--users", type=int, help="override profile user count")
@@ -60,7 +56,36 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("--skip-postgres", action="store_true")
     parser.add_argument("--skip-clickhouse", action="store_true")
+    parser.add_argument(
+        "--no-amplitude", action="store_true", help="do not send events to Amplitude even if it is configured"
+    )
     return parser.parse_args(argv)
+
+
+def amplitude_sink(products: list[ProductRow], users: list[SimUser]) -> AmplitudeSink:
+    settings = get_settings()
+    mapper = AmplitudeMapper(
+        prices={p.id: p.price for p in products},
+        traits={u.id: UserTraits(u.acquisition_source, u.signup_date, u.payment_method) for u in users},
+    )
+    return AmplitudeSink(settings.amplitude_api_key, mapper, server_zone=settings.amplitude_server_zone)
+
+
+def snapshot_readouts(as_of: date) -> None:
+    from probelens.worker.jobs import mark_run
+
+    db = get_sessionmaker()()
+    try:
+        count = snapshot_experiments(db, as_of)
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        log.warning("seed_snapshots_failed", error=str(exc)[:200])
+        mark_run("snapshot_experiments", False, error=str(exc)[:200])
+        return
+    finally:
+        db.close()
+    mark_run("snapshot_experiments", True, as_of=as_of, experiments=count)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -103,10 +128,18 @@ def main(argv: list[str] | None = None) -> int:
             if day.weekday() == 6 or day == end:
                 log.info("seed_progress", day=str(day), events_so_far=total_events)
 
-        load_events(ch, sim.run(on_progress=progress))
+        amplitude = None
+        if get_settings().amplitude_enabled and not args.no_amplitude:
+            amplitude = amplitude_sink(products, users)
+        pipeline = EventPipeline([amplitude] if amplitude else [], store=ClickHouseSink(ch))
+        reports = pipeline.run(sim.run(on_progress=progress))
         # Profiles are written after simulation so first_purchase_date is known.
         load_user_profiles(ch, users)
         log.info("seed_clickhouse_done", events=total_events, users=len(users))
+        if amplitude:
+            report = reports[-1]
+            tracking_status.record_export(report, source="seed", recent=amplitude.recent())
+            log.info("seed_amplitude_done", **report.as_dict())
     else:
         for _ in sim.run():
             pass
@@ -126,7 +159,6 @@ def main(argv: list[str] | None = None) -> int:
     invalidate_analytics_cache()
 
     if not args.skip_postgres and not args.skip_clickhouse:
-        # Run the anomaly sweep now so the inbox is populated the moment the app opens.
         db = get_sessionmaker()()
         try:
             project_id = default_project_id(db)
@@ -142,6 +174,7 @@ def main(argv: list[str] | None = None) -> int:
 
         mark_run("detect_anomalies", True, as_of=end, **detection)
         log.info("seed_anomalies_done", **detection)
+        snapshot_readouts(end)
     log.info("seed_complete", seconds=round(time.perf_counter() - started, 1), events=total_events)
     return 0
 

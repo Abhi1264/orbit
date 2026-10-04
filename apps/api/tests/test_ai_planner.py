@@ -1,5 +1,3 @@
-"""The natural-language planner is deterministic; these pin the phrasing it must understand."""
-
 from datetime import date
 
 from probelens.ai import planner
@@ -22,7 +20,6 @@ def test_why_question_maps_metric_dates_and_intent() -> None:
     p = _plan("Why did conversion fall last week?")
     assert p.intent == "why"
     assert p.metric == "conversion"
-    # "last week" is the previous Monday–Sunday.
     assert (p.dates.date_from, p.dates.date_to) == (date(2026, 8, 31), date(2026, 9, 6))
     assert p.dates.explicit
     assert p.unresolved == []

@@ -39,8 +39,6 @@ export type EntityRef = Schemas["EntityRef"];
 export type SearchResponse = Schemas["SearchResponse"];
 export type SearchHit = Schemas["SearchHit"];
 
-// --------------------------------------------------------------------------- releases
-
 export function useReleases(filters: { platform?: string; status?: ReleaseStatus } = {}) {
   return useQuery({
     queryKey: ["releases", filters],
@@ -107,8 +105,6 @@ export function useReleaseMutations(id?: number) {
   });
   return { create, update, addNote, runSop, remove };
 }
-
-// --------------------------------------------------------------------------- SOPs & checklists
 
 export function useSops() {
   return useQuery({
@@ -197,8 +193,6 @@ export function useOpsMutations() {
   };
 }
 
-// --------------------------------------------------------------------------- knowledge
-
 export function useKnowledge(filters: { tag?: string; q?: string } = {}) {
   return useQuery({
     queryKey: ["ops", "knowledge", filters],
@@ -219,8 +213,6 @@ export function useKnowledgeDoc(id: number | null) {
     enabled: id !== null,
   });
 }
-
-// --------------------------------------------------------------------------- feedback
 
 export function useFeedback(
   filters: {
@@ -251,8 +243,6 @@ export function useStakeholders() {
     staleTime: 10 * 60_000,
   });
 }
-
-// --------------------------------------------------------------------------- decisions
 
 export function useDecisions(
   filters: {
@@ -302,8 +292,6 @@ export function useDecisionMutations() {
   });
   return { create, update, remove };
 }
-
-// --------------------------------------------------------------------------- search
 
 export function useSearch(q: string, enabled = true) {
   return useQuery({

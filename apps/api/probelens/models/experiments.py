@@ -30,8 +30,7 @@ class Experiment(Base, TimestampMixin):
     min_sample_per_variant: Mapped[int] = mapped_column(Integer, default=2000)
     min_relative_effect: Mapped[float] = mapped_column(Float, default=0.02)
     min_duration_days: Mapped[int] = mapped_column(Integer, default=7)
-    # True when the seed baked exposure records into the event stream. App-created
-    # experiments are analysed on hash-based retroactive assignment instead.
+    # True when the seed wrote exposure events; app-created experiments use hash-based assignment.
     has_exposure_events: Mapped[bool] = mapped_column(Boolean, default=False)
     decision: Mapped[ExperimentDecision | None] = mapped_column(enum_col(ExperimentDecision))
     decision_reason: Mapped[str] = mapped_column(Text, default="")
@@ -59,3 +58,14 @@ class ExperimentVariant(Base):
     is_control: Mapped[bool] = mapped_column(Boolean, default=False)
 
     experiment: Mapped[Experiment] = relationship(back_populates="variants")
+
+
+class ExperimentSnapshot(Base):
+    __tablename__ = "experiment_snapshots"
+    experiment_id: Mapped[int] = mapped_column(
+        ForeignKey("experiments.id", ondelete="CASCADE"), primary_key=True
+    )
+    as_of: Mapped[date] = mapped_column(Date)
+    computed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    results: Mapped[dict] = mapped_column(JSONB)  # ExperimentResults JSON
+    reference_metrics: Mapped[list] = mapped_column(JSONB, default=list)

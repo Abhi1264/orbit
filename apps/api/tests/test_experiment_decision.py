@@ -1,5 +1,3 @@
-"""Rule-based recommendation: each branch, driven by synthetic readouts."""
-
 from datetime import date
 
 from probelens.experiments.analysis import (

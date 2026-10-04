@@ -129,8 +129,6 @@ function DecisionForm({
   );
 }
 
-// --------------------------------------------------------------------------- memo
-
 export function MemoDialog({
   exp,
   open,

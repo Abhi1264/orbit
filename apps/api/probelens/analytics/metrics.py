@@ -1,10 +1,3 @@
-"""Metric catalog.
-
-Session-scoped metrics are computed over a per-session rollup (one row per
-session with boolean step flags) so that "sessions with A and B" style
-definitions are exact. Event-scoped metrics aggregate event rows directly.
-"""
-
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -30,7 +23,6 @@ class Metric:
     numerator: str
     denominator: str | None = None
     higher_is_better: bool = True
-    # Rate metrics are analysed as proportions (two-proportion tests etc.).
     is_proportion: bool = False
 
     @property
@@ -40,7 +32,6 @@ class Metric:
         return f"if({self.denominator} = 0, NULL, {self.numerator} / {self.denominator})"
 
 
-# Rollup columns available to session-scoped metrics (see query.SESSION_ROLLUP).
 _S = Scope.session
 _E = Scope.event
 
@@ -231,7 +222,6 @@ def get_metric(key: str) -> Metric:
 
 
 def format_value(fmt: MetricFormat | str, v: float | None) -> str:
-    """Human-readable metric value for generated prose (findings, memos, AI answers)."""
     if v is None:
         return "n/a"
     f = fmt.value if isinstance(fmt, MetricFormat) else fmt

@@ -1,5 +1,3 @@
-"""Shared fixtures. Integration fixtures skip when databases are down (fail in CI)."""
-
 from __future__ import annotations
 
 from collections.abc import Iterator

@@ -1,5 +1,3 @@
-"""Ordered session funnels via ClickHouse windowFunnel."""
-
 from datetime import date
 from typing import Any
 
