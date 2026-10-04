@@ -1,5 +1,3 @@
-"""Product operations: SOPs and their checklists, the knowledge base, and feedback intake."""
-
 from datetime import UTC, date, datetime
 
 from fastapi import APIRouter, Depends, Query
@@ -126,7 +124,6 @@ def update_sop(sop_id: int, payload: SopUpdate, _: CurrentUser, db: DbSession) -
 
 @router.delete("/sops/{sop_id}", status_code=204, dependencies=[_write])
 def delete_sop(sop_id: int, _: CurrentUser, db: DbSession) -> None:
-    """Checklists already run from the SOP keep their items; they just lose the back-reference."""
     sop = _load_sop(db, sop_id)
     for c in db.scalars(select(Checklist).where(Checklist.sop_id == sop.id)).all():
         c.sop_id = None

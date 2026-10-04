@@ -1,11 +1,3 @@
-"""Single source of truth for the product problems baked into the synthetic data.
-
-Every offset is in days before the dataset's last day, so the same story holds
-regardless of when the seed runs. The simulator reads these to bend
-probabilities; the Postgres seed reads them to create matching releases and
-experiments; docs/data-model.md describes them for humans.
-"""
-
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 
@@ -34,9 +26,7 @@ class ExperimentSpec:
     guardrail_metrics: tuple[str, ...]
     variants: tuple[tuple[str, str, int, bool], ...]  # key, name, weight, is_control
     traffic_percent: int = 100
-    # Smallest relative lift on the primary metric worth shipping for; drives the power check.
     min_relative_effect: float = 0.03
-    # Simulation effects applied to the treatment variant.
     effects: dict[str, float] = field(default_factory=dict)
     exposure_event: str = "product_view"
     audience_filters: tuple[dict, ...] = ()
@@ -50,8 +40,7 @@ class Scenarios:
     def day(self, days_before_end: int) -> date:
         return self.end - timedelta(days=days_before_end)
 
-    # Lives in the first two weeks of the window so the seeded "resolved"
-    # investigation has real evidence behind it.
+    # Inside the first two weeks so the seeded "resolved" investigation has evidence behind it.
     historical_spike_subcategory = "sandals"
     historical_spike_multiplier = 1.8
 
@@ -89,7 +78,6 @@ class Scenarios:
         affected_areas=("checkout", "payments"),
         status="planned",
     )
-    # Failure multipliers for Android users on 8.4.0 (relative to base failure rate).
     android_upi_failure_multiplier = 5.5
     android_other_failure_multiplier = 1.8
 

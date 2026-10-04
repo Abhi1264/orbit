@@ -1,12 +1,3 @@
-"""The analyst's tools. Every number the analyst states comes from one of these.
-
-Tools are read-only wrappers over the same engines the UI uses (metric query,
-funnel, root cause, experiment analysis, Postgres lookups). Arguments are
-Pydantic models so the LLM's JSON is validated before anything runs, and each
-tool returns both structured `data` (for the evidence drawer) and a compact
-`summary` (what the model actually reads, to keep context small).
-"""
-
 from __future__ import annotations
 
 import re
@@ -27,9 +18,8 @@ from probelens.analytics.funnel import DEFAULT_FUNNEL, FUNNEL_EVENTS, FunnelQuer
 from probelens.analytics.metrics import METRICS, format_value, get_metric
 from probelens.analytics.query import MetricQuery, run_metric_query
 from probelens.analytics.rootcause import analyze as root_cause_analyze
-from probelens.experiments.analysis import ExperimentSpec
 from probelens.experiments.analysis import analyze as experiment_analyze
-from probelens.experiments.assignment import VariantSpec
+from probelens.experiments.spec import spec_from_model
 from probelens.models import Anomaly, Decision, Experiment, Investigation, KnowledgeDocument, Release, Sop
 
 
@@ -50,7 +40,7 @@ class Tool:
     name: str
     description: str
     args_model: type[BaseModel]
-    run: Callable[[BaseModel, ToolContext], ToolResult]
+    run: Callable[[Any, ToolContext], ToolResult]
 
     def openai_schema(self) -> dict[str, Any]:
         schema = self.args_model.model_json_schema()
@@ -72,7 +62,6 @@ def _rel(cur: float | None, prev: float | None) -> float | None:
 
 
 def _window(args: Any, ctx: ToolContext, default_days: int = 14) -> tuple[date, date]:
-    """Resolve optional date_from/date_to; defaults to the last `default_days` days of data."""
     end = args.date_to or ctx.today
     start = args.date_from or (end - timedelta(days=default_days - 1))
     if start > end:
@@ -263,7 +252,6 @@ def _funnel(a: FunnelArgs, ctx: ToolContext) -> ToolResult:
             }
             for st in s.steps
         ]
-        # Biggest leak: the transition with the lowest step conversion after the first step.
         leak = min(
             (st for st in s.steps[1:] if st.step_conversion is not None),
             key=lambda st: st.step_conversion or 1,
@@ -504,7 +492,6 @@ def _experiment_results(a: ExperimentResultsArgs, ctx: ToolContext) -> ToolResul
     )
     exp = ctx.db.scalars(stmt).first()
     if exp is None:
-        # Fuzzy: substring on key/name.
         q = f"%{a.experiment.lower().replace(' ', '%')}%"
         exp = ctx.db.scalars(
             select(Experiment)
@@ -518,22 +505,8 @@ def _experiment_results(a: ExperimentResultsArgs, ctx: ToolContext) -> ToolResul
             summary=f"{exp.name} is a draft; no results yet.",
             data={"id": exp.id, "key": exp.key, "status": "draft"},
         )
-    control = next((v.key for v in exp.variants if v.is_control), exp.variants[0].key)
-    spec = ExperimentSpec(
-        key=exp.key,
-        variants=[VariantSpec(v.key, v.weight) for v in exp.variants],
-        control_key=control,
-        start=exp.start_date,
-        end=exp.end_date,
-        primary_metric=exp.primary_metric,
-        guardrail_metrics=list(exp.guardrail_metrics or []),
-        audience_filters=[Filter.model_validate(f) for f in exp.audience_filters or []],
-        traffic_percent=exp.traffic_percent,
-        has_exposure_events=exp.has_exposure_events,
-        min_sample_per_variant=exp.min_sample_per_variant,
-        min_relative_effect=exp.min_relative_effect,
-        min_duration_days=exp.min_duration_days,
-    )
+    spec = spec_from_model(exp)
+    control = spec.control_key
     r = experiment_analyze(spec, ctx.today)
     metrics_out = []
     lines = []
@@ -638,11 +611,6 @@ class SearchArgs(BaseModel):
 
 
 def _search_knowledge(a: SearchArgs, ctx: ToolContext) -> ToolResult:
-    """Full-text search over SOPs, knowledge documents and the decision log.
-
-    Tries an all-terms match first, then relaxes to any-term so a query like
-    "payment failure" still finds the payments runbook.
-    """
     sources = (
         (KnowledgeDocument, "knowledge", KnowledgeDocument.body),
         (Sop, "sop", Sop.description),
@@ -711,87 +679,80 @@ TOOLS: dict[str, Tool] = {
         Tool(
             "get_metric_summary",
             "Value of one metric over a date window with the change versus the preceding window of equal "
-            "length. "
-            "Use this first for any 'what is / how did X change' question.",
+            "length. Use this first for any 'what is / how did X change' question.",
             MetricSummaryArgs,
-            _metric_summary,  # type: ignore[arg-type]
+            _metric_summary,
         ),
         Tool(
             "breakdown_metric",
             "Split a metric by one dimension for a window, with each segment's share of volume and change "
-            "versus "
-            "the preceding window. Use to find which segment moved.",
+            "versus the preceding window. Use to find which segment moved.",
             BreakdownArgs,
-            _breakdown,  # type: ignore[arg-type]
+            _breakdown,
         ),
         Tool(
             "run_funnel",
             "Session funnel through ordered events with step and overall conversion; optionally broken down "
-            "by a "
-            "session dimension. Use for 'where do users drop off'.",
+            "by a session dimension. Use for 'where do users drop off'.",
             FunnelArgs,
-            _funnel,  # type: ignore[arg-type]
+            _funnel,
         ),
         Tool(
             "root_cause",
             "Decompose a metric change between a period and a baseline into segment (rate) and mix effects "
-            "across "
-            "all dimensions, and correlate with releases and experiments. Use for 'why did X change'.",
+            "across all dimensions, and correlate with releases and experiments. Use for 'why did X change'.",
             RootCauseArgs,
-            _root_cause,  # type: ignore[arg-type]
+            _root_cause,
         ),
         Tool(
             "list_anomalies",
             "Anomalies detected by the monitor, most severe first.",
             AnomaliesArgs,
             _anomalies,
-        ),  # type: ignore[arg-type]
+        ),
         Tool(
             "list_releases",
             "Product releases in a window, with platform and affected areas.",
             ReleasesArgs,
             _releases,
-        ),  # type: ignore[arg-type]
+        ),
         Tool(
             "list_experiments",
             "Experiments with status, metrics and recorded decisions.",
             ExperimentsArgs,
             _experiments,
-        ),  # type: ignore[arg-type]
+        ),
         Tool(
             "experiment_results",
             "Full readout for one experiment: exposure, per-metric lift with intervals and p-values, "
-            "guardrails and "
-            "the rule-based recommendation.",
+            "guardrails and the rule-based recommendation.",
             ExperimentResultsArgs,
-            _experiment_results,  # type: ignore[arg-type]
+            _experiment_results,
         ),
         Tool(
             "list_investigations",
             "Investigations with status, scope and hypotheses.",
             InvestigationsArgs,
             _investigations,
-        ),  # type: ignore[arg-type]
+        ),
         Tool(
             "search_knowledge",
             "Search SOPs, knowledge documents and the decision log.",
             SearchArgs,
             _search_knowledge,
-        ),  # type: ignore[arg-type]
+        ),
         Tool(
             "plan_query",
             "Parse a natural-language metric question into metric, filters, breakdown and dates using the "
-            "known "
-            "vocabulary. Use when unsure how a user's words map to metric or dimension keys.",
+            "known vocabulary. Use when unsure how a user's words map to metric or dimension keys.",
             PlanArgs,
-            _plan,  # type: ignore[arg-type]
+            _plan,
         ),
     ]
 }
 
 
 def run_tool(name: str, raw_args: dict[str, Any], ctx: ToolContext, call_id: str) -> ToolCallRecord:
-    """Validate, execute and time one tool call. Never raises: errors become records."""
     t0 = time.perf_counter()
     tool = TOOLS.get(name)
     if tool is None:

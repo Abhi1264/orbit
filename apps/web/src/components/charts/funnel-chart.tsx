@@ -7,11 +7,7 @@ import type { FunnelResult } from "@/lib/api/analytics";
 import { formatCompactCount, formatMetric } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-/**
- * Side-by-side funnel bars. Each step shows sessions as a bar scaled to the
- * first step of its own series, so segments with different volumes compare
- * on shape rather than size.
- */
+// Bars scale to their own series' first step, so segments compare on shape rather than size.
 export function FunnelChart({ result }: { result: FunnelResult }) {
   const steps = result.steps;
   const series = result.series;

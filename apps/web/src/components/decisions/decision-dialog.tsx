@@ -12,10 +12,6 @@ import { type DecisionCreate, type DecisionOut, useDecisionMutations, useRelease
 
 export type DecisionPrefill = Partial<DecisionCreate>;
 
-/**
- * Create or edit a decision. `prefill` lets other pages (experiment readout, investigation)
- * open the dialog with the evidence already written in.
- */
 export function DecisionDialog({
   open,
   existing,

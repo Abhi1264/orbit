@@ -43,7 +43,7 @@ function pct(v: number | null | undefined, digits = 0) {
   return `${(v * 100).toFixed(digits)}%`;
 }
 
-/** Share of the overall change accounted for; clipped so a 240% over-explanation still reads sensibly. */
+// Clipped so a 240% over-explanation still reads sensibly.
 function ExplainedBar({ value }: { value: number | null | undefined }) {
   if (value === null || value === undefined) return <span className="text-fg-faint text-xs">n/a</span>;
   const clipped = Math.max(0, Math.min(1, value));
@@ -264,15 +264,6 @@ function OverallChange({ analysis }: { analysis: RootCauseAnalysis }) {
 }
 
 function SupportingTable({ s }: { s: RootCauseAnalysis["supporting"][number] }) {
-  type Row = {
-    key: string;
-    label: string;
-    baseline_count: number;
-    period_count: number;
-    baseline_share: number;
-    period_share: number;
-  };
-  const rows = s.rows as unknown as Row[];
   return (
     <div>
       <h4 className="text-fg mb-1.5 text-xs font-medium">{s.title}</h4>
@@ -286,7 +277,7 @@ function SupportingTable({ s }: { s: RootCauseAnalysis["supporting"][number] }) 
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => {
+          {s.rows.map((r) => {
             const shift = r.period_share - r.baseline_share;
             return (
               <tr key={r.key} className="border-border border-b last:border-b-0">

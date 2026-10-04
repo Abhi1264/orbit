@@ -60,7 +60,6 @@ export default function AnalystPage() {
   const ask = useAsk();
   const runs = useRuns(12);
 
-  // Where the user came from: the analyst defaults to the page's metric, scope and window.
   const context: AskContext = useMemo(
     () => ({
       metric: params.get("metric"),
@@ -97,7 +96,6 @@ export default function AnalystPage() {
     [ask, context],
   );
 
-  // Deep link: /analyst?q=... asks immediately.
   const autoAsked = useRef(false);
   useEffect(() => {
     const q = params.get("q");
@@ -112,7 +110,6 @@ export default function AnalystPage() {
     document.getElementById(`evidence-${id}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   };
 
-  // A selected history item is shown in place of the live answer while it loads/renders.
   const shown = selectedRun !== null ? (replay.data ?? null) : current;
   const isReplay = selectedRun !== null && shown?.run_id === selectedRun;
 

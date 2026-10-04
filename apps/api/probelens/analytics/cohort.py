@@ -1,5 +1,3 @@
-"""Weekly cohort matrices computed from user_profiles joined to events."""
-
 from datetime import date
 from typing import Any, Literal
 
@@ -10,7 +8,6 @@ from probelens.db.clickhouse import run_query
 CohortType = Literal["signup", "first_purchase"]
 Measure = Literal["retention", "repeat_purchase", "revenue_per_user"]
 
-# Cohort filters apply to user attributes, so they map onto user_profiles columns.
 COHORT_FILTER_COLUMNS = {
     "platform": "primary_platform",
     "traffic_source": "acquisition_source",
@@ -22,8 +19,8 @@ COHORT_FILTER_COLUMNS = {
 MEASURE_LABELS = {
     "retention": "Users with a session in week k ÷ cohort size",
     "repeat_purchase": (
-        "Users with an order in week k ÷ cohort size "
-        "(excluding the cohort-defining order for first-purchase cohorts)"
+        "Users with an order in week k ÷ cohort size (excluding the "
+        "cohort-defining order for first-purchase cohorts)"
     ),
     "revenue_per_user": "Revenue in week k ÷ cohort size",
 }
@@ -87,8 +84,7 @@ def run_cohort(q: CohortQuery) -> CohortResult:
         event_where = "event_name = 'order_completed'"
         agg = "sum(order_value)"
 
-    # For first-purchase cohorts the defining order sits in week 0; exclude that day so
-    # week 0 does not trivially read 100% for repeat purchase / revenue.
+    # Exclude the first-purchase day, or week 0 trivially reads 100%.
     exclude_day = (
         " AND e.event_date > p.cohort_date"
         if q.cohort_type == "first_purchase" and q.measure != "retention"

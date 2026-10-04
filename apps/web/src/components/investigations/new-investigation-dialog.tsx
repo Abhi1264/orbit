@@ -35,7 +35,6 @@ function addDays(iso: string, days: number) {
   return d.toISOString().slice(0, 10);
 }
 
-/** Default baseline: the four weeks ending the day before the period starts. */
 function defaultBaseline(periodStart: string) {
   return { baseline_start: addDays(periodStart, -28), baseline_end: addDays(periodStart, -1) };
 }

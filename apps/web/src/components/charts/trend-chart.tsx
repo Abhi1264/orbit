@@ -29,10 +29,6 @@ export const SERIES_COLORS = [
 
 type Row = Record<string, string | number | null>;
 
-/**
- * Series whose denominator is under 2% of the largest are too noisy to plot as
- * a line; they stay in the table flagged as low volume.
- */
 export function isLowVolume(s: MetricQueryResult["series"][number], all: MetricQueryResult["series"]) {
   const vol = (x: MetricQueryResult["series"][number]) => x.total.denominator ?? x.total.numerator;
   const max = Math.max(...all.map(vol));
@@ -45,7 +41,6 @@ export interface Marker {
   tone?: "neutral" | "danger" | "info";
 }
 
-/** A shaded window on the x-axis, e.g. the baseline and the anomalous period. */
 export interface Band {
   from: string;
   to: string;
@@ -59,7 +54,6 @@ const TONE_COLOR = {
   info: "var(--color-info)",
 } as const;
 
-/** One line per bucket; several releases on a day share a label, strongest tone wins. */
 function mergeMarkers(markers: Marker[]): Marker[] {
   const rank = { neutral: 0, info: 1, danger: 2 } as const;
   const byBucket = new Map<string, Marker>();

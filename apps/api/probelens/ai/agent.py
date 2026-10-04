@@ -1,11 +1,3 @@
-"""Analyst orchestration: pick a mode, run it, audit it.
-
-LLM mode is a bounded tool-calling loop. The model never sees raw data; it sees
-one-line tool summaries and must return a structured answer whose facts cite
-tool call ids. Demo mode runs the fixed playbooks. Both are persisted to
-`ai_runs` so every answer can be replayed with its evidence.
-"""
-
 from __future__ import annotations
 
 import json
@@ -172,7 +164,6 @@ def run_llm(
                 {"role": "user", "content": "Tool budget nearly exhausted; answer now with the JSON object."}
             )
 
-    # Budget exhausted: force a final answer without tools.
     messages.append(
         {"role": "user", "content": "Answer now with only the JSON object using the evidence you have."}
     )

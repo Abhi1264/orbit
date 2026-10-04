@@ -81,15 +81,13 @@ class SimUser:
     update_delay_days: int
     update_bucket: int  # 0-99, gates staged rollout
     first_purchase_date: date | None = None
-    # Acquired by the paid-social campaign: low purchase intent, rarely returns.
     campaign_acquired: bool = False
     delivery_delayed: bool = False
     orders: int = 0
     session_seq: int = field(default=0)
 
 
-# Users acquired by the paid-social campaign, as a fraction of the organic population.
-# They are added on top of `count` so the organic base is unchanged.
+# Added on top of `count`, so the organic base is unchanged.
 CAMPAIGN_USER_RATIO = 0.50
 
 
@@ -104,11 +102,8 @@ def generate_users(
     for uid in range(1, count + campaign_count + 1):
         campaign_acquired = uid > count
         if campaign_acquired and campaign_start is not None:
-            # Broad lookalike audiences: sign up steadily through the campaign, mostly on
-            # mobile, with little intent to buy and little reason to come back.
             signup = campaign_start + timedelta(days=rng.randrange(campaign_days))
         elif rng.random() < 0.12:
-            # ~12% of organic users sign up inside the window ("new" on their first day).
             signup = start + timedelta(days=int(rng.random() ** 1.1 * window_days))
         else:
             signup = start - timedelta(days=rng.randint(1, 540))

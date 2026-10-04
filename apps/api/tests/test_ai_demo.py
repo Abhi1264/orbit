@@ -1,10 +1,3 @@
-"""Deterministic analyst against the seeded dataset. Needs Postgres and ClickHouse; skipped otherwise.
-
-These are the guarantees the UI and the acceptance run depend on: every fact cites a real tool
-call, the seeded payment incident is attributed to UPI/PayU on Android with the 8.4.0 release,
-and the same question always produces the same answer.
-"""
-
 from __future__ import annotations
 
 from datetime import date
@@ -96,7 +89,6 @@ def test_payment_incident_is_attributed(tctx: ToolContext) -> None:
     assert any("8.4.0" in c.title for c in answer.candidates)
     assert any(r.priority == "now" for r in answer.recommendations)
     assert any(link.href.startswith("/analytics?metric=payment_success_rate") for link in answer.links)
-    # The monitor's window re-anchored the period.
     assert any("widened" in c for c in answer.caveats)
 
 

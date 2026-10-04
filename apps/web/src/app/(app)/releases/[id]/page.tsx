@@ -44,8 +44,6 @@ function shiftIso(iso: string, days: number) {
   return d.toISOString().slice(0, 10);
 }
 
-// --------------------------------------------------------------------------- impact
-
 const TONE_CLASS = {
   good: "text-success",
   bad: "text-danger",
@@ -178,8 +176,6 @@ function ImpactPanel({ rel }: { rel: ReleaseOut }) {
     </Panel>
   );
 }
-
-// --------------------------------------------------------------------------- page
 
 export default function ReleaseDetailPage() {
   const params = useParams<{ id: string }>();

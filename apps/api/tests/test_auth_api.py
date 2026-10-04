@@ -1,5 +1,3 @@
-"""Authentication, RBAC and user administration."""
-
 from __future__ import annotations
 
 import pytest
@@ -86,7 +84,6 @@ def test_admin_user_lifecycle(api_client: TestClient) -> None:
         )
         assert dup.status_code == 400
 
-        # The new viewer can sign in and is denied writes.
         viewer = TestClient(api_client.app)
         assert (
             viewer.post(
@@ -98,7 +95,6 @@ def test_admin_user_lifecycle(api_client: TestClient) -> None:
         assert viewer.post("/api/ai/ask", json={"question": "why?", "context": {}}).status_code == 403
         assert viewer.post("/api/comments/release/1", json={"body": "hi"}).status_code == 403
 
-        # Password change requires the current password.
         assert (
             viewer.post(
                 "/api/auth/password", json={"current_password": "nope", "new_password": "password456"}
@@ -112,7 +108,6 @@ def test_admin_user_lifecycle(api_client: TestClient) -> None:
             == 204
         )
 
-        # Promote, then deactivate; a deactivated user's session stops working.
         promoted = admin.patch(f"/api/auth/admin/users/{user['id']}", json={"role": "analyst"}).json()
         assert promoted["role"] == "analyst"
         assert viewer.get("/api/auth/me").json()["role"] == "analyst"
@@ -120,7 +115,6 @@ def test_admin_user_lifecycle(api_client: TestClient) -> None:
         assert viewer.get("/api/auth/me").status_code == 401
         assert user["id"] not in {u["id"] for u in admin.get("/api/auth/users").json()}
 
-        # Self-protection rules.
         assert admin.patch(f"/api/auth/admin/users/{me['id']}", json={"is_active": False}).status_code == 403
         assert admin.patch(f"/api/auth/admin/users/{me['id']}", json={"role": "pm"}).status_code == 403
         # Users who own records cannot be hard-deleted; the seeded PM owns investigations.

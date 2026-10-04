@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,9 +31,23 @@ class Settings(BaseSettings):
     llm_model: str = "gpt-4o-mini"
     llm_max_tool_steps: int = Field(default=10, ge=1, le=25)
 
+    # Server-side only; never sent to browsers.
+    amplitude_api_key: str = ""
+    amplitude_server_zone: Literal["US", "EU"] = "US"
+
+    metabase_url: str = ""
+    metabase_site_url: str = ""
+    # Used only by the BI provisioning step, never by the API.
+    metabase_admin_email: str = ""
+    metabase_admin_password: str = ""
+
     @property
     def llm_enabled(self) -> bool:
         return bool(self.llm_api_key)
+
+    @property
+    def amplitude_enabled(self) -> bool:
+        return bool(self.amplitude_api_key)
 
     @property
     def is_production(self) -> bool:

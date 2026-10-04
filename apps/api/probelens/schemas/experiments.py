@@ -107,7 +107,6 @@ class ExperimentOut(ExperimentSummary):
 class DecisionIn(BaseModel):
     decision: ExperimentDecision
     reason: str = Field(min_length=1)
-    # Also record it in the decision log; on by default because that is the point.
     log: bool = True
 
 

@@ -21,6 +21,15 @@ wheels = [
 ]
 
 [[package]]
+name = "amplitude-analytics"
+version = "1.2.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6e/f7/b23d28b1c405c22a25375e2c638c8cdcd054cbc4b43b76cf77bd358a0540/amplitude_analytics-1.2.3.tar.gz", hash = "sha256:4c9525847c391c19675d6e026f4601c27204ffeec71cb92252770d84d4538404", size = 22413, upload-time = "2026-03-31T18:33:20.291Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/56/83af6ef6a8bac9fdf2059de0276008e9eab40a315b8b732eba466bf6cc74/amplitude_analytics-1.2.3-py3-none-any.whl", hash = "sha256:ba2092c1d37ce8a2e3f69d023da145f4e322d02429e20436a5227178b1e594e9", size = 24762, upload-time = "2026-03-31T18:33:19.032Z" },
+]
+
+[[package]]
 name = "annotated-doc"
 version = "0.0.5"
 source = { registry = "https://pypi.org/simple" }
@@ -793,11 +802,13 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },
+    { name = "amplitude-analytics" },
     { name = "apscheduler" },
     { name = "bcrypt" },
     { name = "clickhouse-connect" },
     { name = "dramatiq", extra = ["redis"] },
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "numpy" },
     { name = "openai" },
     { name = "psycopg", extra = ["binary"] },
@@ -821,11 +832,13 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.13" },
+    { name = "amplitude-analytics", specifier = ">=1.2.3" },
     { name = "apscheduler", specifier = ">=3.10,<4" },
     { name = "bcrypt", specifier = ">=4.2" },
     { name = "clickhouse-connect", specifier = ">=0.8" },
     { name = "dramatiq", extras = ["redis"], specifier = ">=1.17" },
     { name = "fastapi", specifier = ">=0.115" },
+    { name = "httpx", specifier = ">=0.27" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27" },
     { name = "numpy", specifier = ">=2.0" },
     { name = "openai", specifier = ">=1.50" },

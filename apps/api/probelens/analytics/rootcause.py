@@ -1,16 +1,3 @@
-"""Root-cause analysis: which segments explain a metric change, and what shipped nearby.
-
-Given a metric, an optional scope, an anomalous period and a baseline period, the
-engine decomposes the period-over-baseline change across every applicable
-dimension and ranks the segments that account for it. For ratio metrics the
-decomposition separates a *rate* effect (the segment itself got worse) from a
-*mix* effect (the segment simply became a bigger share of the denominator) so a
-traffic-mix shift is never mistaken for a product regression.
-
-Everything here is deterministic SQL + arithmetic. The AI analyst calls this as a
-tool and narrates the result; it never invents numbers of its own.
-"""
-
 from __future__ import annotations
 
 from datetime import date, timedelta
@@ -38,8 +25,7 @@ SESSION_DIMS = [
 EVENT_DIMS = ["category", "subcategory", "payment_method", "payment_gateway"]
 PAYMENT_METRICS = {"payment_success_rate", "payment_failure_rate", "payment_failures", "payment_attempts"}
 RETURN_METRICS = {"return_rate", "returns"}
-# Returns are attributed to the return date but lag the order by days; a dimension
-# whose mix shifts inside that lag (an app rollout) produces meaningless ratios.
+# Returns lag their orders by days; a dimension whose mix shifts inside that lag gives meaningless ratios.
 LAG_UNSAFE_DIMS = {"app_version"}
 MIN_SEGMENT_SHARE = 0.02  # ignore slivers: they cannot explain a store-wide move
 
@@ -63,12 +49,10 @@ class Contribution(BaseModel):
     rel_change: float | None
     share_baseline: float
     share_period: float
-    # Fraction of the overall change attributable to this segment (can exceed 1 or
-    # be negative when other segments moved the opposite way).
+    # Share of the overall change; above 1 or negative when other segments moved the other way.
     explained: float | None
     rate_effect: float | None = None
     mix_effect: float | None = None
-    # Segment had no volume in the baseline (a new app version, a new campaign).
     is_new: bool = False
 
 
@@ -76,18 +60,24 @@ class DimensionBreakdown(BaseModel):
     dimension: str
     label: str
     contributions: list[Contribution]
-    # How concentrated the change is: the best single segment's explained share,
-    # discounted for segments that are simply most of the volume.
     concentration: float
-    # False when a session can belong to several segments (event dimensions on a
-    # session metric): rates per segment are valid, but they do not sum to the total.
+    # False when a session can be in several segments: per-segment rates hold but don't sum to the total.
     additive: bool = True
+
+
+class SupportingRow(BaseModel):
+    key: str
+    label: str
+    baseline_count: float
+    period_count: float
+    baseline_share: float
+    period_share: float
 
 
 class SupportingBreakdown(BaseModel):
     title: str
     dimension: str
-    rows: list[dict[str, Any]]
+    rows: list[SupportingRow]
 
 
 class ReleaseRef(BaseModel):
@@ -182,7 +172,6 @@ def _decompose(
     is_ratio = m.denominator is not None
 
     if is_ratio:
-        # Shares are of the denominator (sessions, attempts, orders...).
         base_den = sum((s.compare_total.denominator or 0) for s in series if s.compare_total)
         per_den = sum((s.total.denominator or 0) for s in series)
     else:
@@ -199,8 +188,7 @@ def _decompose(
             share_p = ((s.total.denominator or 0) / per_den) if per_den else 0.0
             rate_effect = mix_effect = explained = None
             if b_val is None and share_b == 0 and p_val is not None and overall.baseline is not None:
-                # A segment that did not exist before: everything it does is a rate
-                # effect relative to how the average segment behaved in the baseline.
+                # A new segment's whole move is a rate effect against the baseline average.
                 is_new = True
                 rate_effect = share_p * (p_val - overall.baseline)
                 mix_effect = 0.0
@@ -237,7 +225,6 @@ def _decompose(
 
 
 def _describe_non_additive(m: Metric, overall: Change, series: list[Series]) -> list[Contribution]:
-    """Per-segment rates without contributions, for overlapping segments."""
     is_ratio = m.denominator is not None
     per_den = sum(((s.total.denominator if is_ratio else s.total.numerator) or 0) for s in series) or 1
     base_den = (
@@ -273,7 +260,6 @@ def _describe_non_additive(m: Metric, overall: Change, series: list[Series]) -> 
 
 
 def _excess(c: Contribution, overall_rel: float) -> float:
-    """How much more than the average a segment moved, in the same direction, weighted by size."""
     if c.rel_change is None or c.share_period < 0.05:
         return 0.0
     same_direction = (c.rel_change < 0) == (overall_rel < 0)
@@ -294,15 +280,13 @@ def _concentration(contribs: list[Contribution], additive: bool = True, overall_
     return best
 
 
-UNIFORM_MIN_SHARE = 0.10  # segments smaller than this are too noisy to judge uniformity
+UNIFORM_MIN_SHARE = 0.10
 UNIFORM_TOLERANCE = 0.35  # a segment is "in line" if its relative move is within ±35% of overall
 
 
 def _uniform_dimensions(
     breakdowns: list[DimensionBreakdown], overall_rel: float
 ) -> tuple[list[str], list[str]]:
-    """(uniform, judgeable): additive dimensions with at least two sizeable segments, and
-    the subset on which every such segment moved in line with the overall change."""
     uniform: list[str] = []
     judgeable: list[str] = []
     if abs(overall_rel) < 0.05:
@@ -347,29 +331,23 @@ def _breakdown(
 
 
 def _applicable_dimensions(m: Metric, filters: list[Filter]) -> list[tuple[str, bool]]:
-    """(dimension, additive) pairs worth decomposing for this metric and scope."""
     fixed = {f.dimension for f in filters if f.operator == "eq"}
     dims: list[tuple[str, bool]] = [(d, True) for d in SESSION_DIMS]
     if m.scope == Scope.event:
         dims += [(d, True) for d in EVENT_DIMS]
     else:
-        # Event dimensions on a session metric: a session touching two categories
-        # counts in both, so rates are comparable but contributions are not.
         dims += [("category", False), ("subcategory", False)]
     if m.key not in PAYMENT_METRICS:
         dims = [(d, a) for d, a in dims if d not in ("payment_method", "payment_gateway")]
     if m.key in RETURN_METRICS:
         dims = [(d, a) for d, a in dims if d not in LAG_UNSAFE_DIMS]
     if m.denominator is None:
-        # Users migrate between versions; for volumes that churn always "explains"
-        # the total without meaning anything.
+        # Users migrate between versions, so for volumes that churn always "explains" the total.
         dims = [(d, a) for d, a in dims if d != "app_version"]
     return [(d, a) for d, a in dims if d not in fixed]
 
 
 def _supporting(m: Metric, filters: list[Filter], period, baseline) -> list[SupportingBreakdown]:
-    """Reason mixes: not a decomposition of the metric, but the fastest way to
-    tell an outage ('gateway_timeout') from a checkout UX problem ('user_abandoned')."""
     out: list[SupportingBreakdown] = []
     spec: list[tuple[str, str, str]] = []
     if m.key in PAYMENT_METRICS:
@@ -381,17 +359,17 @@ def _supporting(m: Metric, filters: list[Filter], period, baseline) -> list[Supp
         base_total = sum((s.compare_total.numerator if s.compare_total else 0) for s in series) or 1
         per_total = sum(s.total.numerator for s in series) or 1
         rows = [
-            {
-                "key": s.key,
-                "label": s.label,
-                "baseline_count": s.compare_total.numerator if s.compare_total else 0,
-                "period_count": s.total.numerator,
-                "baseline_share": (s.compare_total.numerator if s.compare_total else 0) / base_total,
-                "period_share": s.total.numerator / per_total,
-            }
+            SupportingRow(
+                key=s.key,
+                label=s.label,
+                baseline_count=s.compare_total.numerator if s.compare_total else 0,
+                period_count=s.total.numerator,
+                baseline_share=(s.compare_total.numerator if s.compare_total else 0) / base_total,
+                period_share=s.total.numerator / per_total,
+            )
             for s in series
         ]
-        rows.sort(key=lambda r: -(r["period_share"] - r["baseline_share"]))
+        rows.sort(key=lambda r: r.baseline_share - r.period_share)
         out.append(SupportingBreakdown(title=title, dimension=dim, rows=rows))
     return out
 
@@ -545,7 +523,6 @@ def _segment_candidate(
 ) -> Candidate:
     explained = c.explained or 0.0
     overall_rel = overall.rel_change or 0.0
-    # A new segment has no own baseline; compare its level with the baseline average.
     seg_rel = (_rel(overall.baseline, c.period) if c.is_new else c.rel_change) or 0.0
     isolated = abs(seg_rel) >= 1.5 * abs(overall_rel) and c.share_period < 0.7
     # "Explains 66% while being 65% of volume" is not a lead; discount by size.
@@ -597,7 +574,6 @@ def _segment_candidate(
 def _overlap_candidate(
     m: Metric, overall: Change, dim: str, c: Contribution, filters: list[Filter]
 ) -> Candidate:
-    """Candidate from a non-additive dimension: the segment moved far more than average."""
     dim_label = DIMENSIONS[dim].label
     ratio = abs(c.rel_change or 0) / abs(overall.rel_change or 1e-9)
     confidence = "high" if ratio >= 3 and c.share_period >= 0.15 else "medium"
@@ -626,7 +602,6 @@ def _overlap_candidate(
 def _drill(
     m: Metric, filters: list[Filter], skip_dim: str, period, baseline
 ) -> tuple[str | None, list[Contribution]]:
-    """One level deeper inside the top segment: which sub-segment carries it?"""
     best_dim: str | None = None
     best: list[Contribution] = []
     best_score = 0.0
@@ -666,7 +641,6 @@ def _days(window: tuple[date, date]) -> int:
 def _mix_shift_candidate(
     m: Metric, overall: Change, breakdowns: list[DimensionBreakdown]
 ) -> Candidate | None:
-    """When the overall change is mostly a mix effect, say so up front."""
     if not overall.abs_change:
         return None
     for b in breakdowns:
@@ -741,10 +715,7 @@ def analyze(
         )
     breakdowns.sort(key=lambda b: -b.concentration)
 
-    # When every sizeable segment on every additive dimension moved by about the
-    # same relative amount, slicing cannot find the cause: it is scope-wide.
-    # Listing "android explains 53%" would only reflect that android is 53% of
-    # volume, so those slices are dropped and the analysis says so instead.
+    # Every sizeable segment moved alike, so slicing can't find the cause; slices would only mirror volume.
     uniform, judgeable = _uniform_dimensions(breakdowns, overall_rel)
     scope_wide = len(judgeable) >= 2 and len(uniform) == len(judgeable)
 
@@ -775,8 +746,7 @@ def analyze(
     version_candidates = {
         c.key: c for c in candidates if c.kind == "segment" and c.dimension == "app_version" and c.key
     }
-    # A version that swept to most of the volume during the period never shows up as a
-    # segment (it *is* the volume), but the mix-shift candidate names it.
+    # A version that swept to most of the volume never shows as a segment; the mix-shift candidate names it.
     mix_versions = {
         c.key for c in candidates if c.kind == "mix_shift" and c.dimension == "app_version" and c.key
     }
@@ -803,12 +773,8 @@ def analyze(
             for c in candidates
         )
         if version_hit is not None:
-            # The release is only as convincing as the evidence its version segment carries.
             confidence = version_hit.confidence
         elif r.version in mix_versions and (strong_platform or r.platform in scoped_platforms):
-            # The version rolled out across the scope during the period and carries a worse
-            # rate; with the scope already pinned to its platform that is a real lead, and a
-            # tight timing match makes it the leading one.
             confidence = "high" if 0 <= r.days_before_period <= 7 else "medium"
         elif (
             strong_platform
@@ -858,8 +824,7 @@ def analyze(
         if "informativeness" in c.data:
             return abs(float(c.data["informativeness"]))
         if c.kind == "release":
-            # Rank a release by the evidence behind it, not by the raw share of the
-            # change its version happens to carry (a big version carries a big share).
+            # Rank a release by its evidence, not by the share of the change its version happens to carry.
             version = str(c.data.get("version", ""))
             hit = version_candidates.get(version) or next(
                 (x for x in candidates if x.kind == "mix_shift" and x.key == version), None

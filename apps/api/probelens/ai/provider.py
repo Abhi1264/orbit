@@ -1,9 +1,3 @@
-"""Thin provider boundary around an OpenAI-compatible chat API.
-
-The agent only depends on `ChatProvider`, so swapping vendors (or stubbing in
-tests) is a one-class change. Nothing here knows about analytics.
-"""
-
 from __future__ import annotations
 
 import json
@@ -86,7 +80,6 @@ class OpenAICompatibleProvider:
 
 
 def get_provider() -> ChatProvider | None:
-    """None means demo mode: no key configured, so the deterministic analyst runs."""
     settings = get_settings()
     if not settings.llm_enabled:
         return None

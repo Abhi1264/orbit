@@ -1,5 +1,3 @@
-"""Operational status for the Settings → System panel and for smoke checks in CI."""
-
 from __future__ import annotations
 
 import time
@@ -121,7 +119,7 @@ def system_status(_: CurrentUser, db: DbSession) -> SystemStatus:
             cache_keys = sum(1 for _ in redis.scan_iter("chq:*", count=1000))
             hb = redis.get("orbit:worker:heartbeat")
             heartbeat = datetime.fromisoformat(hb.decode()) if hb else None
-            for job in ("detect_anomalies", "refresh_analytics_cache"):
+            for job in ("detect_anomalies", "snapshot_experiments"):
                 raw = redis.hgetall(f"orbit:worker:last_run:{job}")
                 data = {k.decode(): v.decode() for k, v in raw.items()}
                 at = data.pop("at", None)

@@ -26,9 +26,7 @@ def _new_client(user: str, password: str) -> Client:
         username=user,
         password=password,
         compress=True,
-        # Requests run in FastAPI's threadpool and share this client. Without a
-        # session id ClickHouse treats each query independently, which is what
-        # we want: the analytics path never uses session state (temp tables etc.).
+        # Shared across threadpool requests; fine because the analytics path never uses session state.
         autogenerate_session_id=False,
         pool_mgr=clickhouse_connect.driver.httputil.get_pool_manager(maxsize=32, num_pools=4),
     )
@@ -62,13 +60,6 @@ def run_query(
     cache: bool = True,
     label: str = "query",
 ) -> list[dict[str, Any]]:
-    """Execute a read-only analytical query, returning rows as dicts.
-
-    All values are bound server-side through clickhouse-connect parameters, so
-    callers never interpolate user input into SQL. Results are cached in Redis
-    keyed by the exact SQL + parameters; the demo dataset is static, so a short
-    TTL makes repeated dashboard loads cheap.
-    """
     params = params or {}
     settings = get_settings()
     redis = get_redis()

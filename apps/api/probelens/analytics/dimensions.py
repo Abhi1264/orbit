@@ -1,9 +1,3 @@
-"""Allowlisted dimensions and filter compilation.
-
-Only columns listed here can be filtered or grouped on, and every value is
-bound as a query parameter, so no user input is ever interpolated into SQL.
-"""
-
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any, Literal
@@ -92,8 +86,6 @@ class CompiledWhere(BaseModel):
 
 
 def compile_filters(filters: list[Filter], prefix: str = "f") -> CompiledWhere:
-    """Compile filters to a WHERE fragment with bound parameters. Callers decide
-    whether event-scoped filters apply directly or via a session subquery."""
     clauses: list[str] = []
     params: dict[str, Any] = {}
     for i, f in enumerate(filters):

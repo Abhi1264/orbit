@@ -3,10 +3,6 @@
 import type { CohortResult } from "@/lib/api/analytics";
 import { formatCompactCount, formatDate, formatMetric } from "@/lib/format";
 
-/**
- * Sequential single-hue scale; intensity is relative to the largest cell in
- * the matrix so the eye reads structure, not absolute magnitude.
- */
 function cellStyle(value: number | null, max: number) {
   if (value === null) return { background: "transparent" };
   const t = max > 0 ? Math.min(1, value / max) : 0;

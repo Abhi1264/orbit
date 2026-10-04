@@ -1,5 +1,3 @@
-"""Schemas for releases, SOPs & checklists, knowledge, feedback, decisions, search."""
-
 from datetime import date, datetime
 from typing import Any, Literal
 
@@ -19,8 +17,6 @@ Platform = Literal["android", "ios", "web", "all"]
 
 
 class EntityRef(BaseModel):
-    """Enough to render a link to another object without a second request."""
-
     type: str
     id: int
     title: str

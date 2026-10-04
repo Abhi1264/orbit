@@ -18,7 +18,6 @@ RUN uv sync --no-dev
 
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Migrations run before the API boots so a fresh checkout works with one command.
 COPY infra/docker/api-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

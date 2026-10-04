@@ -3,10 +3,6 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
-/**
- * Read/write view state in the URL so every analysis is a shareable link.
- * Values are strings; callers parse. JSON-valued keys should be encoded by the caller.
- */
 export function useUrlState() {
   const params = useSearchParams();
   const router = useRouter();

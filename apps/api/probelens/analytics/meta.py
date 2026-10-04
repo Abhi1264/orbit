@@ -8,7 +8,6 @@ from probelens.analytics.metrics import METRICS
 from probelens.analytics.query import MetricInfo, metric_info
 from probelens.db.clickhouse import run_query
 
-# Dimensions whose distinct values are small enough to offer as dropdowns.
 ENUMERABLE = [
     "platform",
     "device_type",

@@ -1,8 +1,3 @@
-"""Releases, SOPs/checklists, knowledge, feedback, decisions and search over the seeded data.
-
-Each test cleans up what it creates so the demo dataset is unchanged afterwards.
-"""
-
 from __future__ import annotations
 
 import pytest
@@ -13,9 +8,6 @@ pytestmark = pytest.mark.usefixtures("api_client")
 def _android(api_client) -> dict:
     rels = api_client.get("/api/releases", params={"platform": "android"}).json()
     return next(r for r in rels if r["version"] == "8.4.0")
-
-
-# --------------------------------------------------------------------------- releases
 
 
 def test_release_detail_has_checklist_timeline_and_impact(api_client) -> None:
@@ -29,10 +21,8 @@ def test_release_detail_has_checklist_timeline_and_impact(api_client) -> None:
     impact = api_client.get(f"/api/releases/{rel['id']}/impact").json()
     assert impact["scope"] == ["platform = android"]
     by_key = {m["metric_key"]: m for m in impact["metrics"]}
-    # The seeded incident: UPI collect-request timeouts after 8.4.0.
     assert by_key["payment_success_rate"]["tone"] == "bad"
     assert by_key["payment_success_rate"]["rel_change"] < -0.03
-    # affected_areas=payments adds the failure-rate read.
     assert "payment_failure_rate" in by_key
     assert by_key["payment_failure_rate"]["tone"] == "bad"
 
@@ -59,26 +49,21 @@ def test_release_lifecycle_writes_timeline(api_client) -> None:
         assert len(rel["checklists"]) == 1
         assert rel["checklists"][0]["total_count"] == len(launch["items"])
 
-        # Duplicate version+platform is rejected.
         dup = api_client.post(
             "/api/releases",
             json={"version": "test-9.9.9", "name": "Dup", "platform": "web", "release_date": "2026-09-21"},
         )
         assert dup.status_code == 400
 
-        # Rolling out: rollout note lands in the timeline and status auto-advances.
         upd = api_client.patch(f"/api/releases/{rid}", json={"rollout_percent": 25, "note": "Canary"}).json()
         assert upd["status"] == "rolling_out"
         assert any(e["kind"] == "rollout" and "Canary" in e["note"] for e in upd["timeline"])
 
-        # Completing sets rollout to 100.
         upd = api_client.patch(f"/api/releases/{rid}", json={"status": "completed"}).json()
         assert upd["rollout_percent"] == 100
 
-        # Shipped releases cannot be deleted.
         assert api_client.delete(f"/api/releases/{rid}").status_code == 400
 
-        # Checklist item toggling drives checklist status.
         cid = rel["checklists"][0]["id"]
         key = rel["checklists"][0]["items"][0]["key"]
         toggled = api_client.patch(f"/api/ops/checklists/{cid}/items/{key}", json={"done": True}).json()
@@ -95,9 +80,6 @@ def test_release_writes_need_permission(analyst_client) -> None:
         json={"version": "x", "name": "Nope please", "platform": "web", "release_date": "2026-09-20"},
     )
     assert res.status_code == 403
-
-
-# --------------------------------------------------------------------------- ops
 
 
 def test_sop_crud_and_standalone_checklist(api_client) -> None:
@@ -128,7 +110,6 @@ def test_sop_crud_and_standalone_checklist(api_client) -> None:
     assert cl["status"] == "complete"
     assert api_client.get(f"/api/ops/sops/{sop['id']}").json()["run_count"] == 1
     assert api_client.delete(f"/api/ops/sops/{sop['id']}").status_code == 204
-    # The checklist survives without its SOP back-reference.
     survivor = api_client.get("/api/ops/checklists").json()[0]
     assert survivor["id"] == cl["id"] and survivor["sop_id"] is None
     assert api_client.get(f"/api/ops/sops/{sop['id']}").status_code == 404
@@ -204,9 +185,6 @@ def test_ops_writes_need_permission(analyst_client) -> None:
     assert res.status_code == 403
 
 
-# --------------------------------------------------------------------------- decisions
-
-
 def test_decisions_link_and_follow_up(api_client) -> None:
     rows = api_client.get("/api/decisions").json()
     ship = next(d for d in rows if d["title"].startswith("Ship free shipping"))
@@ -237,9 +215,6 @@ def test_decisions_link_and_follow_up(api_client) -> None:
         assert api_client.delete(f"/api/decisions/{created['id']}").status_code == 204
 
 
-# --------------------------------------------------------------------------- search
-
-
 def test_global_search_groups_and_fallbacks(api_client) -> None:
     res = api_client.get("/api/search", params={"q": "payment failure"}).json()
     assert res["total"] > 0
@@ -249,7 +224,6 @@ def test_global_search_groups_and_fallbacks(api_client) -> None:
         not w.startswith("#") for h in res["groups"].get("knowledge", []) for w in h["subtitle"].split()
     )
 
-    # Partial version number falls back to substring matching.
     res = api_client.get("/api/search", params={"q": "8.4", "types": "release"}).json()
     assert set(res["groups"]) == {"release"}
     assert {h["extra"]["version"] for h in res["groups"]["release"]} >= {"8.4.0", "8.4.1"}

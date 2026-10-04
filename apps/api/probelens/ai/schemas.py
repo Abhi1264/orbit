@@ -1,9 +1,3 @@
-"""Wire format for the analyst: what a question looks like and what an answer is.
-
-The answer is structured on purpose. A paragraph of prose cannot be checked;
-a list of facts each pointing at the tool call that produced it can.
-"""
-
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -18,8 +12,6 @@ Confidence = Literal["low", "medium", "high"]
 
 
 class AskContext(BaseModel):
-    """Where the user is asking from; lets the analyst default sensibly."""
-
     date_from: date | None = None
     date_to: date | None = None
     metric: str | None = None
@@ -31,7 +23,6 @@ class AskContext(BaseModel):
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=1000)
     context: AskContext = Field(default_factory=AskContext)
-    # Force demo mode even when an LLM is configured (used by tests and the acceptance run).
     mode: Mode | None = None
 
 
@@ -39,10 +30,10 @@ class ToolCallRecord(BaseModel):
     id: str
     name: str
     args: dict[str, Any]
-    summary: str  # one line, human-readable, what came back
+    summary: str
     ms: int
     error: str | None = None
-    data: dict[str, Any] | None = None  # full result, for the evidence drawer
+    data: dict[str, Any] | None = None
 
 
 class Fact(BaseModel):
@@ -126,9 +117,9 @@ class PlannedQuery(BaseModel):
 
 class PlanResponse(BaseModel):
     query: PlannedQuery
-    explanation: str  # "Conversion rate, Android, 1–13 Sep, by traffic source, vs previous 13 days"
+    explanation: str
     confidence: Confidence
-    unresolved: list[str] = Field(default_factory=list)  # words we could not map
+    unresolved: list[str] = Field(default_factory=list)
     mode: Mode
 
 

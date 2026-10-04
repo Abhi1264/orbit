@@ -63,7 +63,6 @@ def list_anomalies(
     rows = list(db.scalars(stmt))
     data_end = get_meta().data_end
     out = [anomaly_out(a, data_end) for a in rows]
-    # Ongoing, severe and recent first: that is the triage order.
     out.sort(key=lambda a: (not a.ongoing, SEVERITY_ORDER[a.severity], -abs(a.zscore)))
     return out
 
@@ -97,8 +96,6 @@ def update_anomaly(
     dependencies=[Depends(require(Permission.manage_investigations))],
 )
 def detect_now(_: CurrentUser, db: DbSession) -> DetectionSummary:
-    """Run the detector against the dataset's last day. The worker does this on a
-    schedule; this endpoint exists so a demo never depends on the scheduler."""
     as_of = get_meta().data_end or date.today()
     summary = run_detection(db, default_project_id(db), as_of, datetime.now(UTC))
     return DetectionSummary(as_of=as_of, **summary)

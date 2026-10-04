@@ -1,5 +1,6 @@
 "use client";
 
+import { IntegrationsPanel } from "@/components/settings/integrations-panel";
 import { ProfilePanel } from "@/components/settings/profile-panel";
 import { SystemPanel } from "@/components/settings/system-panel";
 import { UsersPanel } from "@/components/settings/users-panel";
@@ -8,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMe, usePermission } from "@/lib/api/hooks";
 import { useUrlState } from "@/lib/url-state";
 
-type Tab = "profile" | "users" | "system";
+type Tab = "profile" | "users" | "integrations" | "system";
 
 export default function SettingsPage() {
   const url = useUrlState();
@@ -31,6 +32,7 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           {isAdmin ? <TabsTrigger value="users">Users &amp; roles</TabsTrigger> : null}
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
@@ -41,6 +43,9 @@ export default function SettingsPage() {
             <UsersPanel />
           </TabsContent>
         ) : null}
+        <TabsContent value="integrations">
+          <IntegrationsPanel />
+        </TabsContent>
         <TabsContent value="system">
           <SystemPanel />
         </TabsContent>

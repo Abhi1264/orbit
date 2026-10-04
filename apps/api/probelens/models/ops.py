@@ -57,9 +57,6 @@ class ReleaseEvent(Base):
 
 
 class Sop(Base, TimestampMixin):
-    """A reusable standard operating procedure. Items are ordered checklist
-    entries; running an SOP against a release creates a Checklist copy."""
-
     __tablename__ = "sops"
     id: Mapped[int] = mapped_column(primary_key=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
@@ -131,10 +128,6 @@ class Decision(Base, TimestampMixin):
 
 
 class Feedback(Base, TimestampMixin):
-    """Stakeholder and customer feedback intake. Each item carries a theme so the
-    ops view can show which problems keep recurring, and an optional link to the
-    investigation, experiment, release, or decision that answers it."""
-
     __tablename__ = "feedback"
     id: Mapped[int] = mapped_column(primary_key=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
@@ -160,9 +153,6 @@ class Feedback(Base, TimestampMixin):
 
 
 class AiRun(Base):
-    """Audit record for every analyst invocation: what was asked, which tools ran,
-    how long it took, and what came back. Secrets never enter this table."""
-
     __tablename__ = "ai_runs"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))

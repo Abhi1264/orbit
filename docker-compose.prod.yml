@@ -1,9 +1,3 @@
-# Overlay for a single small VM (OCI Ampere A1: 2 OCPU / 12 GB).
-# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-#
-# Memory budget ~9 GB of 12, rest for kernel + page cache:
-#   ClickHouse 4g, Postgres 512m, Redis 192m, API 512m, worker 512m, web 384m, Caddy 64m.
-
 x-logging: &default-logging
   driver: json-file
   options:
@@ -45,7 +39,6 @@ services:
     ports: !reset []
     logging: *default-logging
     mem_limit: 192m
-    # volatile-lru: analytics keys have TTL; Dramatiq keys do not, so they survive pressure.
     command:
       - redis-server
       - --maxmemory
@@ -88,6 +81,15 @@ services:
 
   seed:
     mem_limit: 2g
+
+  metabase:
+    restart: unless-stopped
+    ports: !override
+      - "127.0.0.1:3001:3000"
+    logging: *default-logging
+    mem_limit: 1280m
+    environment:
+      JAVA_OPTS: ${METABASE_JAVA_OPTS:--Xmx896m}
 
   web:
     restart: unless-stopped

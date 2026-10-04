@@ -64,6 +64,7 @@ services:
       CLICKHOUSE_READONLY_USER: probelens_ro
       CLICKHOUSE_READONLY_PASSWORD: probelens_ro
       REDIS_URL: redis://redis:6379/0
+      METABASE_URL: ${METABASE_URL:+http://metabase:3000}
     ports:
       - "8000:8000"
     depends_on:
@@ -136,6 +137,51 @@ services:
     profiles: ["seed"]
     command: ["python", "-m", "probelens.seed", "--profile", "${SEED_PROFILE:-demo}", "--seed", "${SEED:-42}"]
 
+  # Opt-in (make bi); Orbit never depends on it.
+  metabase:
+    image: metabase/metabase:v0.63.18.1
+    profiles: ["bi"]
+    environment:
+      MB_DB_FILE: /metabase-data/metabase.db
+      MB_SITE_URL: ${METABASE_SITE_URL:-http://localhost:3001}
+      MB_ENCRYPTION_SECRET_KEY: ${MB_ENCRYPTION_SECRET_KEY:-}
+      MB_ANON_TRACKING_ENABLED: "false"
+      MB_CHECK_FOR_UPDATES: "false"
+      JAVA_OPTS: ${METABASE_JAVA_OPTS:--Xmx768m}
+    ports:
+      - "3001:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+
+  bi-setup:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://probelens:probelens@postgres:5432/probelens
+      CLICKHOUSE_HOST: clickhouse
+      REDIS_URL: redis://redis:6379/0
+      METABASE_URL: http://metabase:3000
+    depends_on:
+      metabase:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles: ["bi"]
+    command: ["python", "-m", "probelens.bi.provision"]
+
   web:
     build:
       context: .
@@ -163,3 +209,4 @@ services:
 volumes:
   postgres_data:
   clickhouse_data:
+  metabase_data:

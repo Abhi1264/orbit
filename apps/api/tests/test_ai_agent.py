@@ -1,6 +1,3 @@
-"""The LLM loop with a scripted provider: tool calls are executed and recorded, duplicates are
-skipped, malformed final answers are retried, and the budget is enforced. No network, no DB."""
-
 from __future__ import annotations
 
 import json
@@ -75,7 +72,6 @@ def test_tool_calls_are_executed_then_answer_parsed(tctx: ToolContext, stub_tool
     assert answer.summary == "Conversion fell 10%."
     assert answer.facts[0].source == "c1"
     assert usage["prompt_tokens"] == 10
-    # The tool result went back to the model tagged with the call id it should cite.
     tool_msgs = [m for m in provider.seen_messages[-1] if m.get("role") == "tool"]
     assert tool_msgs and tool_msgs[0]["content"].startswith("[c1] get_metric_summary ok")
 
@@ -103,7 +99,6 @@ def test_malformed_final_answer_is_retried(tctx: ToolContext, stub_tools) -> Non
     )
     answer, _, _ = agent.run_llm(provider, "q", AskContext(), tctx)
     assert answer.summary == "Conversion fell 10%."
-    # The retry told the model what was wrong.
     assert any("not valid JSON" in m.get("content", "") for m in provider.seen_messages[-1])
 
 
@@ -119,7 +114,7 @@ def test_budget_forces_a_final_answer(tctx: ToolContext, stub_tools, monkeypatch
     answer, calls, _ = agent.run_llm(provider, "q", AskContext(), tctx)
     assert len(calls) == 3
     assert answer.summary
-    assert provider.turns == []  # the forced final call consumed the last scripted turn
+    assert provider.turns == []
 
 
 def test_context_note_is_prepended(tctx: ToolContext, stub_tools) -> None:

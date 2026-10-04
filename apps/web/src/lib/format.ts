@@ -11,8 +11,7 @@ const inrCompact = new Intl.NumberFormat("en-IN", {
   notation: "compact",
   maximumFractionDigits: 1,
 });
-// Currency keeps Indian grouping (₹1.6Cr) because Threadline reports in INR;
-// counts use K/M so non-Indian readers are not tripped up by lakh notation.
+// INR amounts keep Indian grouping (₹1.6Cr); counts use K/M so lakh notation doesn't trip up other readers.
 const count = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const countCompact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 });
 const decimal = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 0 });
@@ -35,10 +34,6 @@ export function formatMetric(value: number | null | undefined, format: MetricFor
   }
 }
 
-/**
- * Period-over-period change, expressed the way an analyst would read it: rates move
- * in percentage points, everything else in relative percent.
- */
 export function formatDelta(current: number | null, previous: number | null, format: MetricFormat) {
   if (current === null || previous === null) return null;
   if (format === "percent") {
@@ -52,10 +47,6 @@ export function formatDelta(current: number | null, previous: number | null, for
 
 export function formatRelative(value: number, digits = 1) {
   return `${value > 0 ? "+" : ""}${(value * 100).toFixed(digits)}%`;
-}
-
-export function formatPp(value: number, digits = 2) {
-  return `${value > 0 ? "+" : ""}${(value * 100).toFixed(digits)} pp`;
 }
 
 export function formatCompactCount(value: number) {
@@ -79,10 +70,6 @@ export function titleCase(s: string) {
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-/**
- * A tight, "nice" axis domain for rate metrics: lines fill the plot instead of
- * hugging a zero baseline, and ticks land on round percentages.
- */
 export function niceDomain(
   values: number[],
   isPercent: boolean,

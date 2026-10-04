@@ -1,10 +1,3 @@
-"""Decision memo: a Markdown document a PM could paste into a doc as-is.
-
-Generated from the readout with no LLM involved, so it is reproducible and
-every number in it can be traced to a query. The AI analyst can later draft
-narrative around it, but the facts come from here.
-"""
-
 from __future__ import annotations
 
 from probelens.analytics.metrics import format_value, get_metric
@@ -95,8 +88,8 @@ def build_memo(
     for m in r.metrics:
         lines += _metric_table(m, r.control)
     lines.append(
-        "✱ significant at the 5% level (two-sided). "
-        "Intervals are 95% and account for users having many sessions."
+        "✱ significant at the 5% level (two-sided). Intervals are 95% and "
+        "account for users having many sessions."
     )
     lines.append("")
 

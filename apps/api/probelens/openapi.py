@@ -1,5 +1,3 @@
-"""Dump the OpenAPI document. The web app generates its TypeScript API types from this."""
-
 import json
 import sys
 

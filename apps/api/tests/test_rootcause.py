@@ -1,5 +1,3 @@
-"""Rate/mix decomposition and candidate heuristics on hand-built series."""
-
 from __future__ import annotations
 
 import pytest

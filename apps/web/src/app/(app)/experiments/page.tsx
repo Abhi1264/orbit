@@ -50,7 +50,7 @@ function ExperimentRow({ exp }: { exp: ExperimentSummary }) {
   );
 }
 
-function ExperimentsPage() {
+export default function ExperimentsPage() {
   const url = useUrlState();
   const filter = (url.get("status") as ListFilter | null) ?? "all";
   const experiments = useExperiments(filter);
@@ -125,8 +125,4 @@ function ExperimentsPage() {
       <NewExperimentDialog open={creating} onClose={() => setCreating(false)} />
     </>
   );
-}
-
-export default function Page() {
-  return <ExperimentsPage />;
 }

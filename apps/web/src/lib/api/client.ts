@@ -41,7 +41,6 @@ export function toApiError(response: Response, body: ErrorBody): ApiError {
   return new ApiError(response.status, detail, response.headers.get("x-request-id") ?? undefined);
 }
 
-/** Unwrap an openapi-fetch result into data or a thrown ApiError, for use in query functions. */
 export function unwrap<T>(result: { data?: T; error?: unknown; response: Response }): T {
   if (result.error !== undefined || result.data === undefined) {
     throw toApiError(result.response, result.error as ErrorBody);

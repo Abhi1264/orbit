@@ -1,9 +1,3 @@
-"""Fixed-window rate limiter for abuse-prone endpoints (login).
-
-Uses Redis when available so limits hold across API replicas; falls back to a
-process-local dict so a missing cache never disables the protection entirely.
-"""
-
 from __future__ import annotations
 
 import contextlib
@@ -17,7 +11,6 @@ _lock = threading.Lock()
 
 
 def hit(key: str, limit: int, window_seconds: int) -> tuple[bool, int]:
-    """Record one attempt; return (allowed, seconds until the window resets)."""
     redis = get_redis()
     if redis is not None:
         try:

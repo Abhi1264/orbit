@@ -26,8 +26,6 @@ export type CommentOut = Schemas["CommentOut"];
 export type EntityType = Schemas["EntityType"];
 export type StakeholderOut = Schemas["StakeholderOut"];
 
-// --------------------------------------------------------------------------- anomalies
-
 export function useAnomalies(status?: AnomalyStatus | "all") {
   return useQuery({
     queryKey: ["anomalies", status ?? "all"],
@@ -37,15 +35,6 @@ export function useAnomalies(status?: AnomalyStatus | "all") {
           params: { query: status && status !== "all" ? { status } : {} },
         }),
       ),
-  });
-}
-
-export function useAnomaly(id: number | null) {
-  return useQuery({
-    queryKey: ["anomalies", "one", id],
-    queryFn: async () =>
-      unwrap(await api.GET("/api/anomalies/{anomaly_id}", { params: { path: { anomaly_id: id! } } })),
-    enabled: id !== null,
   });
 }
 
@@ -68,8 +57,6 @@ export function useAnomalyMutations() {
   });
   return { setStatus, detect };
 }
-
-// --------------------------------------------------------------------------- investigations
 
 export function useInvestigations(status?: InvestigationStatus | "all") {
   return useQuery({
@@ -208,8 +195,6 @@ export function useStakeholders() {
     staleTime: 30 * 60_000,
   });
 }
-
-// --------------------------------------------------------------------------- comments
 
 export function useComments(entityType: EntityType, entityId: number | null) {
   return useQuery({

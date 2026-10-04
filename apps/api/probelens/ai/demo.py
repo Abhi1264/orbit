@@ -1,11 +1,3 @@
-"""Deterministic analyst: fixed playbooks over the same tools the LLM uses.
-
-This is what runs when no LLM key is configured (and what the acceptance test
-pins). Each playbook decides which tools to call from the parsed question,
-then composes an `AnalystAnswer` whose every fact cites the tool call that
-produced it. No prose is generated from anything the tools did not return.
-"""
-
 from __future__ import annotations
 
 import json
@@ -30,8 +22,6 @@ from probelens.ai.tools import ToolContext, run_tool
 from probelens.analytics.dimensions import DIMENSIONS, Filter
 from probelens.analytics.metrics import format_value, get_metric
 from probelens.analytics.rootcause import _areas_touch_metric
-
-Conf = str  # "low" | "medium" | "high"
 
 
 @dataclass
@@ -107,7 +97,6 @@ def _ok(rec: ToolCallRecord) -> bool:
 
 
 def _dominant_dimension(question: str, metric: str) -> str:
-    """Dimension to show when the user didn't name one: what typically explains this metric."""
     m = get_metric(metric)
     if "payment" in m.key:
         return "payment_method"
@@ -138,7 +127,6 @@ def run_demo(
     plan = planner.parse(question, tctx.today, tctx.dimension_values)
     trace = Trace(tctx)
 
-    # Page context fills in what the question left implicit.
     metric = plan.metric or ask_ctx.metric
     filters = plan.filters or list(ask_ctx.filters)
     if not plan.dates.explicit and ask_ctx.date_from and ask_ctx.date_to:
@@ -207,8 +195,7 @@ def _what(
             inferences.append(
                 Inference(
                     text=f"A {_pct(rel)} move over {(d1 - d0).days + 1} days is larger than normal "
-                    "week-to-week drift for "
-                    f"{m.label.lower()}; treat it as a real change rather than noise.",
+                    f"week-to-week drift for {m.label.lower()}; treat it as a real change rather than noise.",
                     confidence="medium" if size < 0.15 else "high",
                     basis=[c_sum.id],
                 )
@@ -293,8 +280,8 @@ def _what(
         caveats=[]
         if plan.dates.explicit
         else [
-            f"No date range given; used {d0:%-d %b}–{d1:%-d %b} (the latest {(d1 - d0).days + 1} days of "
-            "data)."
+            f"No date range given; used {d0:%-d %b}–{d1:%-d %b} (the latest "
+            f"{(d1 - d0).days + 1} days of data)."
         ],
     )
 
@@ -311,8 +298,6 @@ def _dedupe(filters: list[Filter]) -> list[Filter]:
 
 
 def _anomaly_covers_scope(anomaly: dict[str, Any], filters: list[Filter]) -> bool:
-    """True unless an eq filter on the anomaly contradicts the question (UPI store-wide
-    still explains 'on android'; platform=ios does not)."""
     if anomaly.get("scope") in (_scope(filters), "store-wide"):
         return True
     asked = {f.dimension: str(f.value) for f in filters if f.operator == "eq" and f.value is not None}
@@ -331,7 +316,6 @@ def _as_date(v: date | str) -> date:
 def _release_anchor(
     releases: list[dict[str, Any]], metric: str, filters: list[Filter], p0: date
 ) -> dict[str, Any] | None:
-    """When the monitor only flags the last few days, the shipping date is the real start."""
     m = get_metric(metric)
     platforms = {str(f.value) for f in filters if f.dimension == "platform" and f.operator == "eq"}
     best: dict[str, Any] | None = None
@@ -352,8 +336,6 @@ def _release_anchor(
 def _anchor_to_anomaly(
     anomalies: list[dict[str, Any]], filters: list[Filter], p0: date, p1: date
 ) -> dict | None:
-    """The anomaly monitor knows when a move started; a 'why' about 'the last 7 days' should
-    use that start, otherwise the baseline is polluted by the already-broken days."""
     best: dict[str, Any] | None = None
     for a in anomalies:
         a0, a1 = date.fromisoformat(a["period_start"]), date.fromisoformat(a["period_end"])
@@ -367,7 +349,6 @@ def _anchor_to_anomaly(
 
 
 def _why_candidates(cands: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Top readout plus the lead release, which otherwise falls off once more slices rank higher."""
     shown = list(cands[:5])
     titles = {c["title"] for c in shown}
     lead = next(
@@ -382,7 +363,6 @@ def _why_candidates(cands: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def _merge_nearby_releases(
     cands: list[dict[str, Any]], releases: list[dict[str, Any]], metric: str, filters: list[Filter]
 ) -> list[dict[str, Any]]:
-    """RCA only emits a release when a version slice ranks. A finished rollout still belongs here."""
     m = get_metric(metric)
     platforms = {str(f.value) for f in filters if f.dimension == "platform" and f.operator == "eq"}
     have = " ".join(c.get("title") or "" for c in cands)
@@ -538,7 +518,6 @@ def _why(
             caveats=caveats,
         )
 
-    # Segment / mix candidates: show the breakdown that backs the top one.
     seg = [c for c in cands if c["kind"] in ("segment", "mix_shift")]
     top = seg[0] if seg else None
     c_bd = None
@@ -593,8 +572,7 @@ def _why(
         if c["kind"] == "segment" and explained is not None:
             text = (
                 f"{c['title']} accounts for about {explained * 100:.0f}% of the overall change; the rate "
-                "moved "
-                "within that segment rather than its share of traffic."
+                "moved within that segment rather than its share of traffic."
             )
         elif c["kind"] == "mix_shift" and c.get("dimension") == "app_version":
             rel_match = [r for r in rc.get("releases", []) if r["version"] == c.get("key")]
@@ -620,7 +598,6 @@ def _why(
             text = c["summary"]
         inferences.append(Inference(text=text, confidence=c["confidence"], basis=basis))
 
-    # Only pull an experiment readout when the experiment actually measures this metric.
     exp_refs = [
         e
         for e in rc.get("experiments", [])
@@ -676,7 +653,6 @@ def _why(
     if open_inv:
         facts.append(Fact(text=c_inv.summary, source=c_inv.id))
 
-    # Recommendations follow from the candidate kinds, not from the metric name.
     if worse:
         if lead_release:
             r = lead_release
@@ -684,37 +660,33 @@ def _why(
             if r["platform"] == "all":
                 recs.append(
                     RecommendationItem(
-                        text=f"Confirm the {r['version']} link: compare {m.label.lower()} on the days "
-                        "before and "
-                        f"after {_d(r['release_date'])} for sessions touching {areas}; a step change on the "
-                        "release date points at the release, a gradual drift does not.",
+                        text=f"Confirm the {r['version']} link: compare {m.label.lower()} on the days before "
+                        f"and after {_d(r['release_date'])} for sessions touching {areas}; a step change on "
+                        "the release date points at the release, a gradual drift does not.",
                         priority="now",
                     )
                 )
                 recs.append(
                     RecommendationItem(
-                        text=f"If the step change is there, roll {r['version']} back behind its feature "
-                        "flag and "
-                        "re-run the comparison; add the affected metric as a guardrail in its release "
-                        "checklist.",
+                        text=f"If the step change is there, roll {r['version']} back behind its feature flag "
+                        "and re-run the comparison; add the affected metric as a "
+                        "guardrail in its release checklist.",
                         priority="now",
                     )
                 )
             else:
                 recs.append(
                     RecommendationItem(
-                        text=f"Confirm the {r['platform']} {r['version']} link: break {m.label.lower()} "
-                        "down by app "
-                        f"version on {r['platform']} and compare users on {r['version']} against the prior "
-                        "version over the same days.",
+                        text=f"Confirm the {r['platform']} {r['version']} link: break {m.label.lower()} down "
+                        f"by app version on {r['platform']} and compare users on {r['version']} against the "
+                        "prior version over the same days.",
                         priority="now",
                     )
                 )
                 recs.append(
                     RecommendationItem(
                         text=f"If the version split confirms it, pause the {r['version']} rollout or ship a "
-                        "hotfix, "
-                        "and add a version guardrail to the release SOP.",
+                        "hotfix, and add a version guardrail to the release SOP.",
                         priority="now",
                     )
                 )
@@ -733,14 +705,13 @@ def _why(
             if mix.get("dimension") == "traffic_source":
                 text = (
                     f"Treat the {seg_label} volume as a mix effect: report {m.label.lower()} excluding it "
-                    "next to "
-                    "the headline, and review the campaign's targeting and landing experience with growth."
+                    "next to the headline, and review the campaign's targeting "
+                    "and landing experience with growth."
                 )
             else:
                 text = (
                     f"Treat the shift toward {seg_label} as a mix effect: report {m.label.lower()} per "
-                    "segment next "
-                    "to the headline so the blended number is not read as a product regression."
+                    "segment next to the headline so the blended number is not read as a product regression."
                 )
             recs.append(RecommendationItem(text=text, priority="now"))
         first_seg = next((c for c in cands[:4] if c["kind"] == "segment" and c["confidence"] != "low"), None)
@@ -754,8 +725,7 @@ def _why(
             recs.append(
                 RecommendationItem(
                     text=f"Open an investigation scoped to {_scope(filters)} so the hypotheses and evidence "
-                    "are "
-                    "tracked in one place.",
+                    "are tracked in one place.",
                     priority="next",
                 )
             )
@@ -769,8 +739,7 @@ def _why(
         recs.append(
             RecommendationItem(
                 text=f"Capture what drove the improvement ({top['title'] if top else 'see candidates'}) in "
-                "the "
-                "decision log so it can be repeated deliberately.",
+                "the decision log so it can be repeated deliberately.",
                 priority="next",
             )
         )
@@ -848,7 +817,6 @@ def _funnel(trace: Trace, plan: planner.Plan, filters: list[Filter]) -> AnalystA
                     )
                 )
         if len(series) >= 2:
-            # Which step differs most between the best and worst segment?
             best = max(series, key=lambda s: s["steps"][-1]["overall_conversion"] or 0)
             worst = min(series, key=lambda s: s["steps"][-1]["overall_conversion"] or 0)
             gaps = []
@@ -1045,7 +1013,6 @@ def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
     for a in anomalies[:5]:
         facts.append(Fact(text=a["text"] + ".", source=c_an.id))
 
-    # Anomalies sharing a scope are usually one story.
     by_scope: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for a in anomalies:
         by_scope[a["scope"]].append(a)
@@ -1090,7 +1057,6 @@ def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
             )
     if releases:
         facts.append(Fact(text=c_rel.summary, source=c_rel.id))
-        # Any high anomaly on a platform that shipped a release just before it started?
         for a in high[:5]:
             for r in releases:
                 start = date.fromisoformat(a["period_start"])

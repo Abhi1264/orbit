@@ -134,10 +134,7 @@ export interface paths {
     get?: never;
     put?: never;
     post?: never;
-    /**
-     * Admin Delete User
-     * @description Hard delete for accounts that never touched anything; otherwise deactivate to keep the audit trail.
-     */
+    /** Admin Delete User */
     delete: operations["admin_delete_user_api_auth_admin_users__user_id__delete"];
     options?: never;
     head?: never;
@@ -380,11 +377,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /**
-     * Detect Now
-     * @description Run the detector against the dataset's last day. The worker does this on a
-     *     schedule; this endpoint exists so a demo never depends on the scheduler.
-     */
+    /** Detect Now */
     post: operations["detect_now_api_anomalies_detect_post"];
     delete?: never;
     options?: never;
@@ -768,14 +761,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /**
-     * Release Impact
-     * @description Seven days after the release versus the seven days before, on the release's platform.
-     *
-     *     This is a read, not a causal estimate: anything else that happened in the same
-     *     week is mixed in. The experiment platform is the tool for causal answers; this view
-     *     exists so a release owner sees the shape of the week immediately.
-     */
+    /** Release Impact */
     get: operations["release_impact_api_releases__release_id__impact_get"];
     put?: never;
     post?: never;
@@ -814,10 +800,7 @@ export interface paths {
     get: operations["get_sop_api_ops_sops__sop_id__get"];
     put?: never;
     post?: never;
-    /**
-     * Delete Sop
-     * @description Checklists already run from the SOP keep their items; they just lose the back-reference.
-     */
+    /** Delete Sop */
     delete: operations["delete_sop_api_ops_sops__sop_id__delete"];
     options?: never;
     head?: never;
@@ -1054,6 +1037,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/integrations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Integrations Status */
+    get: operations["integrations_status_api_integrations_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/integrations/debug/events": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Debug Events */
+    get: operations["debug_events_api_integrations_debug_events_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/ai/ask": {
     parameters: {
       query?: never;
@@ -1080,10 +1097,7 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /**
-     * Plan Query
-     * @description Natural language → explorer query. Deterministic; the LLM is not needed for this.
-     */
+    /** Plan Query */
     post: operations["plan_query_api_ai_plan_post"];
     delete?: never;
     options?: never;
@@ -1247,6 +1261,47 @@ export interface components {
        */
       created_at: string;
     };
+    /** AmplitudeExport */
+    AmplitudeExport: {
+      /** Source */
+      source: string;
+      /**
+       * Finished At
+       * Format: date-time
+       */
+      finished_at: string;
+      /** Ok */
+      ok: boolean;
+      /** Rows */
+      rows: number;
+      /** Sent */
+      sent: number;
+      /** Delivered */
+      delivered: number;
+      /** Failed */
+      failed: number;
+      /** Unconfirmed */
+      unconfirmed: number;
+      /** Deferred */
+      deferred: number;
+      /** Detail */
+      detail: string | null;
+    };
+    /** AmplitudeStatus */
+    AmplitudeStatus: {
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "connected" | "not_configured" | "invalid_key" | "unreachable";
+      /** Detail */
+      detail: string;
+      /** Server Zone */
+      server_zone: string | null;
+      /** Event Types */
+      event_types: number;
+      last_export: components["schemas"]["AmplitudeExport"] | null;
+    };
     /** AnalystAnswer */
     AnalystAnswer: {
       /** Summary */
@@ -1339,10 +1394,7 @@ export interface components {
     AnomalyUpdate: {
       status: components["schemas"]["AnomalyStatus"];
     };
-    /**
-     * AskContext
-     * @description Where the user is asking from; lets the analyst default sensibly.
-     */
+    /** AskContext */
     AskContext: {
       /** Date From */
       date_from?: string | null;
@@ -1682,6 +1734,58 @@ export interface components {
       /** Cache Keys */
       cache_keys: number;
     };
+    /** DebugEvent */
+    DebugEvent: {
+      /** Event Type */
+      event_type: string;
+      /** Orbit Event */
+      orbit_event: string | null;
+      /** User Id */
+      user_id: string;
+      /**
+       * Time
+       * Format: date-time
+       */
+      time: string;
+      /** Insert Id */
+      insert_id: string;
+      /** Session Id */
+      session_id: number | null;
+      /** Platform */
+      platform: string | null;
+      /** Event Properties */
+      event_properties: {
+        [key: string]: unknown;
+      };
+      /** User Properties */
+      user_properties: {
+        [key: string]: unknown;
+      };
+      /** Revenue */
+      revenue: number | null;
+      /**
+       * Clickhouse
+       * @constant
+       */
+      clickhouse: "stored";
+      /**
+       * Amplitude
+       * @enum {string}
+       */
+      amplitude: "delivered" | "failed" | "pending" | "not_configured" | "unknown";
+    };
+    /** DebugEvents */
+    DebugEvents: {
+      /**
+       * Source
+       * @enum {string}
+       */
+      source: "last_export" | "clickhouse_preview" | "empty";
+      /** Amplitude Configured */
+      amplitude_configured: boolean;
+      /** Events */
+      events: components["schemas"]["DebugEvent"][];
+    };
     /** DecisionCreate */
     DecisionCreate: {
       /** Title */
@@ -1887,10 +1991,7 @@ export interface components {
       /** Values */
       values: string[];
     };
-    /**
-     * EntityRef
-     * @description Enough to render a link to another object without a second request.
-     */
+    /** EntityRef */
     EntityRef: {
       /** Type */
       type: string;
@@ -2452,6 +2553,18 @@ export interface components {
       /** Basis */
       basis?: string[];
     };
+    /** IntegrationsStatus */
+    IntegrationsStatus: {
+      amplitude: components["schemas"]["AmplitudeStatus"];
+      metabase: components["schemas"]["MetabaseStatus"];
+      /** Debugger */
+      debugger: boolean;
+      /**
+       * Checked At
+       * Format: date-time
+       */
+      checked_at: string;
+    };
     /** InventoryRisk */
     InventoryRisk: {
       /** Product Id */
@@ -2802,6 +2915,33 @@ export interface components {
        */
       as_of: string;
     };
+    /** MetabaseDashboard */
+    MetabaseDashboard: {
+      /** Name */
+      name: string;
+      /** Url */
+      url: string | null;
+      /** Cards */
+      cards: number;
+    };
+    /** MetabaseStatus */
+    MetabaseStatus: {
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "connected" | "not_configured" | "needs_setup" | "unreachable";
+      /** Detail */
+      detail: string;
+      /** Version */
+      version: string | null;
+      /** Url */
+      url: string | null;
+      /** Provisioned At */
+      provisioned_at: string | null;
+      /** Dashboards */
+      dashboards: components["schemas"]["MetabaseDashboard"][];
+    };
     /**
      * MetricFormat
      * @enum {string}
@@ -2878,7 +3018,7 @@ export interface components {
        * Role
        * @enum {string}
        */
-      role: "primary" | "guardrail";
+      role: "primary" | "guardrail" | "reference";
       /** Variants */
       variants: components["schemas"]["VariantStat"][];
       /** Comparisons */
@@ -3650,9 +3790,22 @@ export interface components {
       /** Dimension */
       dimension: string;
       /** Rows */
-      rows: {
-        [key: string]: unknown;
-      }[];
+      rows: components["schemas"]["SupportingRow"][];
+    };
+    /** SupportingRow */
+    SupportingRow: {
+      /** Key */
+      key: string;
+      /** Label */
+      label: string;
+      /** Baseline Count */
+      baseline_count: number;
+      /** Period Count */
+      period_count: number;
+      /** Baseline Share */
+      baseline_share: number;
+      /** Period Share */
+      period_share: number;
     };
     /** SystemStatus */
     SystemStatus: {
@@ -6656,6 +6809,68 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SystemStatus"];
+        };
+      };
+    };
+  };
+  integrations_status_api_integrations_get: {
+    parameters: {
+      query?: {
+        refresh?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["IntegrationsStatus"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  debug_events_api_integrations_debug_events_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DebugEvents"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

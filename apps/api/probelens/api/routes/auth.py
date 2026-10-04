@@ -177,7 +177,6 @@ def admin_update_user(user_id: int, payload: UserUpdate, actor: CurrentUser, db:
 
 @router.delete("/admin/users/{user_id}", status_code=204, dependencies=[_admin])
 def admin_delete_user(user_id: int, actor: CurrentUser, db: DbSession) -> None:
-    """Hard delete for accounts that never touched anything; otherwise deactivate to keep the audit trail."""
     user = db.get(User, user_id)
     if user is None:
         raise NotFound("User", user_id)

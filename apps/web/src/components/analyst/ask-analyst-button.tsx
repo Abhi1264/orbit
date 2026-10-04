@@ -7,7 +7,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { usePermission } from "@/lib/api/hooks";
 import { cn } from "@/lib/utils";
 
-/** Link-styled-as-button into the analyst; hidden for roles without the permission. */
 export function AskAnalystButton({
   href,
   children = "Ask analyst",

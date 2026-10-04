@@ -1,9 +1,3 @@
-"""Global search across every object with a search vector, plus metrics and dimensions.
-
-Each searchable table exposes a persisted tsvector (see models.core.search_vector), so one
-ranked query per table is cheap. Results are grouped by type; the client decides layout.
-"""
-
 from dataclasses import dataclass
 from typing import Any
 
@@ -105,7 +99,6 @@ def _search_table(db: Session, src: _Source, q: str, limit: int) -> list[SearchH
 
 
 def _search_catalog(q: str) -> list[SearchHit]:
-    """Metrics and dimensions are code, not rows; match on label/key/description."""
     needle = q.lower()
     hits: list[SearchHit] = []
     for m in METRICS.values():

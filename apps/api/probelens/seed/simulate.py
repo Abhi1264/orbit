@@ -1,12 +1,4 @@
-"""Session-level behavioural simulator.
-
-Each active user-day produces one session that walks the funnel with
-probabilities bent by user traits and by the scenarios in `scenarios.py`. The
-output is a flat list of event rows in `EVENT_COLUMNS` order, ready for
-ClickHouse. Everything draws from one seeded `random.Random`, so a given
-(seed, profile, end date) always yields the same dataset.
-"""
-
+import json
 import random
 import uuid
 from collections.abc import Callable, Iterator
@@ -46,7 +38,6 @@ EVENT_COLUMNS = [
     "properties",
 ]
 
-# Relative hourly traffic: quiet overnight, lunchtime bump, evening peak.
 _HOUR_WEIGHTS = [
     1,
     0.6,
@@ -184,7 +175,6 @@ class Simulator:
         return mult
 
     def run(self, on_progress: Callable[[date, int], None] | None = None) -> Iterator[list[tuple]]:
-        """Yield batches of event rows, one batch per simulated day."""
         day = self.start
         while day <= self.end:
             rows: list[tuple] = []
@@ -196,8 +186,6 @@ class Simulator:
                 is_signup_day = user.signup_date == day
                 if is_signup_day or self.rng.random() < user.activity * dow:
                     self._session(rows, user, day, is_signup_day, forced_source=None)
-                # Retargeting leg of the campaign: existing customers see the ads too and
-                # convert normally. The damage comes from who the ads *acquire*.
                 if campaign_live and not user.campaign_acquired and self.rng.random() < 0.005:
                     self._session(rows, user, day, False, forced_source="paid_social")
             if on_progress:
@@ -270,7 +258,6 @@ class Simulator:
         if not deep_link:
             emit("home_view")
 
-        # Bounce: campaign traffic bounces more, even when deep-linked to a product.
         bounce_p = 0.28 * (sc.paid_social_bounce_multiplier if low_intent_campaign else 1.0)
         if (not deep_link or low_intent_campaign) and rng.random() < bounce_p:
             if deep_link:
@@ -279,6 +266,7 @@ class Simulator:
             return
 
         viewed: list[ProductRow] = []
+        search_click = ""  # properties JSON for the product_view a search result click leads to
         searched = not deep_link and rng.random() < (0.5 if user.platform == "web" else 0.42)
         if searched:
             exposures.update(self._active_experiments(user, day, "search"))
@@ -294,6 +282,7 @@ class Simulator:
                 if rng.random() < ctr:
                     items, cum = self.by_category[cat]
                     viewed.append(rng.choices(items, cum_weights=cum, k=1)[0])
+                    search_click = json.dumps({"source": "search", "search_query": query})
                 elif rng.random() < 0.55:
                     return
             else:
@@ -307,9 +296,15 @@ class Simulator:
         if not viewed:
             return
 
-        for p in viewed:
+        for i, p in enumerate(viewed):
             exposures.update(self._active_experiments(user, day, "product_view"))
-            emit("product_view", product_id=p.id, category=p.category, subcategory=p.subcategory)
+            emit(
+                "product_view",
+                product_id=p.id,
+                category=p.category,
+                subcategory=p.subcategory,
+                properties=search_click if i == 0 else "",
+            )
             if rng.random() < 0.07:
                 emit(
                     "add_to_wishlist",

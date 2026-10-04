@@ -31,8 +31,7 @@ router = APIRouter(prefix="/releases", tags=["releases"], dependencies=[Depends(
 
 _write = Depends(require(Permission.manage_releases))
 
-# Metrics worth a before/after read for any release. Lagged metrics (returns,
-# delivery) are excluded: a week after launch is too soon for them to mean anything.
+# Lagged metrics (returns, delivery) are left out: a week after launch is too soon for them.
 IMPACT_METRICS = [
     "conversion",
     "checkout_conversion",
@@ -43,7 +42,6 @@ IMPACT_METRICS = [
 ]
 IMPACT_WINDOW_DAYS = 7
 
-# Releases whose affected areas touch these keywords get an extra metric in the read.
 AREA_METRICS = {
     "search": "search_to_product_view_rate",
     "discovery": "search_to_product_view_rate",
@@ -333,12 +331,6 @@ def _fmt_change(fmt: MetricFormat, before: float | None, after: float | None) ->
 
 @router.get("/{release_id}/impact", response_model=ReleaseImpact)
 def release_impact(release_id: int, _: CurrentUser, db: DbSession) -> ReleaseImpact:
-    """Seven days after the release versus the seven days before, on the release's platform.
-
-    This is a read, not a causal estimate: anything else that happened in the same
-    week is mixed in. The experiment platform is the tool for causal answers; this view
-    exists so a release owner sees the shape of the week immediately.
-    """
     rel = _load(db, release_id)
     meta = get_meta()
     data_end = meta.data_end or date.today()
