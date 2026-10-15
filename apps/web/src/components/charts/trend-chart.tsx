@@ -23,8 +23,8 @@ export const SERIES_COLORS = [
   "var(--color-series-4)",
   "var(--color-series-5)",
   "var(--color-series-6)",
-  "#64748b",
-  "#a16207",
+  "var(--color-series-7)",
+  "var(--color-series-8)",
 ];
 
 type Row = Record<string, string | number | null>;

@@ -30,7 +30,7 @@ export function Topbar({
   const logout = useLogout();
 
   return (
-    <header className="border-border bg-bg flex h-12 shrink-0 items-center justify-between gap-3 border-b px-4">
+    <header className="border-border bg-bg flex h-12 shrink-0 items-center justify-between gap-2 border-b px-3 md:gap-3 md:px-4">
       <div className="flex items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -55,7 +55,7 @@ export function Topbar({
               <span className="bg-surface-2 text-2xs flex size-5 items-center justify-center rounded-full font-medium uppercase">
                 {me.data?.name?.[0] ?? "·"}
               </span>
-              <span className="max-w-32 truncate">{me.data?.name ?? ""}</span>
+              <span className="hidden max-w-32 truncate sm:inline">{me.data?.name ?? ""}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

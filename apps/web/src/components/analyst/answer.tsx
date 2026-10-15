@@ -31,7 +31,7 @@ export function Cite({
   const className = cn(
     "text-2xs inline-flex h-4 items-center rounded-sm border px-1 align-middle font-mono leading-none transition-colors",
     active
-      ? "border-accent bg-accent text-white"
+      ? "border-accent bg-accent text-accent-foreground"
       : "border-border bg-surface-2 text-fg-subtle hover:border-accent hover:text-accent",
   );
   if (!onClick) return <span className={className}>{id}</span>;
