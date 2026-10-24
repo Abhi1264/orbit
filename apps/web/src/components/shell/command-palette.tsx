@@ -150,16 +150,16 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="border-border bg-surface text-fg-subtle hover:border-fg-faint hover:text-fg-muted hidden h-7 w-56 items-center gap-2 rounded-sm border px-2 text-xs transition-colors md:flex"
+        className="border-border bg-surface-2 text-fg-subtle hover:border-border-strong hover:text-fg-muted flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm border text-xs transition-colors duration-150 md:h-7 md:w-56 md:justify-start md:px-2"
         aria-label="Search (⌘K)"
       >
         <Search className="size-3.5" />
-        <span className="flex-1 text-left">Search…</span>
-        <kbd className="text-2xs font-mono">⌘K</kbd>
+        <span className="hidden flex-1 text-left md:block">Search…</span>
+        <kbd className="text-2xs hidden font-mono md:inline">⌘K</kbd>
       </button>
       <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
         <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="bg-fg/30 fixed inset-0 z-40" />
+          <DialogPrimitive.Overlay className="bg-scrim fixed inset-0 z-40" />
           <DialogPrimitive.Content
             className="border-border bg-bg fixed top-[12vh] left-1/2 z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-md border shadow-md focus:outline-none"
             onOpenAutoFocus={(e) => {

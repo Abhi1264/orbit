@@ -6,8 +6,11 @@ import { formatCompactCount, formatDate, formatMetric } from "@/lib/format";
 function cellStyle(value: number | null, max: number) {
   if (value === null) return { background: "transparent" };
   const t = max > 0 ? Math.min(1, value / max) : 0;
-  const alpha = 0.08 + t * 0.82;
-  return { background: `rgb(47 95 214 / ${alpha.toFixed(2)})`, color: t > 0.55 ? "#fff" : "var(--color-fg)" };
+  const pct = Math.round((0.12 + t * 0.88) * 100);
+  return {
+    background: `color-mix(in srgb, var(--color-accent) ${pct}%, transparent)`,
+    color: t > 0.7 ? "var(--color-accent-foreground)" : "var(--color-fg)",
+  };
 }
 
 export function CohortHeatmap({ result }: { result: CohortResult }) {

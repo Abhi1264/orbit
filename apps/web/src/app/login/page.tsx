@@ -38,11 +38,16 @@ function LoginForm() {
         login.mutate();
       }}
     >
-      <div className="mb-6">
-        <div className="mb-1 text-[15px] font-semibold tracking-tight">Orbit</div>
+      <div className="mb-6 flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <span className="bg-accent text-accent-foreground flex size-5 items-center justify-center rounded-sm text-[11px] font-semibold">
+            O
+          </span>
+          <span className="text-sm font-semibold tracking-tight">Orbit</span>
+        </div>
         <p className="text-fg-muted text-[13px]">Product analytics and experimentation for Threadline.</p>
       </div>
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         <Field label="Email" htmlFor="email">
           <Input
             id="email"
@@ -74,12 +79,12 @@ function LoginForm() {
       </div>
       <div className="border-border mt-6 border-t pt-4">
         <p className="text-fg-subtle mb-2 text-xs">Demo accounts (password: probelens)</p>
-        <ul className="space-y-1">
+        <ul className="flex flex-col gap-1">
           {DEMO_ACCOUNTS.map((a) => (
             <li key={a.email}>
               <button
                 type="button"
-                className="hover:bg-surface-2 flex w-full items-center justify-between rounded-sm px-2 py-1 text-left text-xs"
+                className="hover:bg-surface-2 flex h-8 w-full cursor-pointer items-center justify-between rounded-sm px-2 text-left text-xs"
                 onClick={() => {
                   setEmail(a.email);
                   setPassword("probelens");

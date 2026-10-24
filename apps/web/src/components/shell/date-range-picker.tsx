@@ -40,13 +40,16 @@ export function DateRangePicker({ dataStart, dataEnd }: { dataStart?: string; da
       }}
     >
       <PopoverTrigger asChild>
-        <Button size="sm" aria-label="Change date range">
+        <Button
+          size="sm"
+          aria-label={`Date range ${formatDate(range.from)} to ${formatDate(range.to)}, ${days} days`}
+        >
           <CalendarDays className="text-fg-subtle size-3.5" aria-hidden />
-          <span className="tabular">
+          <span className="tabular hidden md:inline">
             {formatDate(range.from)} –{" "}
             {formatDate(range.to, { month: "short", day: "numeric", year: "numeric" })}
           </span>
-          <span className="text-fg-subtle">· {days}d</span>
+          <span className="text-fg-subtle tabular">{days}d</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">

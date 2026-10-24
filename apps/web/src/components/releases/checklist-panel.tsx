@@ -67,7 +67,7 @@ export function ChecklistPanel({
                   }
                   className={cn(
                     "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-sm border transition-colors",
-                    item.done ? "border-success bg-success text-white" : "border-border bg-bg",
+                    item.done ? "border-success bg-success text-success-foreground" : "border-border bg-bg",
                     canEdit ? "hover:border-accent" : "cursor-default",
                     pending && "opacity-50",
                   )}
