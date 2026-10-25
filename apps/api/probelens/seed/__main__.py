@@ -1,4 +1,5 @@
 import argparse
+import os
 import random
 import sys
 import time
@@ -44,7 +45,7 @@ PROFILES = {
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Simulate the storefront and load Postgres and ClickHouse.")
     parser.add_argument("--profile", choices=PROFILES, default="demo")
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--users", type=int, help="override profile user count")
     parser.add_argument("--products", type=int, help="override profile product count")
     parser.add_argument("--days", type=int, help="override profile window length")
@@ -59,7 +60,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--no-amplitude", action="store_true", help="do not send events to Amplitude even if it is configured"
     )
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.seed is None:
+        args.seed = int(os.environ.get("SEED") or "42")
+    return args
 
 
 def amplitude_sink(products: list[ProductRow], users: list[SimUser]) -> AmplitudeSink:

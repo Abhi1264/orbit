@@ -53,8 +53,8 @@ def _pct(v: float | None, signed: bool = True) -> str:
     return f"{v * 100:+.1f}%" if signed else f"{v * 100:.1f}%"
 
 
-def _d(s: str) -> str:
-    return date.fromisoformat(s).strftime("%-d %b")
+def _d(s: date | str) -> str:
+    return planner.day_mon(s if isinstance(s, date) else date.fromisoformat(s))
 
 
 def _scope(filters: list[Filter]) -> str:
@@ -279,10 +279,7 @@ def _what(
         links=links,
         caveats=[]
         if plan.dates.explicit
-        else [
-            f"No date range given; used {d0:%-d %b}–{d1:%-d %b} (the latest "
-            f"{(d1 - d0).days + 1} days of data)."
-        ],
+        else [f"No date range given; used {_d(d0)}–{_d(d1)} (the latest {(d1 - d0).days + 1} days of data)."],
     )
 
 
@@ -430,7 +427,7 @@ def _why(
     if anchor:
         p0 = date.fromisoformat(anchor["period_start"])
         caveats.append(
-            f"Period widened to {p0:%-d %b}–{p1:%-d %b}: the monitor flagged this move starting {p0:%-d %b}, "
+            f"Period widened to {_d(p0)}–{_d(p1)}: the monitor flagged this move starting {_d(p0)}, "
             "so the baseline is taken from before it."
         )
     else:
@@ -463,7 +460,7 @@ def _why(
         if hit:
             p0 = _as_date(hit["release_date"])
             caveats.append(
-                f"Period widened to {p0:%-d %b}–{p1:%-d %b}: {hit['version']} shipped {p0:%-d %b}, "
+                f"Period widened to {_d(p0)}–{_d(p1)}: {hit['version']} shipped {_d(p0)}, "
                 "so the baseline is taken from before it."
             )
     b1 = p0 - timedelta(days=1)
@@ -498,7 +495,7 @@ def _why(
     facts.append(
         Fact(
             text=f"{m.label} ({_scope(filters)}) was {format_value(m.format, overall['period'])} over "
-            f"{p0:%-d %b}–{p1:%-d %b} versus {format_value(m.format, overall['baseline'])} in the 28-day "
+            f"{_d(p0)}–{_d(p1)} versus {format_value(m.format, overall['baseline'])} in the 28-day "
             f"baseline ({_pct(rel)}).",
             source=c_rc.id,
         )
@@ -510,7 +507,7 @@ def _why(
 
     if rel is None or abs(rel) < 0.02:
         return AnalystAnswer(
-            summary=f"{m.label} did not move materially ({_pct(rel)}) in {p0:%-d %b}–{p1:%-d %b} against its "
+            summary=f"{m.label} did not move materially ({_pct(rel)}) in {_d(p0)}–{_d(p1)} against its "
             "28-day baseline; there is nothing to explain.",
             facts=facts,
             links=links,
@@ -761,7 +758,7 @@ def _why(
     lead = (
         f"{m.label} {direction} {_pct(abs(rel), signed=False)} "
         f"({format_value(m.format, overall['baseline'])} → {format_value(m.format, overall['period'])}) "
-        f"in {p0:%-d %b}–{p1:%-d %b} versus its 28-day baseline."
+        f"in {_d(p0)}–{_d(p1)} versus its 28-day baseline."
     )
     if cands:
         heads = [f"{c['title']} ({c['confidence']} confidence)" for c in cands[:2]]
@@ -1006,7 +1003,7 @@ def _attention(trace: Trace, plan: planner.Plan) -> AnalystAnswer:
     facts.append(
         Fact(
             text=f"{len(anomalies)} unresolved anomalies, {len(high)} high severity, "
-            f"{len(ongoing)} still ongoing as of {trace.ctx.today:%-d %b}.",
+            f"{len(ongoing)} still ongoing as of {_d(trace.ctx.today)}.",
             source=c_an.id,
         )
     )

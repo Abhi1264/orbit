@@ -127,6 +127,7 @@ services:
       DATABASE_URL: postgresql+psycopg://probelens:probelens@postgres:5432/probelens
       CLICKHOUSE_HOST: clickhouse
       REDIS_URL: redis://redis:6379/0
+      SEED: ${SEED:-42}
     depends_on:
       postgres:
         condition: service_healthy
