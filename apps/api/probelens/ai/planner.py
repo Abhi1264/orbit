@@ -539,6 +539,11 @@ def previous_window(date_from: date, date_to: date) -> tuple[date, date]:
     return date_from - timedelta(days=days), date_from - timedelta(days=1)
 
 
+def day_mon(d: date) -> str:
+    # "%-d" is glibc-only and throws on Windows.
+    return f"{d.day} {d:%b}"
+
+
 def describe(plan: Plan) -> str:
     parts: list[str] = []
     if plan.metric:
@@ -547,7 +552,7 @@ def describe(plan: Plan) -> str:
         parts.append(", ".join(f.describe() for f in plan.filters))
     d = plan.dates
     parts.append(
-        f"{d.date_from:%-d %b} – {d.date_to:%-d %b}" if d.date_from != d.date_to else f"{d.date_from:%-d %b}"
+        f"{day_mon(d.date_from)} – {day_mon(d.date_to)}" if d.date_from != d.date_to else day_mon(d.date_from)
     )
     if plan.breakdown:
         parts.append(f"by {DIMENSIONS[plan.breakdown].label.lower()}")

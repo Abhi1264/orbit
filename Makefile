@@ -53,7 +53,7 @@ seed:
 	docker compose run --rm seed
 
 seed-full:
-	SEED_PROFILE=full docker compose run --rm seed
+	docker compose run --rm seed python -m probelens.seed --profile full
 
 bi:
 	docker compose --profile bi up -d metabase
@@ -104,5 +104,5 @@ typecheck:
 	cd apps/web && pnpm typecheck
 
 openapi:
-	cd apps/api && uv run python -m probelens.openapi > ../web/openapi.json
+	cd apps/api && uv run python -m probelens.openapi ../web/openapi.json
 	cd apps/web && pnpm openapi

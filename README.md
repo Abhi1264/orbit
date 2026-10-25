@@ -1,6 +1,6 @@
 # Orbit
 
-Internal product analytics and experimentation for **Threadline**, a multi-platform fashion storefront. KPIs, funnels, cohorts, A/B readouts, anomaly root-cause analysis, releases, launch SOPs and an AI analyst, all on one event store.
+Internal product analytics and experimentation for **Threadline**, a fictional multi-platform fashion storefront. KPIs, funnels, cohorts, A/B readouts, anomaly root-cause analysis, releases, launch SOPs and an AI analyst, all on one event store.
 
 - **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui
 - **API:** Python 3.12, FastAPI, Dramatiq + APScheduler for jobs
@@ -9,12 +9,12 @@ Internal product analytics and experimentation for **Threadline**, a multi-platf
 
 ## Quick start
 
-Needs Docker, [uv](https://docs.astral.sh/uv/) and [pnpm](https://pnpm.io/).
+Needs Docker. Running the API or web outside Docker also needs [uv](https://docs.astral.sh/uv/) and [pnpm](https://pnpm.io/).
 
 ```bash
 cp .env.example .env
-make up      # postgres, clickhouse, redis, api, worker, web
-make seed    # demo data: 30k users, ~900k events
+docker compose up -d --build
+docker compose run --rm seed
 ```
 
 Open [http://localhost:3000](http://localhost:3000). Every demo account's password is `probelens`.
@@ -26,19 +26,39 @@ Open [http://localhost:3000](http://localhost:3000). Every demo account's passwo
 | `admin@threadline.test` | Admin |
 | `viewer@threadline.test` | Viewer |
 
-API docs are at [http://localhost:8000/api/docs](http://localhost:8000/api/docs) outside production. `make seed-full` loads 50k users and ~5M events. `make down` stops the stack and `make clean` also drops its volumes.
+API docs are at [http://localhost:8000/api/docs](http://localhost:8000/api/docs) outside production. `docker compose run --rm seed python -m probelens.seed --profile full` loads 50k users and ~5M events. `docker compose --profile bi down` stops the stack; add `-v` to drop its volumes. The Makefile runs these same commands where `make` is installed.
 
 ## Local development
 
 ```bash
-make dev-infra   # databases only
-make migrate
-make api         # :8000, reloads on change
-make worker
-make web         # :3000
+docker compose up -d postgres clickhouse redis
+cd apps/api
+uv run alembic upgrade head
 ```
 
-The AI analyst gives deterministic answers until `LLM_API_KEY` is set; `LLM_BASE_URL` and `LLM_MODEL` point it at any OpenAI-compatible endpoint. After changing API schemas, `make openapi` regenerates the web client's types.
+```bash
+cd apps/api
+uv run uvicorn probelens.main:app --reload --port 8000
+```
+
+```bash
+cd apps/api
+uv run python -m probelens.worker
+```
+
+```bash
+cd apps/web
+pnpm dev
+```
+
+The AI analyst gives deterministic answers until `LLM_API_KEY` is set; `LLM_BASE_URL` and `LLM_MODEL` point it at any OpenAI-compatible endpoint. After changing API schemas, regenerate the web client's types:
+
+```bash
+cd apps/api
+uv run python -m probelens.openapi ../web/openapi.json
+cd ../web
+pnpm openapi
+```
 
 ## Experiments
 
@@ -51,10 +71,10 @@ The AI analyst gives deterministic answers until `LLM_API_KEY` is set; `LLM_BASE
 
 ClickHouse stays Orbit's event store; Amplitude can receive a copy of every storefront event. The storefront is the seeded simulator, so events go out server-side through Amplitude's Python SDK and the key never reaches a browser.
 
-Set `AMPLITUDE_API_KEY` in `.env` (plus `AMPLITUDE_SERVER_ZONE=EU` for EU projects), run `make up`, then send events either way:
+Set `AMPLITUDE_API_KEY` in `.env` (plus `AMPLITUDE_SERVER_ZONE=EU` for EU projects), run `docker compose up -d --build`, then send events either way:
 
-- `make seed` sends them as it loads. To seed without sending: `docker compose run --rm seed python -m probelens.seed --no-amplitude`.
-- `make amplitude-backfill` sends what ClickHouse already holds. `ARGS='--days 7'` limits the range; `ARGS='--dry-run'` prints counts and a sample event without sending.
+- `docker compose run --rm seed` sends them as it loads. To seed without sending: `docker compose run --rm seed python -m probelens.seed --no-amplitude`.
+- `docker compose run --rm api python -m probelens.tracking.backfill` sends what ClickHouse already holds. `--days 7` limits the range; `--dry-run` prints counts and a sample event without sending.
 
 The demo seed is about 900k events, so check your Amplitude plan first. How sending behaves:
 
@@ -77,7 +97,15 @@ METABASE_ADMIN_PASSWORD=
 MB_ENCRYPTION_SECRET_KEY=   # openssl rand -hex 32, before the first run
 ```
 
-`make bi` starts Metabase on port 3001 and provisions it: read-only `orbit_bi` logins with a fresh password each run, the BI views, and six dashboards (Product overview, Conversion funnel, Retention, Returns, Acquisition, Experiments). Every card is run before it reports success. Run `make up` afterwards so the API sees `METABASE_URL`; `make bi-setup` re-provisions in place and keeps dashboard URLs.
+Start Metabase on port 3001 and provision it: read-only `orbit_bi` logins with a fresh password each run, the BI views, and six dashboards (Product overview, Conversion funnel, Retention, Returns, Acquisition, Experiments). Every card is run before it reports success.
+
+```bash
+docker compose --profile bi up -d metabase
+docker compose --profile bi run --rm --build bi-setup
+docker compose up -d
+```
+
+The last command restarts the API so it sees `METABASE_URL`. Run the bi-setup command on its own to re-provision in place and keep dashboard URLs.
 
 - Dashboard numbers equal Orbit's for the same dates and filters; `tests/test_bi.py` compares them with Orbit's query engine.
 - `orbit_bi` reads ClickHouse under a small `bi_analytics` profile (2 threads, 600 MB, 60 s per query) so dashboards can't starve Orbit, and sees only the `bi` schema in Postgres.
@@ -86,7 +114,7 @@ MB_ENCRYPTION_SECRET_KEY=   # openssl rand -hex 32, before the first run
 
 ## Deploy (OCI Ampere, one VM)
 
-Always Free shape: **VM.Standard.A1.Flex, 2 OCPU, 12 GB**, Ubuntu aarch64. Use the demo seed; `make seed-full` runs out of memory.
+Always Free shape: **VM.Standard.A1.Flex, 2 OCPU, 12 GB**, Ubuntu aarch64. Use the demo seed; the full profile (50k users) runs out of memory.
 
 1. Open ingress **22, 80, 443** and nothing else.
 2. Install Docker and add a 2 GB swap file (`fallocate`, `mkswap`, `swapon`).
@@ -97,23 +125,39 @@ cp .env.example .env
 # Always set SECRET_KEY=$(openssl rand -hex 32). The VM is public.
 # With a DNS name: APP_ENV=production, SITE_ADDRESS=orbit.example.com, ACME_EMAIL=you@domain
 # Public IP only: leave SITE_ADDRESS empty and APP_ENV=development (Secure cookies need HTTPS)
-make prod
-make prod-seed    # ~30k users; takes a while on 2 OCPU
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm seed
 ```
 
-Caddy serves the UI on 80/443. Postgres, ClickHouse, Redis and the API stay on the Docker network. `make prod-logs` tails the services and `make prod-down` stops them.
+Caddy serves the UI on 80/443. Postgres, ClickHouse, Redis and the API stay on the Docker network. `docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f api worker web caddy` tails the services and `docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile bi down` stops them.
 
-`make prod-bi` adds Metabase (about 1.3 GB of memory), bound to `127.0.0.1:3001`. Reach it with `ssh -L 3001:localhost:3001 <vm>` and `METABASE_SITE_URL=http://localhost:3001`.
+Metabase (about 1.3 GB of memory) stays bound to `127.0.0.1:3001`:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile bi up -d metabase
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile bi run --rm --build bi-setup
+```
+
+Reach it with `ssh -L 3001:localhost:3001 <vm>` and `METABASE_SITE_URL=http://localhost:3001`.
 
 ## Tests
 
 ```bash
-make lint
-make test   # API and web unit tests
-make e2e    # Playwright, against a running stack
+cd apps/api
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest -q
+cd ../web
+pnpm lint
+pnpm test
 ```
 
-API integration tests run when the stack is reachable and skip otherwise; `ORBIT_INTEGRATION=1` makes them fail instead. To run everything locally: `make up && SEED_PROFILE=dev make seed`, then `make test` and `make e2e`. CI does the same for pull requests and pushes to `main`.
+```bash
+cd tests/e2e
+pnpm test
+```
+
+API integration tests run when the stack is reachable and skip otherwise; `ORBIT_INTEGRATION=1` makes them fail instead. To run everything locally: `docker compose up -d --build`, then `docker compose run --rm seed python -m probelens.seed --profile dev`, then the commands above. CI does the same for pull requests and pushes to `main`.
 
 ## Layout
 

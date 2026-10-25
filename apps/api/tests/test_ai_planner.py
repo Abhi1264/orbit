@@ -79,6 +79,13 @@ def test_describe_is_human_readable() -> None:
     assert "Payment failure rate" in text
     assert "Platform = ios" in text
     assert "by payment method" in text.lower()
+    d = date(2026, 9, 7)
+    try:
+        expected = d.strftime("%-d %b")
+    except ValueError:
+        expected = f"{d.day} {d.strftime('%b')}"
+    assert planner.day_mon(d) == expected
+    assert planner.day_mon(d) in text
 
 
 def test_previous_window_is_adjacent_and_same_length() -> None:

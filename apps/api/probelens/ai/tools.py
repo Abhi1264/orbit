@@ -102,7 +102,9 @@ def _metric_summary(a: MetricSummaryArgs, ctx: ToolContext) -> ToolResult:
     cur, prev = s.total.value, s.compare_total.value if s.compare_total else None
     rel = _rel(cur, prev)
     scope = ", ".join(f.describe() for f in a.filters) or "store-wide"
-    summary = f"{m.label} ({scope}) {start:%-d %b}–{end:%-d %b}: {format_value(m.format, cur)}"
+    summary = (
+        f"{m.label} ({scope}) {planner.day_mon(start)}–{planner.day_mon(end)}: {format_value(m.format, cur)}"
+    )
     if prev is not None:
         summary += (
             f" vs {format_value(m.format, prev)} in the previous {(end - start).days + 1} days ({_pct(rel)})"
@@ -194,8 +196,8 @@ def _breakdown(a: BreakdownArgs, ctx: ToolContext) -> ToolResult:
         piece += f" [{r['share'] * 100:.0f}% of volume]"
         parts.append(piece)
     summary = (
-        f"{m.label} by {DIMENSIONS[a.dimension].label.lower()} {start:%-d %b}–{end:%-d %b}: "
-        + "; ".join(parts)
+        f"{m.label} by {DIMENSIONS[a.dimension].label.lower()} "
+        f"{planner.day_mon(start)}–{planner.day_mon(end)}: " + "; ".join(parts)
     )
     return ToolResult(
         summary=summary,
@@ -276,8 +278,10 @@ def _funnel(a: FunnelArgs, ctx: ToolContext) -> ToolResult:
             )
         )
     return ToolResult(
-        summary=f"Funnel {' → '.join(FUNNEL_EVENTS.get(x, x) for x in a.steps)} {start:%-d %b}–{end:%-d %b}. "
-        + " | ".join(lines),
+        summary=(
+            f"Funnel {' → '.join(FUNNEL_EVENTS.get(x, x) for x in a.steps)} "
+            f"{planner.day_mon(start)}–{planner.day_mon(end)}. " + " | ".join(lines)
+        ),
         data={
             "steps": a.steps,
             "date_from": start.isoformat(),
@@ -395,7 +399,7 @@ def _anomalies(a: AnomaliesArgs, ctx: ToolContext) -> ToolResult:
                 "text": f"{m.label} {'up' if x.direction == 'up' else 'down'} ({scope}): "
                 f"{format_value(m.format, x.actual)} vs expected {format_value(m.format, x.expected)}, "
                 f"z {x.zscore:+.1f}, "
-                f"{x.period_start:%-d %b}–{x.period_end:%-d %b}, {x.severity}",
+                f"{planner.day_mon(x.period_start)}–{planner.day_mon(x.period_end)}, {x.severity}",
             }
         )
     summary = f"{len(out)} {a.status} anomalies. " + " | ".join(o["text"] for o in out[:5])
@@ -434,7 +438,7 @@ def _releases(a: ReleasesArgs, ctx: ToolContext) -> ToolResult:
         }
         for r in rows
     ]
-    summary = f"{len(out)} releases {start:%-d %b}–{end:%-d %b}: " + "; ".join(
+    summary = f"{len(out)} releases {planner.day_mon(start)}–{planner.day_mon(end)}: " + "; ".join(
         f"{o['platform']} {o['version']} on {o['release_date'][5:]} ({o['status']}; "
         f"{', '.join(o['affected_areas']) or 'no areas listed'})"
         for o in out[:6]

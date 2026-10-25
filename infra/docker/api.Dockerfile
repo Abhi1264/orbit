@@ -19,7 +19,8 @@ RUN uv sync --no-dev
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY infra/docker/api-entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# A Windows checkout writes CRLF, which makes the shebang "/bin/sh\r".
+RUN sed -i 's/\r$$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
